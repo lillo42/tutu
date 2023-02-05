@@ -1,0 +1,56 @@
+﻿// Demonstrates how to match on modifiers like: Control, alt, shift.
+
+using Erised.Commands;
+using Erised.Events;
+using NodaTime;
+using static Erised.Commands.Events;
+using Terminal = Erised.Terminal.Terminal;
+
+const string Help = @"Blocking poll() & non-blocking read()
+ - Keyboard, mouse and terminal resize events enabled
+ - Prints ""."" every second if there's no event
+ - Hit ""c"" to print current cursor position
+ - Use Esc to quit
+";
+
+Console.WriteLine(Help);
+
+Terminal.EnableRawMode();
+var stdout = Console.Out;
+stdout.Execute(EnableMouseCapture);
+
+try
+{
+    PrintEvents();
+}
+catch (Exception e)
+{
+    Console.WriteLine("Error: {0}", e);
+}
+
+stdout.Execute(DisableMouseCapture);
+Terminal.DisableRawMode();
+
+static void PrintEvents()
+{
+    while (true)
+    {
+        var @event = EventStream.Instance.Read(
+            Duration.FromSeconds(1),
+            () => Console.WriteLine("."));
+        if (@event != null)
+        {
+            Console.WriteLine(@event);
+            if (@event is Event.KeyEvent { Event.Code: KeyCode.CharKeyCode { Character: 'c' } })
+            {
+                var position = Cursor.Position;
+                Console.WriteLine("Cursor position: ({0}, {1})", position.Column, position.Row);
+            }
+
+            if (@event is Event.KeyEvent { Event.Code: KeyCode.EscKeyCode })
+            {
+                break;
+            }
+        }
+    }
+}
