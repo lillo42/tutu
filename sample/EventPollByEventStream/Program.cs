@@ -26,10 +26,10 @@ Terminal.DisableRawMode();
 
 static async Task PrintEventsAsync()
 {
-    EventStream.Instance.Start(
+    EventStream.Default.Start(
         Duration.FromSeconds(1),
         () => Console.WriteLine("."));
-    var reader = EventStream.Instance.Reader;
+    var reader = EventStream.Default.Reader;
     while (await reader.WaitToReadAsync())
     {
         var @event = await reader.ReadAsync();
@@ -43,7 +43,7 @@ static async Task PrintEventsAsync()
 
         if (@event is Event.KeyEvent { Event.Code: KeyCode.EscKeyCode })
         {
-            EventStream.Instance.Stop();
+            EventStream.Default.Stop();
             break;
         }
     }

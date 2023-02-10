@@ -9,6 +9,11 @@ namespace Erised.Events;
 public enum KeyboardEnhancementFlags
 {
     /// <summary>
+    /// 
+    /// </summary>
+    None = 0,
+    
+    /// <summary>
     /// Represent Escape and modified keys using CSI-u sequences, so they can be unambiguously
     /// read.
     /// </summary>

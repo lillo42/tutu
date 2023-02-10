@@ -1,31 +1,52 @@
-using Tmds.Linux;
-
 namespace Erised;
 
 internal static partial class Unix
 {
-    private static readonly Mutex<termios?> TerminalModePriorRawMode = new(null);
-
-    public static bool IsRawModeEnabled
+    public static partial class Cursor
     {
-        get
+        /// <summary>
+        /// The cursor position.
+        /// </summary>
+        public static (ushort Column, ushort Row) Position
         {
-            using var value = TerminalModePriorRawMode.Lock();
-            return value.Value != null;
-        }
-    }
-
-
-    public static bool SupportKeyboardEnhancement
-    {
-        get
-        {
-            if (IsRawModeEnabled)
+            get
             {
-                return ReadSupportsKeyboardEnhancementRaw;
-            }
+                if (Terminal.IsRawModeEnabled)
+                {
+                    return ReadPositionRaw();
+                }
 
-            return false;
+                Terminal.EnableRawMode();
+                var position = ReadPositionRaw();
+                Terminal.DisableRawMode();
+                return position;
+            }
+        }
+
+        private static (ushort, ushort) ReadPositionRaw()
+        {
+            var stdout = Console.OpenStandardOutput();
+            stdout.Write("\x1B[6n"u8.ToArray());
+            stdout.Flush();
+
+            return (0, 0);
+            /*while (true)
+            {
+                
+            }*/
+        }
+        
+        public static bool SupportKeyboardEnhancement
+        {
+            get
+            {
+                if (Terminal.IsRawModeEnabled)
+                {
+                    return ReadSupportsKeyboardEnhancementRaw;
+                }
+
+                return false;
+            }
         }
     }
 
@@ -56,8 +77,6 @@ internal static partial class Unix
                 @out.Flush();
                 return false;
             }
-            
-            
 
             return true;
         }

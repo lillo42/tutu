@@ -87,7 +87,7 @@ static char ReadChar()
 {
     while (true)
     {
-        var read = EventStream.Instance.Read();
+        var read = EventStream.Default.Read();
         if (read is Event.KeyEvent { Event.Code: KeyCode.CharKeyCode ch })
         {
             return ch.Character;

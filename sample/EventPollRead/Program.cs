@@ -35,7 +35,7 @@ static void PrintEvents()
 {
     while (true)
     {
-        var @event = EventStream.Instance.Read(
+        var @event = EventStream.Default.Read(
             Duration.FromSeconds(1),
             () => Console.WriteLine("."));
         if (@event != null)

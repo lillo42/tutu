@@ -11,19 +11,23 @@ public class EventStream
     private Task? _consumeEvent;
     private CancellationTokenSource? _source;
 
-    private EventStream()
+    private EventStream(int capacity)
     {
         _windowsEventStream = new Windows.WindowsEventStream();
-        _channel = Channel.CreateUnbounded<IEvent>(new UnboundedChannelOptions
+        
+        _channel = Channel.CreateBounded<IEvent>(new BoundedChannelOptions(capacity)
         {
-            SingleWriter = true,
             SingleReader = false,
-            AllowSynchronousContinuations = false
+            SingleWriter = true,
+            AllowSynchronousContinuations = false,
+            FullMode = BoundedChannelFullMode.DropOldest
         });
     }
 
-    public static EventStream Instance { get; } = new();
+    public static EventStream Default { get; } = new(1_000);
 
+    public static EventStream Create(int capacity) => new(capacity);
+    
     public ChannelReader<IEvent> Reader => _channel.Reader;
 
     public void Start(Duration? timeout = null, 

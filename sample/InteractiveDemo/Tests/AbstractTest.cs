@@ -24,7 +24,7 @@ public abstract class AbstractTest
             action(writer);
 
             writer.Flush();
-
+            
             var ch = ReadChar();
             if (ch == 'q')
             {
@@ -48,7 +48,7 @@ public abstract class AbstractTest
     {
         while (true)
         {
-            var read = EventStream.Instance.Read();
+            var read = EventStream.Default.Read();
             if (read is Erised.Events.Event.KeyEvent { Event.Code: KeyCode.CharKeyCode ch })
             {
                 return ch.Character;

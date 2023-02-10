@@ -1,4 +1,5 @@
 using Erised.Events;
+using Tmds.Linux;
 using static Erised.Commands.Cursor;
 using static Erised.Commands.Events;
 
@@ -12,7 +13,7 @@ public class Event : AbstractTest
 
         while (true)
         {
-            var @event = EventStream.Instance.Read();
+            var @event = EventStream.Default.Read();
             if (@event != null)
             {
                 Console.WriteLine(@event);
@@ -32,6 +33,8 @@ public class Event : AbstractTest
                 }
             }
         }
+
+        writer.Execute(DisableMouseCapture);
     }
     
     public static void Run(TextWriter writer)

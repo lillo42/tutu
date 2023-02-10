@@ -13,7 +13,7 @@ internal static partial class Windows
         private const uint EnableProcessedInput = 0x0001;
         private const uint NotRawModeMask = EnableLineInput | EnableEchoInput | EnableProcessedInput;
 
-        public static bool IsRawModeEnable => (Console.Input.Mode & NotRawModeMask) == 0;
+        public static bool IsRawModeEnabled => (Console.Input.Mode & NotRawModeMask) == 0;
 
         public static void EnableRawMode()
         {
