@@ -18,7 +18,7 @@ internal static partial class Unix
             return new ValueAccess(this);
         }
         
-        public struct ValueAccess : IDisposable
+        public class ValueAccess : IDisposable
         {
             private readonly Mutex<T> _mutex;
 

@@ -10,11 +10,24 @@ internal static partial class Windows
 {
     public partial class WindowsEventStream
     {
+        private readonly Channel<IEvent> _channel;
+
+        public WindowsEventStream(int capacity)
+        {
+            _channel = Channel.CreateBounded<IEvent>(new BoundedChannelOptions(capacity)
+            {
+                SingleReader = false,
+                SingleWriter = true,
+                AllowSynchronousContinuations = false
+            });
+        }
+
+        public ChannelReader<IEvent> Reader => _channel.Reader;
+
         private ushort? _suggorate;
         private MouseButtonPressed _mouseButtonPressed;
 
         public async Task ConsumeConsoleEventAsync(
-            ChannelWriter<IEvent> writer,
             IClock clock,
             Duration? duration,
             Action? onTimeout,
@@ -22,6 +35,7 @@ internal static partial class Windows
         {
             await Task.Yield();
 
+            var writer = _channel.Writer;
             var console = Console.CurrentIn;
             while (!cancellationToken.IsCancellationRequested)
             {
@@ -40,7 +54,8 @@ internal static partial class Windows
                     }
                 }
 
-                if (!cancellationToken.IsCancellationRequested && IsElapsed(startedAt, clock.GetCurrentInstant(), duration))
+                if (!cancellationToken.IsCancellationRequested &&
+                    IsElapsed(startedAt, clock.GetCurrentInstant(), duration))
                 {
                     onTimeout?.Invoke();
                 }

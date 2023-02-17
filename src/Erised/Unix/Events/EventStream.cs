@@ -1,6 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
-using System.Linq.Expressions;
 using System.Text;
+using System.Threading.Channels;
 using Erised.Events;
 using NodaTime;
 using Tmds.Linux;
@@ -16,28 +16,141 @@ internal static partial class Unix
         // is enough.
         private const uint TTY_BUFFER_SIZE = 1024;
 
-        private readonly FileDesc _tty;
         private readonly byte[] _ttyBuffer;
-        private readonly object _winchSignalReceiver;
+        private readonly FileDesc _tty;
+        private readonly FileDesc _winchSignalReceiver;
+        private readonly Channel<IInternalEvent> _channel;
+        private readonly Channel<IEvent> _inner;
 
+        private readonly SemaphoreSlim _semaphore = new(0, 1);
 
-        public UnixEventStream(FileDesc tty)
+        public UnixEventStream(FileDesc tty, int capacity)
         {
+            _channel = Channel.CreateBounded<IInternalEvent>(new BoundedChannelOptions(capacity)
+            {
+                SingleWriter = true,
+                SingleReader = false,
+                AllowSynchronousContinuations = true
+            });
+
+            _inner = Channel.CreateBounded<IEvent>(new BoundedChannelOptions(capacity)
+            {
+                SingleWriter = true,
+                SingleReader = false,
+                AllowSynchronousContinuations = true
+            });
+
             _tty = tty;
             _ttyBuffer = new byte[TTY_BUFFER_SIZE];
-            _winchSignalReceiver = new object();
+
+            var (read, _) = NonBlockingUnixPair();
+            _winchSignalReceiver = read;
+            _ = InternalPoll(null);
         }
 
-        public UnixEventStream()
-            : this(FileDesc.TtyFd())
+        public UnixEventStream(int capacity)
+            : this(FileDesc.TtyFd(), capacity)
         {
+        }
+
+        public ChannelReader<IEvent> Reader => _inner.Reader;
+
+        private static unsafe (FileDesc, FileDesc) CreateSocketPair()
+        {
+            var fds = new int[2];
+
+            fixed (int* ptr = fds)
+            {
+                var rv = LibC.socketpair(LibC.AF_UNIX, LibC.SOCK_STREAM | LibC.SOCK_CLOEXEC, 0, ptr);
+                if (rv < 0)
+                {
+                    PlatformException.Throw();
+                }
+            }
+
+            return (new FileDesc(fds[0], true), new FileDesc(fds[1], true));
+        }
+
+        private static (FileDesc, FileDesc) NonBlockingUnixPair()
+        {
+            var (read, write) = CreateSocketPair();
+            LibC.ioctl(read.Fd, LibC.FIONBIO, 1);
+            LibC.ioctl(write.Fd, LibC.FIONBIO, 1);
+            return (read, write);
+        }
+
+
+        public IInternalEvent? InternalPoll(Duration? duration)
+        {
+            var timeout = Timeout.Infinite;
+            if (duration != null)
+            {
+                timeout = (int)duration.Value.TotalMilliseconds;
+            }
             
-        }
+            if (_semaphore.Wait(timeout))
+            {
+                return null;
+            }
+            
+            
 
-        public unsafe IEvent? Read(IClock clock, Duration? duration, Action? onTimeout)
+            _semaphore.Release();
+            return null;
+        }   
+
+        private unsafe IEvent? Read(IClock clock, Duration? duration, Action? onTimeout)
         {
+            Span<pollfd> fds = stackalloc pollfd[2];
+            fds[0] = CreatePollFd(_tty);
+            fds[1] = CreatePollFd(_winchSignalReceiver);
 
-            return ParseEvent(Array.Empty<byte>(), true);
+            var started = clock.GetCurrentInstant();
+            while (IsElapsed(started, clock.GetCurrentInstant(), duration))
+            {
+                var d = duration ?? Duration.Zero;
+                Poll(fds, d);
+
+                if ((fds[0].revents & LibC.POLLIN) != 0)
+                {
+                    while (true)
+                    {
+                        var readCount = ReadComplete(_tty, _ttyBuffer);
+                        if (readCount > 0)
+                        {
+                            Advance(_ttyBuffer.AsSpan()[..readCount], readCount == TTY_BUFFER_SIZE);
+                        }
+
+                        if (_events.TryDequeue(out var ev))
+                        {
+                            return ev;
+                        }
+
+                        if (readCount == 0)
+                        {
+                            break;
+                        }
+                    }
+                }
+
+                if ((fds[1].revents & LibC.POLLIN) != 0)
+                {
+                    while (ReadComplete(_winchSignalReceiver, new byte[(int)TTY_BUFFER_SIZE]) != 0) { }
+
+                    // TODO Should we remove tput?
+                    //
+                    // This can take a really long time, because terminal::size can
+                    // launch new process (tput) and then it parses its output. It's
+                    // not a really long time from the absolute time point of view, but
+                    // it's a really long time from the mio, async-std/tokio executor, ...
+                    // point of view.
+                    var size = Terminal.Size;
+                    return Event.Resize(size.Item1, size.Item2);
+                }
+            }
+
+            onTimeout?.Invoke();
+            return null;
 
             static pollfd CreatePollFd(FileDesc fd)
             {
@@ -50,7 +163,99 @@ internal static partial class Unix
             }
         }
 
-        private static IEvent? ParseEvent(Span<byte> buffer, bool isInputAvailable)
+        private readonly Queue<IEvent> _events = new();
+        private readonly List<byte> _buffer = new((int)TTY_BUFFER_SIZE);
+
+        private void Advance(Span<byte> buffer, bool hasMore)
+        {
+            for (var idx = 0; idx < buffer.Length; idx++)
+            {
+                var more = idx + 1 < buffer.Length || hasMore;
+                _buffer.Add(buffer[idx]);
+
+                IEvent? ev = null;
+                try
+                {
+                    ev = ParseEvent(_buffer.ToArray(), more);
+                }
+                catch
+                {
+                    // Event can't be parsed (not enough parameters, parameter is not a number, ...).
+                    // Clear the buffer and continue with another sequence.
+                    _buffer.Clear();
+                }
+
+                if (ev != null)
+                {
+                    _events.Enqueue(ev);
+                    _buffer.Clear();
+                }
+
+                // Event can't be parsed, because we don't have enough bytes for
+                // the current sequence. Keep the buffer and process next bytes.
+            }
+        }
+
+        /// read_complete reads from a non-blocking file descriptor
+        /// until the buffer is full or it would block.
+        ///
+        /// Similar to `std::io::Read::read_to_end`, except this function
+        /// only fills the given buffer and does not read beyond that.
+        private static unsafe int ReadComplete(FileDesc fd, Span<byte> buffer)
+        {
+            while (true)
+            {
+                ssize_t rv;
+
+                fixed (byte* ptr = buffer)
+                {
+                    rv = LibC.read(fd.Fd, ptr, buffer.Length);
+                }
+
+                if (rv == 0)
+                {
+                    return (int)rv;
+                }
+
+                if (rv == LibC.EWOULDBLOCK || rv == LibC.EAGAIN)
+                {
+                    return 0;
+                }
+
+                if (rv == LibC.EINTR)
+                {
+                    continue;
+                }
+
+                PlatformException.Throw();
+            }
+        }
+
+        private static unsafe void Poll(Span<pollfd> fds, Duration duration)
+        {
+            fixed (pollfd* ptr = fds)
+            {
+                var rv = LibC.poll(ptr, (uint)fds.Length, (int)duration.TotalMilliseconds);
+                if (rv < 0)
+                {
+                    PlatformException.Throw();
+                }
+            }
+        }
+
+        private static bool IsElapsed(Instant start, Instant now, Duration? duration)
+        {
+            if (duration == null)
+            {
+                return false;
+            }
+
+            var elapsed = now - start;
+            return elapsed >= duration.Value;
+        }
+
+
+        private static IEvent? ParseEvent(ReadOnlySpan<byte> buffer, bool isInputAvailable)
         {
             if (buffer.IsEmpty)
             {
@@ -174,7 +379,7 @@ internal static partial class Unix
             return Event.Key(new KeyEvent(KeyCode.Char(ch), char.IsUpper(ch) ? KeyModifiers.Shift : KeyModifiers.None));
         }
 
-        private static char ParseUt8Char(Span<byte> buffer)
+        private static char ParseUt8Char(ReadOnlySpan<byte> buffer)
         {
             try
             {
@@ -216,7 +421,7 @@ internal static partial class Unix
             }
         }
 
-        private static IEvent? ParseCSINormalMouse(Span<byte> buffer)
+        private static IEvent? ParseCSINormalMouse(ReadOnlySpan<byte> buffer)
         {
             // Normal mouse encoding: ESC [ M CB Cx Cy (6 characters only).
             if (buffer.Length < 6)
@@ -236,7 +441,7 @@ internal static partial class Unix
             return Event.Mouse(new MouseEvent(kind, cx, cy, modifiers));
         }
 
-        private static IEvent? ParseCSIRxvtMouse(Span<byte> buffer)
+        private static IEvent? ParseCSIRxvtMouse(ReadOnlySpan<byte> buffer)
         {
             // rxvt mouse encoding:
             // ESC [ Cb ; Cx ; Cy ; M
@@ -257,7 +462,7 @@ internal static partial class Unix
             return Event.Mouse(new MouseEvent(kind, --cx, --cy, modifiers));
         }
 
-        private static IEvent? ParseCSISpecialKeyCode(Span<byte> buffer)
+        private static IEvent? ParseCSISpecialKeyCode(ReadOnlySpan<byte> buffer)
         {
             var s = Encoding.UTF8.GetString(buffer[2..^1]);
             var split = s.Split(';');
@@ -375,7 +580,7 @@ internal static partial class Unix
             return (kind, modifiers);
         }
 
-        private static IEvent? ParseCSI(Span<byte> buffer)
+        private static IEvent? ParseCSI(ReadOnlySpan<byte> buffer)
         {
             if (buffer.Length == 2)
             {
@@ -541,7 +746,7 @@ internal static partial class Unix
             return null;
         }
 
-        private static IEvent? ParseCSIBracketedPaste(Span<byte> buffer)
+        private static IEvent? ParseCSIBracketedPaste(ReadOnlySpan<byte> buffer)
         {
             if (!buffer.EndsWith("\x1b[201~"u8.ToArray()))
             {
@@ -552,7 +757,7 @@ internal static partial class Unix
             return Event.Pasted(s);
         }
 
-        private static IEvent? ParseCSIModifierKeyCode(Span<byte> buffer)
+        private static IEvent? ParseCSIModifierKeyCode(ReadOnlySpan<byte> buffer)
         {
             var s = Encoding.UTF8.GetString(buffer[2..^1]);
             var split = s.Split(';');
@@ -604,7 +809,7 @@ internal static partial class Unix
             return Event.Key(new KeyEvent(keyCode, modifiers, kind));
         }
 
-        private static IEvent? ParseCSICursorPosition(Span<byte> buffer)
+        private static IEvent? ParseCSICursorPosition(ReadOnlySpan<byte> buffer)
         {
             var s = Encoding.UTF8.GetString(buffer[2..^1]);
             var split = s.Split(';');
@@ -627,7 +832,7 @@ internal static partial class Unix
             return null;
         }
 
-        private static IEvent? ParseCSIUEncodedKeyCode(Span<byte> buffer)
+        private static IEvent? ParseCSIUEncodedKeyCode(ReadOnlySpan<byte> buffer)
         {
             var s = Encoding.UTF8.GetString(buffer[2..^1]);
             var split = s.Split(';');
@@ -838,7 +1043,7 @@ internal static partial class Unix
         }
 
 
-        private static IEvent? ParseCSIPrimaryDeviceAttributes(Span<byte> buffer)
+        private static IEvent? ParseCSIPrimaryDeviceAttributes(ReadOnlySpan<byte> buffer)
         {
             // ESC [ 64 ; attr1 ; attr2 ; ... ; attrn ; c
 
@@ -848,7 +1053,7 @@ internal static partial class Unix
             return null;
         }
 
-        private static IEvent? ParseCSIKeyboardEnhancementFlags(Span<byte> buffer)
+        private static IEvent? ParseCSIKeyboardEnhancementFlags(ReadOnlySpan<byte> buffer)
         {
             // ESC [ ? flags u
             if (buffer.Length < 5)
@@ -888,7 +1093,7 @@ internal static partial class Unix
             return null;
         }
 
-        private static IEvent? ParseCSISgrMouse(Span<byte> buffer)
+        private static IEvent? ParseCSISgrMouse(ReadOnlySpan<byte> buffer)
         {
             if (buffer[^1] != 'm' && buffer[^1] != 'M')
             {
@@ -924,7 +1129,7 @@ internal static partial class Unix
             return Event.Mouse(new MouseEvent(kind, cx, cy, modifiers));
         }
 
-        private static IEvent? ParseCSIModifierKey(Span<byte> buffer)
+        private static IEvent? ParseCSIModifierKey(ReadOnlySpan<byte> buffer)
         {
             if (buffer.Length < 3)
             {
@@ -966,7 +1171,7 @@ internal static partial class Unix
             return keyCode == null ? null : Event.Key(new KeyEvent(keyCode, keyModifier, keyEventKind));
         }
 
-        private static (byte, byte)? ModifierAndKindParsed(Span<string> iter)
+        private static (byte, byte)? ModifierAndKindParsed(ReadOnlySpan<string> iter)
         {
             if (iter.IsEmpty)
             {

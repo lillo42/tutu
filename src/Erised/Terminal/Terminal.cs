@@ -33,11 +33,30 @@ public static class Terminal
 
     public static (ushort Width, ushort Height) Size
     {
-        get => Windows.Terminal.Size;
+        get
+        {
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                return Windows.Terminal.Size;
+            }
+
+            return Unix.Terminal.Size;
+        }
         set => Windows.Terminal.Size = value;
     }
 
-    public static bool SupportsKeyboardEnhancement => false;
+    public static bool SupportsKeyboardEnhancement
+    {
+        get
+        {
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                return false;
+            }
+            
+            return Unix.Terminal.SupportsKeyboardEnhancement;
+        }
+    }
 
     public static void Clear(ClearType type) => Windows.Terminal.Clear(type);
 
