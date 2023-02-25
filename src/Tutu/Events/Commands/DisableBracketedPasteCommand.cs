@@ -1,4 +1,3 @@
-
 namespace Tutu.Events.Commands;
 
 /// <summary>

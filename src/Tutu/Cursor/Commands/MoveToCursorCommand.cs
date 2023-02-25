@@ -8,9 +8,8 @@ namespace Tutu.Cursor.Commands;
 /// <param name="Column">The desired column.</param>
 /// <param name="Row">The desired row.</param>
 /// <remarks>
-/// Top left cell is represented as `0,0`.
-///
-/// Commands must be executed/queued for execution otherwise they do nothing.
+/// <para>Top left cell is represented as `0,0`.</para>
+/// <para>Commands must be executed/queued for execution otherwise they do nothing.</para>
 /// </remarks>
 public record MoveToCursorCommand(ushort Column, ushort Row) : ICommand
 {

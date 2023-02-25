@@ -7,9 +7,8 @@ namespace Tutu.Cursor.Commands;
 /// </summary>
 /// <param name="NewRow">The target row.</param>
 /// <remarks>
-/// This command is 0 based, meaning 0 is the topmost row.
-///
-/// Commands must be executed/queued for execution otherwise they do nothing.
+/// <para>This command is 0 based, meaning 0 is the topmost row.</para>
+/// <para>Commands must be executed/queued for execution otherwise they do nothing.</para>
 /// </remarks>
 public record MoveToRowCursorCommand(ushort NewRow) : ICommand
 {

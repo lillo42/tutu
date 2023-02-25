@@ -4,10 +4,10 @@ namespace Tutu.Cursor.Commands;
 /// A command that disables blinking of the terminal cursor.
 /// </summary>
 /// <remarks>
-/// Some Unix terminals (ex: GNOME and Konsole) as well as Windows versions lower than Windows 10 do not support this functionality.
-///   Use <see cref="SetCursorStyleCursorCommand"/> for better cross-compatibility.
-/// 
-/// Commands must be executed/queued for execution otherwise they do nothing.
+/// <para>Some Unix terminals (ex: GNOME and Konsole) as well as Windows versions lower than Windows 10 do not support
+/// this functionality.</para>
+/// <para>Use <see cref="SetCursorStyleCursorCommand"/> for better cross-compatibility.</para>
+/// <para>Commands must be executed/queued for execution otherwise they do nothing.</para>
 /// </remarks>
 public record DisableBlinkingCursorCommand : ICommand
 {

@@ -6,9 +6,8 @@ namespace Tutu.Cursor.Commands;
 /// A command that saves the current terminal cursor position.
 /// </summary>
 /// <remarks>
-/// The cursor position is stored globally.
-///
-/// Commands must be executed/queued for execution otherwise they do nothing.
+/// <para>The cursor position is stored globally.</para>
+/// <para>Commands must be executed/queued for execution otherwise they do nothing.</para>
 /// </remarks>
 public record SavePositionCursorCommand : ICommand
 {

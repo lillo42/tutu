@@ -8,11 +8,9 @@ namespace Tutu.Cursor.Commands;
 /// </summary>
 /// <param name="Count">The number of line to move forward.</param>
 /// <remarks>
-/// This command is 1 based, meaning `MoveToNextLine(1)` moves to the next line.
-///
-/// Most terminals default 0 argument to 1.
-///
-/// Commands must be executed/queued for execution otherwise they do nothing.
+/// <para>This command is 1 based, meaning `MoveToNextLine(1)` moves to the next line.</para>
+/// <para>Most terminals default 0 argument to 1.</para>
+/// <para>Commands must be executed/queued for execution otherwise they do nothing.</para>
 /// </remarks>
 public record MoveToNextLineCursorCommand(ushort Count) : ICommand
 {

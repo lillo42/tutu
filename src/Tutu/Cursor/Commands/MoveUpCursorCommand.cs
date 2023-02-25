@@ -7,11 +7,9 @@ namespace Tutu.Cursor.Commands;
 /// </summary>
 /// <param name="Count">The number of line to be up.</param>
 /// <remarks>
-/// This command is 1 based, meaning `MoveUp(1)` moves the cursor up one cell.
-///
-/// Most terminals default 0 argument to 1.
-///
-/// Commands must be executed/queued for execution otherwise they do nothing.
+/// <para>This command is 1 based, meaning `MoveUp(1)` moves the cursor up one cell.</para>
+/// <para>Most terminals default 0 argument to 1.</para>
+/// <para>Commands must be executed/queued for execution otherwise they do nothing.</para>
 /// </remarks>
 public record MoveUpCursorCommand(ushort Count) : ICommand
 {

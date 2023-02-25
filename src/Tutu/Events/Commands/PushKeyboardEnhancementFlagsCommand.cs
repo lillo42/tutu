@@ -1,13 +1,12 @@
 namespace Tutu.Events.Commands;
 
 /// <summary>
-/// A command that enables the  <see href="https://sw.kovidgoyal.net/kitty/keyboard-protocol/">kitty keyboard protocol</see>,
+/// A command that enables the <see href="https://sw.kovidgoyal.net/kitty/keyboard-protocol/">kitty keyboard protocol</see>,
 /// which adds extra information to keyboard events and removes ambiguity for modifier keys.
-///
-/// It should be paired with <see cref="PopKeyboardEnhancementFlagsCommand"/> at the end of execution.
 /// </summary>
 /// <param name="Flags">The <see cref="KeyEventKind"/>.</param>
 /// <remarks>
+/// <para>It should be paired with <see cref="PopKeyboardEnhancementFlagsCommand"/> at the end of execution.</para>
 /// <list type="bullet">
 ///     <item><see href="https://sw.kovidgoyal.net/kitty/">kitty terminal</see></item>
 ///     <item><see href="https://codeberg.org/dnkl/foot/issues/319">foot terminal</see></item>

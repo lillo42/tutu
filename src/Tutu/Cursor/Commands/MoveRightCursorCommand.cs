@@ -7,11 +7,9 @@ namespace Tutu.Cursor.Commands;
 /// </summary>
 /// <param name="Count">The number of column to be move.</param>
 /// <remarks>
-/// This command is 1 based, meaning `MoveRight(1)` moves the cursor right one cell.
-///
-/// Most terminals default 0 argument to 1.
-///
-/// Commands must be executed/queued for execution otherwise they do nothing.
+/// <para>This command is 1 based, meaning `MoveRight(1)` moves the cursor right one cell.</para>
+/// <para>Most terminals default 0 argument to 1.</para>
+/// <para>Commands must be executed/queued for execution otherwise they do nothing.</para>
 /// </remarks>
 public record MoveRightCursorCommand(ushort Count) : ICommand
 {
