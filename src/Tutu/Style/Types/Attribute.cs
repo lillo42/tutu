@@ -3,42 +3,114 @@ namespace Tutu.Style.Types;
 /// <summary>
 /// Represents an attribute.
 /// </summary>
+/// <param name="Value">The value.</param>
+/// <param name="Name">The name value.</param>
 /// <remarks>
-/// # Platform-specific Notes
-/// 
-/// * Only UNIX and Windows 10 terminals do support text attributes.
-/// * Keep in mind that not all terminals support all attributes.
-/// * Crossterm implements almost all attributes listed in the
-///
-/// | Attribute    | Windows | UNIX | Notes |
-/// | :-----------:| :--: | :--: | :--: |
-/// | `Reset`      | ✓ | ✓ | |
-/// | `Bold`       | ✓ | ✓ | |
-/// | `Dim`        | ✓ | ✓ | |
-/// | `Italic`     | ? | ? | Not widely supported, sometimes treated as inverse. |
-/// | `Underlined` | ✓ | ✓ | |
-/// | `SlowBlink`  | ? | ? | Not widely supported, sometimes treated as inverse. |
-/// | `RapidBlink` | ? | ? | Not widely supported. MS-DOS ANSI.SYS; 150+ per minute. |
-/// | `Reverse`    | ✓ | ✓ | |
-/// | `Hidden`     | ✓ | ✓ | Also known as Conceal. |
-/// | `Fraktur`    | ✗ | ✓ | Legible characters, but marked for deletion. |
-/// | `DefaultForegroundColor` | ? | ? | Implementation specific (according to standard). |
-/// | `DefaultBackgroundColor` | ? | ? | Implementation specific (according to standard). |
-/// | `Framed`    | ? | ? | Not widely supported. |
-/// | `Encircled` | ? | ? | This should turn on the encircled attribute. |
-/// | `OverLined` | ? | ? | This should draw a line at the top of the text. |
+/// <para><strong>Platform-specific Notes</strong></para>
+/// <para>Only UNIX and Windows 10 terminals do support text attributes.</para>
+/// <para>Keep in mind that not all terminals support all attributes.</para>
+/// <para>Tutu implements almost all attributes listed in the</para>
+/// <list type="table">
+///     <listheader>
+///         <term>Attribute</term>
+///         <term>Windows</term>
+///         <term>UNIX</term>
+///         <term>Notes</term>
+///     </listheader>
+///     <item>
+///         <term>Reset</term>
+///         <term>✓</term>
+///         <term>✓</term>
+///         <term></term>
+///     </item>
+///     <item>
+///         <term>Bold</term>
+///         <term>✓</term>
+///         <term>✓</term>
+///         <term></term>
+///     </item>
+///     <item>
+///         <term>Dim</term>
+///         <term>✓</term>
+///         <term>✓</term>
+///         <term></term>
+///     </item>
+///     <item>
+///         <term>Italic</term>
+///         <term>?</term>
+///         <term>?</term>
+///         <term>Not widely supported, sometimes treated as inverse.</term>
+///     </item>
+///    <item>
+///         <term>Underlined</term>
+///         <term>✓</term>
+///         <term>✓</term>
+///         <term></term>
+///     </item>
+///     <item>
+///         <term>SlowBlink</term>
+///         <term>?</term>
+///         <term>?</term>
+///         <term>Not widely supported, sometimes treated as inverse.</term>
+///     </item>
+///     <item>
+///         <term>RapidBlink</term>
+///         <term>?</term>
+///         <term>?</term>
+///         <term>Not widely supported. MS-DOS ANSI.SYS; 150+ per minute.</term>
+///     </item>
+///     <item>
+///         <term>Reverse</term>
+///         <term>✓</term>
+///         <term>✓</term>
+///         <term></term>
+///     </item>
+///     <item>
+///         <term>Hidden</term>
+///         <term>✓</term>
+///         <term>✓</term>
+///         <term>Also known as Conceal.</term>
+///     </item>
+///     <item>
+///         <term>Fraktur</term>
+///         <term>✗</term>
+///         <term>✓</term>
+///         <term>Legible characters, but marked for deletion.</term>
+///     </item>
+///     <item>
+///         <term>DefaultForegroundColor</term>
+///         <term>?</term>
+///         <term>?</term>
+///         <term>Implementation specific (according to standard).</term>
+///     </item>
+///     <item>
+///         <term>DefaultBackgroundColor</term>
+///         <term>?</term>
+///         <term>?</term>
+///         <term>Implementation specific (according to standard).</term>
+///     </item>
+///     <item>
+///         <term>Framed</term>
+///         <term>?</term>
+///         <term>?</term>
+///         <term>Not widely supported.</term>
+///     </item>
+///     <item>
+///         <term>Encircled</term>
+///         <term>?</term>
+///         <term>?</term>
+///         <term>This should turn on the encircled attribute.</term>
+///     </item>
+///     <item>
+///         <term>Overlined</term>
+///         <term>?</term>
+///         <term>?</term>
+///         <term>Not widely supported.</term>
+///     </item>
+/// </list>
 /// </remarks>
-public readonly struct Attribute
+public readonly record struct Attribute(string Name, string Value)
 {
-    public Attribute(string name, string value)
-    {
-        Name = name;
-        Value = value;
-    }
-
-    public string Name { get; }
-    public string Value { get; }
-
     internal static IEnumerable<Attribute> AllAttributes
     {
         get
@@ -66,7 +138,7 @@ public readonly struct Attribute
             yield return NoReverse;
             yield return Reveal;
             yield return NotCrossedOut;
-            yield return Framed;
+            yield return Frame;
             yield return Encircled;
             yield return OverLined;
             yield return NotFramedOrEncircled;
@@ -136,7 +208,7 @@ public readonly struct Attribute
     public static Attribute Underdashed { get; } = new("Underdashed", "4:5");
 
     /// <summary>
-    /// Makes the text blinking (< 150 per minute).
+    /// Makes the text blinking ( < 150 per minute).
     /// </summary>
     /// <remarks>
     /// Sets blinking to less than 150 times per minute.
@@ -187,27 +259,26 @@ public readonly struct Attribute
     /// <returns></returns>
     public static Attribute AlternativeFont(int fontNumber) => new("AlternativeFont", (10 + fontNumber).ToString());
 
-
     /// <summary>
-    /// Sets the [Fraktur](https://en.wikipedia.org/wiki/Fraktur) typeface.
-    ///
-    /// Mostly used for [mathematical alphanumeric symbols](https://en.wikipedia.org/wiki/Mathematical_Alphanumeric_Symbols).
+    /// Sets the <see href="https://en.wikipedia.org/wiki/Fraktur">Fraktur</see> typeface.
     /// </summary>
     /// <remarks>
-    /// Rarely supported.
+    /// <para>Mostly used for <see href="https://en.wikipedia.org/wiki/Mathematical_Alphanumeric_Symbols">mathematical alphanumeric symbols</see>.</para>
+    /// <para>Rarely supported.</para>
     /// </remarks>
     public static Attribute Fraktur { get; } = new("Fraktur", "20");
 
     /// <summary>
-    /// Turns off the `Bold` attribute. - Inconsistent - Prefer to use NormalIntensity
+    /// Turns off the <see cref="Bold"/> attribute. - Inconsistent - Prefer to use <see cref="NormalIntensity"/>. 
     /// </summary>
     /// <remarks>
-    /// Double-underline per ECMA-48 but instead disables bold intensity on several terminals, including in the Linux kernel's console before version 4.17
+    /// Double-underline per ECMA-48 but instead disables bold intensity on several terminals, including in the
+    /// Linux kernel's console before version 4.17
     /// </remarks>
     public static Attribute NoBold { get; } = new("NoBold", "21");
 
     /// <summary>
-    /// Switches the text back to normal intensity (no bold, italic).
+    /// Switches the text back to normal intensity (<see cref="NoBold"/>, <see cref="Italic"/>).
     /// </summary>
     /// <remarks>
     /// Neither bold nor faint; color changes where intensity is implemented as such.
@@ -215,12 +286,12 @@ public readonly struct Attribute
     public static Attribute NormalIntensity { get; } = new("NormalIntensity", "22");
 
     /// <summary>
-    /// Turns off the `Italic` attribute.
+    /// Turns off the <see cref="Italic"/> attribute.
     /// </summary>
     public static Attribute NoItalic { get; } = new("NoItalic", "23");
 
     /// <summary>
-    /// Turns off the `Underlined` attribute.
+    /// Turns off the <see cref="Underlined"/> attribute.
     /// </summary>
     /// <remarks>
     /// Neither singly nor doubly underlined.
@@ -228,17 +299,17 @@ public readonly struct Attribute
     public static Attribute NoUnderline { get; } = new("NoUnderline", "24");
 
     /// <summary>
-    /// Turns off the text blinking (`SlowBlink` or `RapidBlink`).
+    /// Turns off the text blinking (<see cref="SlowBlink"/> or <see cref="RapidBlink"/>).
     /// </summary>
     public static Attribute NoBlink { get; } = new("NoBlink", "25");
 
     /// <summary>
-    /// Turns off the `Reverse` attribute.
+    /// Turns off the <see cref="Reverse"/> attribute.
     /// </summary>
     public static Attribute NoReverse { get; } = new("NoReverse", "27");
 
     /// <summary>
-    /// Turns off the `Hidden` attribute.
+    /// Turns off the <see cref="Hidden"/> attribute.
     /// </summary>
     /// <remarks>
     /// Not concealed.
@@ -246,7 +317,7 @@ public readonly struct Attribute
     public static Attribute Reveal { get; } = new("NoHidden", "28");
 
     /// <summary>
-    /// Turns off the `CrossedOut` attribute.
+    /// Turns off the <see cref="CrossedOut"/> attribute.
     /// </summary>
     public static Attribute NotCrossedOut { get; } = new("NotCrossedOut", "29");
 
@@ -256,7 +327,7 @@ public readonly struct Attribute
     /// <remarks>
     /// Implemented as "emoji variation selector" in mintty.
     /// </remarks>
-    public static Attribute Framed { get; } = new("Framed", "51");
+    public static Attribute Frame { get; } = new("Framed", "51");
 
     /// <summary>
     /// Makes the text encircled.
@@ -275,21 +346,20 @@ public readonly struct Attribute
     public static Attribute OverLined { get; } = new("OverLined", "53");
 
     /// <summary>
-    /// Turns off the `Frame` and `Encircled` attributes.
+    /// Turns off the <see cref="Frame"/> and <see cref="Encircled"/> attributes.
     /// </summary>
     public static Attribute NotFramedOrEncircled { get; } = new("NotFramedOrEncircled", "54");
 
     /// <summary>
-    /// Turns off the `OverLined` attribute.
+    /// Turns off the <see cref="OverLined"/> attribute.
     /// </summary>
     public static Attribute NotOverLined { get; } = new("NotOverLined", "55");
 
     /// <summary>
-    /// Returns the SGR attribute value.
+    /// The SGR attribute value.
     /// </summary>
-    /// <returns>The SRG attribute</returns>
     /// <remarks>
     /// See https://en.wikipedia.org/wiki/ANSI_escape_code#SGR_parameters
     /// </remarks>
-    public string Sgr() => Value;
+    public string Sgr => Value;
 }

@@ -6,13 +6,15 @@ namespace Tutu.Terminal.Commands;
 /// A command that switches to alternate screen.
 /// </summary>
 /// <remarks>
-/// * Commands must be executed/queued for execution otherwise they do nothing.
-/// * Use [LeaveAlternateScreen](./struct.LeaveAlternateScreen.html) command to leave the entered alternate screen.
+/// <para>Commands must be executed/queued for execution otherwise they do nothing.</para>
+/// <para>Use <see cref="LeaveAlternateScreenCommand"/> command to leave the entered alternate screen.</para>
 /// </remarks>
 public record EnterAlternateScreenCommand : ICommand
 {
+    /// <inheritdoc />
     public void WriteAnsi(TextWriter write) 
         => write.Write($"{AnsiCodes.CSI}?1049h");
 
+    /// <inheritdoc />
     public void ExecuteWindowsApi() => ScreenBuffer.Create().Show();
 }

@@ -3,7 +3,7 @@ namespace Tutu.Style.Commands;
 /// <summary>
 /// A command that sets a style (colors and attributes).
 /// </summary>
-/// <param name="Style"></param>
+/// <param name="Style">The <see cref="ContentStyled"/>.</param>
 /// <remarks>
 ///  Commands must be executed/queued for execution otherwise they do nothing.
 /// </remarks>

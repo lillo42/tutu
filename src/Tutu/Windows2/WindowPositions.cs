@@ -5,21 +5,12 @@ namespace Tutu.Windows2;
 /// <summary>
 /// This is a wrapper for the locations of a rectangle. 
 /// </summary>
-internal struct WindowPositions
+/// <param name="Top"></param>
+/// <param name="Right"></param>
+/// <param name="Left"></param>
+/// <param name="Bottom"></param>
+internal readonly record struct WindowPositions(short Top, short Right, short Left, short Bottom)
 {
-    public readonly short Top;
-    public readonly short Right;
-    public readonly short Left;
-    public readonly short Bottom;
-
-    public WindowPositions(short top, short right, short left, short bottom)
-    {
-        Top = top;
-        Right = right;
-        Left = left;
-        Bottom = bottom;
-    }
-
     public SMALL_RECT ToSmallRect()
         => new() { Bottom = Bottom, Left = Left, Right = Right, Top = Top };
 

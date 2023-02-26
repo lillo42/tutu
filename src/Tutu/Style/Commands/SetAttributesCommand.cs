@@ -5,7 +5,7 @@ namespace Tutu.Style.Commands;
 /// <summary>
 /// A command that sets several attributes.
 /// </summary>
-/// <param name="Attributes"></param>
+/// <param name="Attributes">A collection of <see cref="Attribute"/>.</param>
 /// <remarks>
 /// Commands must be executed/queued for execution otherwise they do nothing.
 /// </remarks>
@@ -24,8 +24,5 @@ public record SetAttributesCommand(IEnumerable<Attribute> Attributes) : ICommand
     }
 
     /// <inheritdoc />
-    public void ExecuteWindowsApi()
-    {
-        // Should ignore this command on windows api
-    }
+    public void ExecuteWindowsApi() { }
 }

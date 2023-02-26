@@ -6,7 +6,7 @@ namespace Tutu.Style.Commands;
 /// A command that prints styled content.
 /// </summary>
 /// <param name="Content">Print content styled.</param>
-/// <typeparam name="T"></typeparam>
+/// <typeparam name="T">The content.</typeparam>
 /// <remarks>
 /// Commands must be executed/queued for execution otherwise they do nothing.
 /// </remarks>
@@ -63,8 +63,5 @@ public record PrintStyledContentCommand<T>(StyledContent<T> Content) : ICommand
     }
 
     /// <inheritdoc />
-    public void ExecuteWindowsApi()
-    {
-        // Should ignore this command on windows api.
-    }
+    public void ExecuteWindowsApi() { }
 }

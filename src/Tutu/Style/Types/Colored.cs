@@ -3,23 +3,10 @@ namespace Tutu.Style.Types;
 /// <summary>
 /// Represents a foreground or background or underline color.
 /// </summary>
-/// <param name="Value"></param>
+/// <param name="Value">An internal value.</param>
 /// <param name="Color">The <see cref="Types.Color"/>.</param>
-public readonly struct Colored
+public readonly record struct Colored(int Value, Color Color)
 {
-    private readonly int _value;
-
-    /// <summary>
-    /// The <see cref="Types.Color"/>. 
-    /// </summary>
-    public Color Color { get; }
-
-    public Colored(int value, Color color)
-    {
-        _value = value;
-        Color = color;
-    }
-
     /// <summary>
     /// Creates a foreground instance.
     /// </summary>
@@ -72,12 +59,21 @@ public readonly struct Colored
         return null;
     }
 
-    public bool IsForegroundColor => _value == 38;
+    /// <summary>
+    /// Is this a foreground color.
+    /// </summary>
+    public bool IsForegroundColor => Value == 38;
 
-    public bool IsBackgroundColor => _value == 48;
+    /// <summary>
+    /// Is this a background color.
+    /// </summary>
+    public bool IsBackgroundColor => Value == 48;
 
-    public bool IsUnderlineColor => _value == 58;
+    /// <summary>
+    /// Is this a underline color.
+    /// </summary>
+    public bool IsUnderlineColor => Value == 58;
 
     public override string ToString()
-        => Color == Color.Reset ? (_value + 1).ToString() : $"{_value};{Color}";
+        => Color == Color.Reset ? (Value + 1).ToString() : $"{Value};{Color}";
 }

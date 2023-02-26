@@ -5,22 +5,19 @@ namespace Tutu.Style.Commands;
 /// <summary>
 /// A command that sets an attribute.
 /// </summary>
-/// <param name="ContentAttribute">The attribute.</param>
+/// <param name="Attribute">The attribute.</param>
 /// <remarks>
 /// Commands must be executed/queued for execution otherwise they do nothing.
 /// </remarks>
-public record SetAttributeCommand(Attribute ContentAttribute) : ICommand
+public record SetAttributeCommand(Attribute Attribute) : ICommand
 {
     /// <inheritdoc />
     public void WriteAnsi(TextWriter write)
-        => Execute(write, ContentAttribute);
+        => Execute(write, Attribute);
 
     internal static void Execute(TextWriter write, Attribute contentAttribute)
-        => write.Write($"{AnsiCodes.CSI}{contentAttribute.Sgr()}m");
+        => write.Write($"{AnsiCodes.CSI}{contentAttribute.Sgr}m");
 
     /// <inheritdoc />
-    public void ExecuteWindowsApi()
-    {
-        // Should ignore this command on windows api
-    }
+    public void ExecuteWindowsApi() { }
 }

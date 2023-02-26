@@ -1,3 +1,5 @@
+using Tutu.Windows2;
+
 namespace Tutu.Terminal.Commands;
 
 /// <summary>
@@ -5,14 +7,13 @@ namespace Tutu.Terminal.Commands;
 /// </summary>
 /// <param name="Title">The new title.</param>
 /// <remarks>
-/// * Commands must be executed/queued for execution otherwise they do nothing.
+/// Commands must be executed/queued for execution otherwise they do nothing.
 /// </remarks>
 public record SetTitleCommand(string Title) : ICommand
 {
+    /// <inheritdoc />
     public void WriteAnsi(TextWriter write) => write.Write($"{AnsiCodes.ESC}]0;{Title}\x07");
 
-    public void ExecuteWindowsApi()
-    {
-        // Windows.Windows.Terminal.SetWindowTitle(Title);
-    }
+    /// <inheritdoc />
+    public void ExecuteWindowsApi() => WindowsTerminal.SetTitle(Title);
 }

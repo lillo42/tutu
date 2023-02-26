@@ -5,17 +5,10 @@ namespace Tutu.Windows2;
 /// <summary>
 /// This is type represents the position of something on a certain 'x' and 'y'.
 /// </summary>
-internal readonly struct Coordinate
+/// <param name="X"></param>
+/// <param name="Y"></param>
+internal readonly record struct Coordinate(short X, short Y)
 {
-    public readonly short X;
-    public readonly short Y;
-
-    public Coordinate(short x, short y)
-    {
-        X = x;
-        Y = y;
-    }
-
     public void Deconstruct(out short x, out short y)
     {
         x = X;

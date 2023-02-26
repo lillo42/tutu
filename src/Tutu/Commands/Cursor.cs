@@ -8,31 +8,14 @@ namespace Tutu.Commands;
 /// </summary>
 public static class Cursor
 {
-    /// <summary>
-    /// A command that hides the terminal cursor.
-    /// </summary>
-    /// <remarks>
-    /// Commands must be executed/queued for execution otherwise they do nothing.
-    /// </remarks>
+    
+    /// <inheritdoc cref="HideCursorCommand"/>
     public static ICommand Hide { get; } = new HideCursorCommand();
 
-    /// <summary>
-    /// A command that shows the terminal cursor.
-    /// </summary>
-    /// <remarks>
-    /// Commands must be executed/queued for execution otherwise they do nothing.
-    /// </remarks>
+    /// <inheritdoc cref="ShowCursorCommand"/>
     public static ICommand Show { get; } = new ShowCursorCommand();
 
-    /// <summary>
-    /// A command that moves the terminal cursor to the given position (column, row).
-    /// </summary>
-    /// <param name="column">The desired column.</param>
-    /// <param name="row">The desired row.</param>
-    /// <remarks>
-    /// Top left cell is represented as `0,0`.
-    /// Commands must be executed/queued for execution otherwise they do nothing.
-    /// </remarks>
+    /// <inheritdoc cref="MoveToCursorCommand"/>
     public static ICommand MoveTo(ushort column, ushort row) => new MoveToCursorCommand(column, row);
 
     /// <summary>

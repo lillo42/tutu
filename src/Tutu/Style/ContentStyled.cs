@@ -4,13 +4,26 @@ using Attribute = Tutu.Style.Types.Attribute;
 
 namespace Tutu.Style;
 
+/// <summary>
+/// The content styled.
+/// </summary>
+/// <param name="ForegroundColor">The foreground <see cref="Color"/>.</param>
+/// <param name="BackgroundColor">The background <see cref="Color"/>.</param>
+/// <param name="UnderlineColor">The underline <see cref="Color"/>.</param>
+/// <param name="Attributes">The <see cref="Attribute"/> collection.</param>
 public record ContentStyled(
     Color? ForegroundColor,
     Color? BackgroundColor,
     Color? UnderlineColor,
     ImmutableList<Attribute> Attributes)
 {
+    /// <summary>
+    /// The default instance.
+    /// </summary>
     public static ContentStyled Default { get; } = new(null, null, null, ImmutableList<Attribute>.Empty);
+
+    // TODO: Add support for 256 colors.
+
     public ContentStyled With(Color color) => this with { ForegroundColor = color };
 
     public ContentStyled On(Color color) => this with { BackgroundColor = color };

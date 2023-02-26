@@ -28,6 +28,10 @@ internal static partial class Kernel32
     public static partial bool GetConsoleScreenBufferInfo(nint hConsoleOutput,
         out CONSOLE_SCREEN_BUFFER_INFO lpConsoleScreenBufferInfo);
 
+    [LibraryImport(LibraryName, SetLastError = true, EntryPoint = "SetConsoleTitleW", StringMarshalling = StringMarshalling.Utf16)]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    public static partial bool SetConsoleTitle(string title);
+
     [LibraryImport(LibraryName, SetLastError = true)]
     [return: MarshalAs(UnmanagedType.Bool)]
     public static partial bool GetNumberOfConsoleInputEvents(nint hConsoleOutput, out uint lpNumberOfEvents);

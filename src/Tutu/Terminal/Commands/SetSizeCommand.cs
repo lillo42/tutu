@@ -12,10 +12,9 @@ namespace Tutu.Terminal.Commands;
 /// </remarks>
 public record SetSizeCommand(ushort Column, ushort Row) : ICommand
 {
+    /// <inheritdoc />
     public void WriteAnsi(TextWriter write) => write.Write($"{AnsiCodes.CSI}8;{Column};{Row}t");
 
-    public void ExecuteWindowsApi()
-    {
-        // WindowsTerminal.Size = (Column, Row);
-    }
+    /// <inheritdoc />
+    public void ExecuteWindowsApi() => WindowsTerminal.SetSize(new(Column, Row));
 }

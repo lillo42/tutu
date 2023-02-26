@@ -5,9 +5,11 @@ namespace Tutu.Terminal.Commands;
 /// </summary>
 public record DisableLineWrapCommand : ICommand
 {
+    /// <inheritdoc />
     public void WriteAnsi(TextWriter write) 
         => write.Write($"{AnsiCodes.CSI}?7l");
 
+    /// <inheritdoc />
     public void ExecuteWindowsApi()
     {
         var screenBuffer = Windows.Windows.ScreenBuffer.Current;

@@ -11,6 +11,7 @@ namespace Tutu.Terminal.Commands;
 /// </remarks>
 public record ClearCommand(ClearType Type) : ICommand
 {
+    /// <inheritdoc />
     public void WriteAnsi(TextWriter write) => write.Write(Type switch
         {
             ClearType.All => $"{AnsiCodes.CSI}2J",
@@ -22,8 +23,6 @@ public record ClearCommand(ClearType Type) : ICommand
             _ => throw new ArgumentOutOfRangeException()
         });
 
-    public void ExecuteWindowsApi()
-    {
-        // WindowsTerminal.Clear(Type);
-    }
+    /// <inheritdoc />
+    public void ExecuteWindowsApi() => WindowsTerminal.Clear(Type);
 }

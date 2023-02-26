@@ -4,7 +4,7 @@ namespace Tutu.Style.Commands;
 /// A command that prints the given displayable type.
 /// </summary>
 /// <param name="Content">The content.</param>
-/// <typeparam name="T"></typeparam>
+/// <typeparam name="T">The content type.</typeparam>
 public record PrintCommand<T>(T Content) : ICommand
     where T : notnull
 {

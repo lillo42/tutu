@@ -4,50 +4,48 @@
 /// Represents a color.
 /// </summary>
 /// <remarks>
-/// # Platform-specific Notes
-///
-/// The following list of 16 base colors are available for almost all terminals (Windows 7 and 8 included).
+/// <para><strong>Platform-specific Notes.</strong></para>
+/// <para>The following list of 16 base colors are available for almost all terminals (Windows 7 and 8 included).</para>
 /// <list type="table">
 ///     <listheader>
-///         <light>Light</light>
-///         <dark>Dark</dark>
+///         <term>Light</term>
+///         <term>Dark</term>
 ///     </listheader>
 ///     <item>
-///         <light>DarkGrey</light>
-///         <dark>Black</dark>
+///         <term>DarkGrey</term>
+///         <term>Black</term>
 ///     </item>
 ///     <item>
-///         <light>Red</light>
-///         <dark>DarkRed</dark>
+///         <term>Red</term>
+///         <term>DarkRed</term>
 ///     </item>
 ///     <item>
-///         <light>Green</light>
-///         <dark>DarkGreen</dark>
+///         <term>Green</term>
+///         <term>DarkGreen</term>
 ///     </item>
 ///     <item>
-///         <light>Yellow</light>
-///         <dark>DarkYellow</dark>
+///         <term>Yellow</term>
+///         <term>DarkYellow</term>
 ///     </item>
 ///     <item>
-///         <light>Blue</light>
-///         <dark>DarkBlue</dark>
+///         <term>Blue</term>
+///         <term>DarkBlue</term>
 ///     </item>
 ///     <item>
-///         <light>Magenta</light>
-///         <dark>DarkMagenta</dark>
+///         <term>Magenta</term>
+///         <term>DarkMagenta</term>
 ///     </item>
 ///     <item>
-///         <light>Cyan</light>
-///         <dark>DarkCyan</dark>
+///         <term>Cyan</term>
+///         <term>DarkCyan</term>
 ///     </item>
 ///     <item>
-///         <light>White</light>
-///         <dark>Grey</dark>
+///         <term>White</term>
+///         <term>Grey</term>
 ///     </item>
 /// </list>
-///
-/// Most UNIX terminals and Windows 10 consoles support additional colors.
-/// See <see cref="Rgb"/> or <see cref="AnsiValue"/> for more info.
+/// <para>Most UNIX terminals and Windows 10 consoles support additional colors.</para>
+/// <para>See <see cref="Rgb"/> or <see cref="AnsiValue"/> for more info.</para>
 /// </remarks>
 public readonly record struct Color(string Name, byte[] Values)
 {
@@ -299,10 +297,9 @@ public readonly record struct Color(string Name, byte[] Values)
     }
 
     /// <summary>
-    /// The logic for parse_ansi, takes an iterator of the sequences terms (the numbers between the
-    /// ';'). It's a separate function so it can be used by both Color::parse_ansi and
-    /// colored::parse_ansi.
-    /// Tested in Colored tests.
+    /// The logic for ParseAnsi, takes an iterator of the sequences terms (the numbers between the
+    /// ';'). It's a separate function so it can be used by both <see cref="ParseAnsi(string[])"/> and
+    /// <see cref="Colored.ParseAnsi(string)"/>.
     /// </summary>
     /// <param name="values">The source value.</param>
     /// <returns>The <see cref="Color"/>.</returns>
@@ -324,9 +321,11 @@ public readonly record struct Color(string Name, byte[] Values)
 
     /// <summary>
     /// Parses an ANSI color sequence.
-    /// Currently, 3/4 bit color values aren't supported so return `null`.
     /// </summary>
     /// <returns>The <see cref="Color"/>.</returns>
+    /// <remarks>
+    /// Currently, 3/4 bit color values aren't supported so return <see langword="null"/>.
+    /// </remarks>
     public static Color? ParseAnsi(string ansi)
         => ParseAnsi(ansi.Split(";"));
 

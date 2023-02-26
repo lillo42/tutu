@@ -1,3 +1,5 @@
+using Tutu.Windows2;
+
 namespace Tutu.Terminal.Commands;
 
 /// <summary>
@@ -5,14 +7,13 @@ namespace Tutu.Terminal.Commands;
 /// </summary>
 /// <param name="Lines">Number of line to be jump down.</param>
 /// <remarks>
-/// * Commands must be executed/queued for execution otherwise they do nothing.
+/// Commands must be executed/queued for execution otherwise they do nothing.
 /// </remarks>
 public record ScrollDownCommand(ushort Lines) : ICommand
 {
+    /// <inheritdoc />
     public void WriteAnsi(TextWriter write) => write.Write($"{AnsiCodes.CSI}{Lines}T");
 
-    public void ExecuteWindowsApi()
-    {
-        // Windows.Windows.Terminal.ScrollDown(Lines);
-    }
+    /// <inheritdoc />
+    public void ExecuteWindowsApi() => WindowsTerminal.ScrollDown(Lines);
 }
