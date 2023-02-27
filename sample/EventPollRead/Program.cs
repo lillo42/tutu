@@ -1,10 +1,11 @@
 ﻿// Demonstrates how to match on modifiers like: Control, alt, shift.
 
-using Erised.Commands;
-using Erised.Events;
+using Tutu.Commands;
+using Tutu.Events;
 using NodaTime;
-using static Erised.Commands.Events;
-using Terminal = Erised.Terminal.Terminal;
+using Tutu.Extensions;
+using static Tutu.Commands.Events;
+using Terminal = Tutu.Terminal.Terminal;
 
 const string Help = @"Blocking poll() & non-blocking read()
  - Keyboard, mouse and terminal resize events enabled
@@ -35,22 +36,24 @@ static void PrintEvents()
 {
     while (true)
     {
-        var @event = EventStream.Default.Read(
-            Duration.FromSeconds(1),
-            () => Console.WriteLine("."));
-        if (@event != null)
+        var isPolled = EventReader.Poll(Duration.FromSeconds(1));
+        if (!isPolled)
         {
-            Console.WriteLine(@event);
-            if (@event is Event.KeyEvent { Event.Code: KeyCode.CharKeyCode { Character: 'c' } })
-            {
-                var position = Cursor.Position;
-                Console.WriteLine("Cursor position: ({0}, {1})", position.Column, position.Row);
-            }
+            Console.WriteLine("..");
+            continue;
+        }
+        
+        var @event = EventReader.Read();
+        Console.WriteLine(@event);
+        if (@event is Event.KeyEvent { Event.Code: KeyCode.CharKeyCode { Character: 'c' } })
+        {
+            var position = Tutu.Cursor.Cursor.Position;
+            Console.WriteLine("Cursor position: ({0}, {1})", position.Column, position.Row);
+        }
 
-            if (@event is Event.KeyEvent { Event.Code: KeyCode.EscKeyCode })
-            {
-                break;
-            }
+        if (@event is Event.KeyEvent { Event.Code: KeyCode.EscKeyCode })
+        {
+            break;
         }
     }
 }

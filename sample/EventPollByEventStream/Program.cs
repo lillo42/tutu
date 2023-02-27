@@ -1,10 +1,10 @@
 ﻿// Demonstrates how to read events asynchronously.
 
-using Erised.Commands;
-using Erised.Events;
 using NodaTime;
-using static Erised.Commands.Events;
-using Terminal = Erised.Terminal.Terminal;
+using Tutu.Events;
+using Tutu.Extensions;
+using static Tutu.Commands.Events;
+using Terminal = Tutu.Terminal.Terminal;
 
 const string Help = @"Event Stream for read Events
  - Keyboard, mouse and terminal resize events enabled
@@ -26,25 +26,34 @@ Terminal.DisableRawMode();
 
 static async Task PrintEventsAsync()
 {
-    EventStream.Default.Start(
-        Duration.FromSeconds(1),
-        () => Console.WriteLine("."));
-    var reader = EventStream.Default.Reader;
-    while (await reader.WaitToReadAsync())
-    {
-        var @event = await reader.ReadAsync();
-        
-        Console.WriteLine(@event);
-        if (@event is Event.KeyEvent { Event.Code: KeyCode.CharKeyCode { Character: 'c' } })
-        {
-            var position = Cursor.Position;
-            Console.WriteLine("Cursor position: ({0}, {1})", position.Column, position.Row);
-        }
+    await EventStream.Default.StartAsync();
 
-        if (@event is Event.KeyEvent { Event.Code: KeyCode.EscKeyCode })
+    var reader = EventStream.Default.Reader;
+    
+    while (true)
+    {
+        var source = new CancellationTokenSource();
+        try
         {
-            EventStream.Default.Stop();
-            break;
+            source.CancelAfter(Duration.FromSeconds(1).ToTimeSpan());
+            var @event = await reader.ReadAsync(source.Token);
+
+            Console.WriteLine(@event);
+            if (@event is Event.KeyEvent { Event.Code: KeyCode.CharKeyCode { Character: 'c' } })
+            {
+                var position = Tutu.Cursor.Cursor.Position;
+                Console.WriteLine("Cursor position: ({0}, {1})", position.Column, position.Row);
+            }
+
+            if (@event is Event.KeyEvent { Event.Code: KeyCode.EscKeyCode })
+            {
+                await EventStream.Default.StopAsync();
+                break;
+            }
+        }
+        catch (OperationCanceledException)
+        {
+            Console.WriteLine("..");
         }
     }
 }

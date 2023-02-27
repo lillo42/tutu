@@ -226,7 +226,7 @@ internal readonly struct WindowsConsole
     /// <remarks>
     /// This wraps <see href="https://docs.microsoft.com/en-us/windows/console/readconsoleinput">ReadConsoleInputW</see>
     /// </remarks>
-    public Span<INPUT_RECORD> ReadMultipleInputEvents()
+    public INPUT_RECORD[] ReadMultipleInputEvents()
     {
         var bufLen = NumberOfInputEvent;
         if (bufLen == 0)

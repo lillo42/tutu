@@ -1,8 +1,9 @@
-using Erised.Events;
-using Erised.Terminal;
-using static Erised.Commands.Cursor;
-using static Erised.Commands.Style;
-using static Erised.Commands.Terminal;
+using Tutu.Events;
+using Tutu.Extensions;
+using Tutu.Terminal;
+using static Tutu.Commands.Cursor;
+using static Tutu.Commands.Style;
+using static Tutu.Commands.Terminal;
 
 namespace InteractiveDemo.Tests;
 
@@ -48,8 +49,8 @@ public abstract class AbstractTest
     {
         while (true)
         {
-            var read = EventStream.Default.Read();
-            if (read is Erised.Events.Event.KeyEvent { Event.Code: KeyCode.CharKeyCode ch })
+            var read = EventReader.Read();
+            if (read is Tutu.Events.Event.KeyEvent { Event: { Code: KeyCode.CharKeyCode ch, Kind: KeyEventKind.Release } })
             {
                 return ch.Character;
             }

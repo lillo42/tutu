@@ -1,24 +1,25 @@
-using static Erised.Commands.Cursor;
-using static Erised.Commands.Style;
+using Tutu.Extensions;
+using static Tutu.Commands.Cursor;
+using static Tutu.Commands.Style;
 
 namespace InteractiveDemo.Tests;
 
 public class Attribute : AbstractTest
 {
-    private static (Erised.Style.Types.Attribute, Erised.Style.Types.Attribute)[] Attibuttes =
+    private static (Tutu.Style.Types.Attribute, Tutu.Style.Types.Attribute)[] Attibuttes =
     {
-        (Erised.Style.Types.Attribute.Bold, Erised.Style.Types.Attribute.NormalIntensity),
-        (Erised.Style.Types.Attribute.Italic, Erised.Style.Types.Attribute.NoItalic),
-        (Erised.Style.Types.Attribute.Underlined, Erised.Style.Types.Attribute.NoUnderline),
+        (Tutu.Style.Types.Attribute.Bold, Tutu.Style.Types.Attribute.NormalIntensity),
+        (Tutu.Style.Types.Attribute.Italic, Tutu.Style.Types.Attribute.NoItalic),
+        (Tutu.Style.Types.Attribute.Underlined, Tutu.Style.Types.Attribute.NoUnderline),
 
-        (Erised.Style.Types.Attribute.DoubleUnderlined, Erised.Style.Types.Attribute.NoUnderline),
-        (Erised.Style.Types.Attribute.Undercurled, Erised.Style.Types.Attribute.NoUnderline),
-        (Erised.Style.Types.Attribute.Underdotted, Erised.Style.Types.Attribute.NoUnderline),
-        (Erised.Style.Types.Attribute.Underdashed, Erised.Style.Types.Attribute.NoUnderline),
+        (Tutu.Style.Types.Attribute.DoubleUnderlined, Tutu.Style.Types.Attribute.NoUnderline),
+        (Tutu.Style.Types.Attribute.Undercurled, Tutu.Style.Types.Attribute.NoUnderline),
+        (Tutu.Style.Types.Attribute.Underdotted, Tutu.Style.Types.Attribute.NoUnderline),
+        (Tutu.Style.Types.Attribute.Underdashed, Tutu.Style.Types.Attribute.NoUnderline),
 
-        (Erised.Style.Types.Attribute.Reverse, Erised.Style.Types.Attribute.NoReverse),
-        (Erised.Style.Types.Attribute.CrossedOut, Erised.Style.Types.Attribute.NotCrossedOut),
-        (Erised.Style.Types.Attribute.SlowBlink, Erised.Style.Types.Attribute.NoBlink),
+        (Tutu.Style.Types.Attribute.Reverse, Tutu.Style.Types.Attribute.NoReverse),
+        (Tutu.Style.Types.Attribute.CrossedOut, Tutu.Style.Types.Attribute.NotCrossedOut),
+        (Tutu.Style.Types.Attribute.SlowBlink, Tutu.Style.Types.Attribute.NoBlink),
     };
 
     private static void TestSetDisplayAttribute(TextWriter writer)

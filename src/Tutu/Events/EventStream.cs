@@ -7,65 +7,60 @@ namespace Tutu.Events;
 
 public class EventStream
 {
-    private static readonly object Lock = new();
-
     private readonly Channel<IEvent> _channel;
-
+    private Task? _consumeTask;
     private CancellationTokenSource? _cancellationTokenSource;
 
-    private EventStream()
+    public EventStream(int capacity)
     {
-        _channel = Channel.CreateBounded<IEvent>(new BoundedChannelOptions(1_000));
+        _consumeTask = null;
+        _channel = Channel.CreateBounded<IEvent>(new BoundedChannelOptions(capacity));
     }
 
-    private static EventStream? _default;
 
-    public static EventStream Default
-    {
-        get
-        {
-            if (_default == null)
-            {
-                lock (Lock)
-                {
-                    if (_default == null)
-                    {
-                        _default = new EventStream();
-                    }
-                }
-            }
-
-            return _default;
-        }
-    }
+    public static EventStream Default { get; } = new(1_000);
 
     public ChannelReader<IEvent> Reader => _channel.Reader;
 
-    public void Start(Duration? timeout = null, IClock? clock = null)
+    public void Start(IClock? clock = null) => StartAsync(clock).GetAwaiter().GetResult();
+
+    public void Stop() => StopAsync().GetAwaiter().GetResult();
+
+    public async Task StartAsync(IClock? clock = null)
     {
-        Stop();
+        await StopAsync().ConfigureAwait(false);
         _cancellationTokenSource = new CancellationTokenSource();
-        ConsumeEvents(clock ?? SystemClock.Instance, _cancellationTokenSource.Token);
+        _consumeTask = ConsumeEvents(clock ?? SystemClock.Instance, _cancellationTokenSource.Token);
     }
 
-    public void Stop()
+    public async Task StopAsync()
     {
         _cancellationTokenSource?.Cancel();
+        if (_consumeTask != null)
+        {
+            await _consumeTask.ConfigureAwait(false);
+        }
     }
 
-    private void ConsumeEvents(
+    private async Task ConsumeEvents(
         IClock clock,
         CancellationToken cancellationToken)
     {
+        await Task.Yield();
+
         while (!cancellationToken.IsCancellationRequested)
         {
-            var hasEvent = EventReader.PollInternal(clock, Duration.FromSeconds(1), EventFilter.Default);
+            var hasEvent = EventReader.Poll(clock, Duration.FromMilliseconds(10));
             if (hasEvent)
             {
-                var @event = EventReader.ReadInternal(EventFilter.Default);
-                if (@event is InternalEvent.PublicEvent publicEvent)
+                try
                 {
-                    _channel.Writer.TryWrite(publicEvent.Event);
+                    var @event = EventReader.Read();
+                    await _channel.Writer.WriteAsync(@event, cancellationToken).ConfigureAwait(false);
+                }
+                catch
+                {
+                    // ignored
                 }
             }
         }

@@ -1,5 +1,6 @@
-using static Erised.Commands.Cursor;
-using static Erised.Commands.Style;
+using Tutu.Extensions;
+using static Tutu.Commands.Cursor;
+using static Tutu.Commands.Style;
 
 namespace InteractiveDemo.Tests;
 
@@ -27,9 +28,9 @@ public class Color : AbstractTest
         {
             writer.Enqueue(
                     SetForegroundColor(color),
-                    SetBackgroundColor(Erised.Style.Types.Color.Black),
+                    SetBackgroundColor(Tutu.Style.Types.Color.Black),
                     Print(SetWidth($"{color.Name} ████████████ ", 40)),
-                    SetBackgroundColor(Erised.Style.Types.Color.White),
+                    SetBackgroundColor(Tutu.Style.Types.Color.White),
                     Print(SetWidth($"{color.Name} ████████████ ", 40)),
                     MoveToNextLine(1))
                 .Flush();
@@ -49,9 +50,9 @@ public class Color : AbstractTest
         {
             writer.Enqueue(
                     SetBackgroundColor(color),
-                    SetForegroundColor(Erised.Style.Types.Color.Black),
+                    SetForegroundColor(Tutu.Style.Types.Color.Black),
                     Print(SetWidth($"{color.Name} ▒▒▒▒▒▒▒▒▒▒▒▒ ", 40)),
-                    SetForegroundColor(Erised.Style.Types.Color.White),
+                    SetForegroundColor(Tutu.Style.Types.Color.White),
                     Print(SetWidth($"{color.Name} ▒▒▒▒▒▒▒▒▒▒▒▒ ", 40)),
                     MoveToNextLine(1))
                 .Flush();
@@ -64,52 +65,52 @@ public class Color : AbstractTest
     {
         TestColorValuesMatrix16x16(writer,
             "Color::Ansi value",
-            (col, row) => Erised.Style.Types.Color.AnsiValue((byte)(row * 16 + col)));
+            (col, row) => Tutu.Style.Types.Color.AnsiValue((byte)(row * 16 + col)));
     }
 
     private static void TestRgbRedValues(TextWriter writer)
     {
         TestColorValuesMatrix16x16(writer,
             "Color::Rgb Red values",
-            (col, row) => Erised.Style.Types.Color.Rgb((byte)(col * 16), 0, 0));
+            (col, row) => Tutu.Style.Types.Color.Rgb((byte)(col * 16), 0, 0));
     }
 
     private static void TestRgbGreenValues(TextWriter writer)
     {
         TestColorValuesMatrix16x16(writer,
             "Color::Rgb Green values",
-            (col, row) => Erised.Style.Types.Color.Rgb(0, (byte)(col * 16), 0));
+            (col, row) => Tutu.Style.Types.Color.Rgb(0, (byte)(col * 16), 0));
     }
 
     private static void TestRgbBlueValues(TextWriter writer)
     {
         TestColorValuesMatrix16x16(writer,
             "Color::Rgb Blue values",
-            (col, row) => Erised.Style.Types.Color.Rgb(0, 0, (byte)(col * 16)));
+            (col, row) => Tutu.Style.Types.Color.Rgb(0, 0, (byte)(col * 16)));
     }
 
     private static void TestColorValuesMatrix16x16(TextWriter writer,
         string title,
-        Func<ushort, ushort, Erised.Style.Types.Color> color)
+        Func<ushort, ushort, Tutu.Style.Types.Color> color)
     {
         writer.Execute(Print(title));
 
         for (var idx = 0; idx < 16; idx++)
         {
             writer.Enqueue(
-                    MoveTo(1, (ushort)(idx + 4)),
+                    MoveTo(1, (idx + 4)),
                     Print(SetWidth($"{idx}", 2)))
                 .Flush();
 
             writer.Enqueue(
-                    MoveTo((ushort)(idx * 3 + 3), 3),
+                    MoveTo((idx * 3 + 3), 3),
                     Print(SetWidth($"{idx}", 3)))
                 .Flush();
         }
 
         for (var row = 0; row <= 15; row++)
         {
-            writer.Execute(MoveTo(4, (ushort)(row + 4)));
+            writer.Execute(MoveTo(4, (row + 4)));
 
             for (var col = 0; col <= 15; col++)
             {
@@ -120,7 +121,7 @@ public class Color : AbstractTest
             }
 
             writer.Enqueue(
-                    SetForegroundColor(Erised.Style.Types.Color.White),
+                    SetForegroundColor(Tutu.Style.Types.Color.White),
                     Print(SetWidth($"{row * 16}", 3) + " .. = "),
                     Print(SetWidth($"{row * 16 + 15}", 3)))
                 .Flush();
@@ -131,27 +132,27 @@ public class Color : AbstractTest
 
    
 
-    private static List<Erised.Style.Types.Color> Colors => new()
+    private static List<Tutu.Style.Types.Color> Colors => new()
     {
-        Erised.Style.Types.Color.Black,
-        Erised.Style.Types.Color.DarkGrey,
-        Erised.Style.Types.Color.Grey,
-        Erised.Style.Types.Color.White,
-        Erised.Style.Types.Color.DarkRed,
-        Erised.Style.Types.Color.Red,
-        Erised.Style.Types.Color.DarkGreen,
-        Erised.Style.Types.Color.Green,
-        Erised.Style.Types.Color.DarkYellow,
-        Erised.Style.Types.Color.Yellow,
-        Erised.Style.Types.Color.DarkBlue,
-        Erised.Style.Types.Color.Blue,
-        Erised.Style.Types.Color.DarkMagenta,
-        Erised.Style.Types.Color.Magenta,
-        Erised.Style.Types.Color.DarkCyan,
-        Erised.Style.Types.Color.Cyan,
-        Erised.Style.Types.Color.AnsiValue(15),
-        Erised.Style.Types.Color.Rgb(255, 0, 0),
-        Erised.Style.Types.Color.Rgb(0, 255, 0),
-        Erised.Style.Types.Color.Rgb(0, 0, 255),
+        Tutu.Style.Types.Color.Black,
+        Tutu.Style.Types.Color.DarkGrey,
+        Tutu.Style.Types.Color.Grey,
+        Tutu.Style.Types.Color.White,
+        Tutu.Style.Types.Color.DarkRed,
+        Tutu.Style.Types.Color.Red,
+        Tutu.Style.Types.Color.DarkGreen,
+        Tutu.Style.Types.Color.Green,
+        Tutu.Style.Types.Color.DarkYellow,
+        Tutu.Style.Types.Color.Yellow,
+        Tutu.Style.Types.Color.DarkBlue,
+        Tutu.Style.Types.Color.Blue,
+        Tutu.Style.Types.Color.DarkMagenta,
+        Tutu.Style.Types.Color.Magenta,
+        Tutu.Style.Types.Color.DarkCyan,
+        Tutu.Style.Types.Color.Cyan,
+        Tutu.Style.Types.Color.AnsiValue(15),
+        Tutu.Style.Types.Color.Rgb(255, 0, 0),
+        Tutu.Style.Types.Color.Rgb(0, 255, 0),
+        Tutu.Style.Types.Color.Rgb(0, 0, 255),
     };
 }

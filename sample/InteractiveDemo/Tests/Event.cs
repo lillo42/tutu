@@ -1,7 +1,8 @@
-using Erised.Events;
+using Tutu.Events;
 using Tmds.Linux;
-using static Erised.Commands.Cursor;
-using static Erised.Commands.Events;
+using Tutu.Extensions;
+using static Tutu.Commands.Cursor;
+using static Tutu.Commands.Events;
 
 namespace InteractiveDemo.Tests;
 
@@ -13,23 +14,20 @@ public class Event : AbstractTest
 
         while (true)
         {
-            var @event = EventStream.Default.Read();
-            if (@event != null)
+            var @event = EventReader.Read();
+            Console.WriteLine(@event);
+
+            if (@event is Tutu.Events.Event.KeyEvent { Event.Code: KeyCode.CharKeyCode ch } keyEvent)
             {
-                Console.WriteLine(@event);
-
-                if (@event is Erised.Events.Event.KeyEvent { Event.Code: KeyCode.CharKeyCode ch })
+                if (ch.Character == 'c')
                 {
-                    if (ch.Character == 'c')
-                    {
-                        var position = Position;
-                        Console.WriteLine("Cursor position: ({0}, {1})", position.Column, position.Row);
-                    }
+                    var position = Tutu.Cursor.Cursor.Position;
+                    Console.WriteLine("Cursor position: ({0}, {1})", position.Column, position.Row);
+                }
 
-                    if (ch.Character == 'q')
-                    {
-                        break;
-                    }
+                if (ch.Character == 'q')
+                {
+                    break;
                 }
             }
         }
