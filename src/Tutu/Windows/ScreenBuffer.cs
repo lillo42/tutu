@@ -1,96 +1,175 @@
 using System.Runtime.InteropServices;
-using static Tutu.Windows.Interop.Windows.Interop;
-using static Tutu.Windows.Interop.Kernel32.Windows.Interop.Kernel32;
+using Tutu.Windows.Interop;
+using Tutu.Windows.Interop.Kernel32;
+using static Tutu.Windows.Interop.Consts;
+using static Tutu.Windows.Interop.Kernel32.Kernel32;
 
 namespace Tutu.Windows;
 
-internal static partial class Windows
+/// <summary>
+/// The screen buffer.
+/// </summary>
+internal readonly struct ScreenBuffer
 {
-    public readonly record struct ScreenBuffer(Handle Handle)
+    private const uint ConsoleTextModeBuffer = 1;
+    public readonly Handle Handle;
+
+    public ScreenBuffer(Handle handle)
     {
-        private const uint ConsoleTextModeBuffer = 1;
+        Handle = handle;
+    }
 
-        /// Create new console screen buffer.
-        ///
-        /// This wraps
-        /// [`CreateConsoleScreenBuffer`](https://docs.microsoft.com/en-us/windows/console/createconsolescreenbuffer)
-        public static unsafe ScreenBuffer Create()
+    /// <summary>
+    /// Create new console screen buffer.
+    /// </summary>
+    /// <returns>New instance of <see cref="ScreenBuffer" />.</returns>
+    /// <remarks>
+    /// This wraps <see href="https://docs.microsoft.com/en-us/windows/console/createconsolescreenbuffer">CreateConsoleScreenBuffer</see>
+    /// </remarks>
+    public static unsafe ScreenBuffer Create()
+    {
+        var security = new SECURITY_ATTRIBUTES
         {
-            var security = new SECURITY_ATTRIBUTES
-            {
-#pragma warning disable CS8500
-                nLength = (uint)sizeof(SECURITY_ATTRIBUTES),
-#pragma warning restore CS8500
-                lpSecurityDescriptor = nint.Zero,
-                bInheritHandle = true
-            };
+            nLength = sizeof(SECURITY_ATTRIBUTES),
+            lpSecurityDescriptor = nint.Zero,
+            bInheritHandle = true
+        };
 
-            var newScreenBuffer = CreateConsoleScreenBuffer(
-                GENERIC_READ | GENERIC_WRITE,
-                FILE_SHARE_READ | FILE_SHARE_WRITE,
-                security,
-                ConsoleTextModeBuffer,
-                nint.Zero
-            );
+        var newScreenBuffer = CreateConsoleScreenBuffer(
+            GENERIC_READ | GENERIC_WRITE,
+            FILE_SHARE_READ | FILE_SHARE_WRITE,
+            security,
+            ConsoleTextModeBuffer,
+            nint.Zero
+        );
 
-            return new(Handle.Create(newScreenBuffer));
-        }
+        Marshal.ThrowExceptionForHR(Marshal.GetLastPInvokeError());
+        return new(Handle.Create(newScreenBuffer));
+    }
 
-        /// <summary>
-        /// Get the current console screen buffer
-        /// </summary>
-        /// <returns></returns>
-        public static ScreenBuffer Current => new(Handle.Create(HandleType.CurrentOutputHandle));
+    /// <summary>
+    /// The console input screen buffer.
+    /// </summary>
+    public static ScreenBuffer Input => new(Handle.Create(HandleType.InputHandle));
 
-        /// <summary>
-        /// Set this screen buffer to the current one.
-        ///
-        /// This wraps
-        /// [`SetConsoleActiveScreenBuffer`](https://docs.microsoft.com/en-us/windows/console/setconsoleactivescreenbuffer).
-        /// </summary>
-        public void Show()
+    /// <summary>
+    /// The console output screen buffer.
+    /// </summary>
+    public static ScreenBuffer Output => new(Handle.Create(HandleType.OutputHandle));
+
+    /// <summary>
+    /// The current console input screen buffer.
+    /// </summary>
+    public static ScreenBuffer CurrentInput => new(Handle.Create(HandleType.CurrentInput));
+
+    /// <summary>
+    /// The current console output screen buffer.
+    /// </summary>
+    public static ScreenBuffer CurrentOutput => new(Handle.Create(HandleType.CurrentOutput));
+
+    /// <summary>
+    ///  Get the screen buffer information like terminal size, cursor position, buffer size.
+    /// </summary>
+    /// <remarks>
+    /// This wraps <see href="https://docs.microsoft.com/en-us/windows/console/getconsolescreenbufferinfo">GetConsoleScreenBufferInfo</see>
+    /// </remarks>
+    public ScreenBufferInfo Info
+    {
+        get
         {
-            if (!SetConsoleActiveScreenBuffer(Handle))
+            if (!GetConsoleScreenBufferInfo(Handle, out var buffer))
             {
-                throw GetExceptionForWin32Error(Marshal.GetLastPInvokeError());
+                Marshal.ThrowExceptionForHR(Marshal.GetLastPInvokeError());
             }
-        }
 
-
-        /// <summary>
-        ///  Get the screen buffer information like terminal size, cursor position, buffer size.
-        ///
-        /// This wraps
-        /// [`GetConsoleScreenBufferInfo`](https://docs.microsoft.com/en-us/windows/console/getconsolescreenbufferinfo).
-        /// </summary>
-        /// <returns></returns>
-        public ScreenBufferInfo Info
-        {
-            get
-            {
-                if (!GetConsoleScreenBufferInfo(Handle, out var buffer))
-                {
-                    throw GetExceptionForWin32Error(Marshal.GetLastPInvokeError());
-                }
-
-                return new(buffer);
-            }
-        }
-
-        /// <summary>
-        /// Set the console screen buffer size to the given size.
-        ///
-        /// This wraps
-        /// [`SetConsoleScreenBufferSize`](https://docs.microsoft.com/en-us/windows/console/setconsolescreenbuffersize).
-        /// </summary>
-        /// <param name="x"></param>
-        /// <param name="y"></param>
-        public void SetSize(short x, short y)
-        {
-            if (!SetConsoleScreenBufferSize(Handle, new COORD { X = x, Y = y }))
-            {
-                throw GetExceptionForWin32Error(Marshal.GetLastPInvokeError());
-            }
+            return new(buffer);
         }
     }
+
+    /// <summary>
+    /// Set this screen buffer to the current one.
+    /// </summary>
+    /// <remarks>
+    /// This wraps <see href="https://docs.microsoft.com/en-us/windows/console/setconsoleactivescreenbuffer">SetConsoleActiveScreenBuffer</see> 
+    /// </remarks>
+    public void Show()
+    {
+        if (!SetConsoleActiveScreenBuffer(Handle))
+        {
+            Marshal.ThrowExceptionForHR(Marshal.GetLastPInvokeError());
+        }
+    }
+
+    /// <summary>
+    /// Set the console screen buffer size to the given size.
+    /// </summary>
+    /// <param name="x"></param>
+    /// <param name="y"></param>
+    /// <remarks>
+    /// This wraps <see href="https://docs.microsoft.com/en-us/windows/console/setconsolescreenbuffersize">SetConsoleScreenBufferSize</see>
+    /// </remarks>
+    public void SetSize(short x, short y)
+    {
+        if (!SetConsoleScreenBufferSize(Handle, new COORD { X = x, Y = y }))
+        {
+            Marshal.ThrowExceptionForHR(Marshal.GetLastPInvokeError());
+        }
+    }
+}
+
+/// <summary>
+/// Information about a console screen buffer.
+/// </summary>
+/// <remarks>
+/// This wraps <see href="https://docs.microsoft.com/en-us/windows/console/console-screen-buffer-info-str">CONSOLE_SCREEN_BUFFER_INFO</see>
+/// </remarks>
+internal readonly struct ScreenBufferInfo
+{
+    public readonly CONSOLE_SCREEN_BUFFER_INFO Info;
+
+    public ScreenBufferInfo(CONSOLE_SCREEN_BUFFER_INFO info)
+    {
+        Info = info;
+    }
+
+    /// <summary>
+    ///  Get the size of the screen buffer.
+    /// </summary>
+    /// <remarks>
+    /// Will take <see cref="CONSOLE_SCREEN_BUFFER_INFO.dwSize"/> from the current screen buffer and convert it into a <see cref="Size"/>.
+    /// </remarks>
+    public Size BufferSize => Size.From(Info.dwSize);
+
+    /// <summary>
+    /// Get the size of the terminal display window.
+    /// </summary>
+    /// <remarks>
+    /// Will calculate the width and height from <see cref="CONSOLE_SCREEN_BUFFER_INFO.srWindow"/> and convert it into a <see cref="Size"/>.
+    /// </remarks>
+    public Size TerminalSize => new((short)(Info.srWindow.Right - Info.srWindow.Left),
+        (short)(Info.srWindow.Bottom - Info.srWindow.Top));
+
+    /// <summary>
+    /// Get the position and size of the terminal display window.
+    /// </summary>
+    /// <remarks>
+    /// Will take <see cref="CONSOLE_SCREEN_BUFFER_INFO.srWindow"/> and convert it into the <see cref="WindowPositions"/> type.
+    /// </remarks>
+    public WindowPositions TerminalWindow => WindowPositions.From(Info);
+
+    /// <summary>
+    /// Get the position and size of the terminal display window.
+    /// </summary>
+    /// <remarks>
+    /// Will take <see cref="CONSOLE_SCREEN_BUFFER_INFO.wAttributes" /> from the current screen buffer.
+    /// </remarks>
+    public ushort Attributes => Info.wAttributes;
+
+    /// <summary>
+    /// Get the current column and row of the terminal cursor in the screen buffer.
+    /// </summary>
+    /// <remarks>
+    /// Will take <see cref="CONSOLE_SCREEN_BUFFER_INFO.dwCursorPosition"/> from the current screen buffer.
+    /// </remarks>
+    public Coordinate CursorPosition => Coordinate.From(Info.dwCursorPosition);
 }

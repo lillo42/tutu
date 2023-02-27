@@ -1,9 +1,9 @@
 using System.Runtime.InteropServices;
 using Tutu.Cursor;
-using Tutu.Windows2.Interop.Kernel32;
-using static Tutu.Windows2.Interop.Kernel32.Kernel32;
+using Tutu.Windows.Interop.Kernel32;
+using static Tutu.Windows.Interop.Kernel32.Kernel32;
 
-namespace Tutu.Windows2;
+namespace Tutu.Windows;
 
 /// <summary>
 /// Windows implementation of <see cref="ICursor"/>.

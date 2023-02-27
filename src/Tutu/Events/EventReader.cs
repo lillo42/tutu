@@ -1,4 +1,6 @@
+using System.Runtime.InteropServices;
 using NodaTime;
+using Tutu.Windows;
 
 namespace Tutu.Events;
 
@@ -8,7 +10,17 @@ public static class EventReader
 
     static EventReader()
     {
-        InternalReader = new Mutex<InternalReader>(null!);
+        InternalReader = new Mutex<InternalReader>(new InternalReader(CreateEventSource()));
+
+        static IEventSource CreateEventSource()
+        {
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                return new WindowsEventSource();
+            }
+
+            return new Unix.Events.Unix.EventSource(Unix.Unix.FileDesc.TtyFd());
+        }
     }
 
     /// <summary>
@@ -49,7 +61,7 @@ public static class EventReader
     internal static bool PollInternal<TFilter>(IClock clock, Duration? timeout, TFilter filter)
         where TFilter : IFilter
     {
-        Mutex<InternalReader>.ValueAccess access;
+        Mutex<InternalReader>.ValueAccess? access;
         if (timeout != null)
         {
             var pollTimeout = new PollTimeout(clock, timeout.Value);

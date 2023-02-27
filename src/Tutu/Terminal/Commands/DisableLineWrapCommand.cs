@@ -1,3 +1,5 @@
+using Tutu.Windows;
+
 namespace Tutu.Terminal.Commands;
 
 /// <summary>
@@ -12,8 +14,7 @@ public record DisableLineWrapCommand : ICommand
     /// <inheritdoc />
     public void ExecuteWindowsApi()
     {
-        var screenBuffer = Windows.Windows.ScreenBuffer.Current;
-        var console = new Windows.Windows.Console(screenBuffer.Handle);
-        console.Mode = (uint)(console.Mode & ~Windows.Windows.Console.EnableWrapAtEolOutput);
+        var console = WindowsConsole.CurrentOutput;
+        console.Mode = (uint)(console.Mode & ~WindowsConsole.EnableWrapAtEolOutput);
     }
 }

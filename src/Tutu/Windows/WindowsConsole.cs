@@ -1,10 +1,10 @@
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using Tutu.Style.Types;
-using Tutu.Windows2.Interop.Kernel32;
-using static Tutu.Windows2.Interop.Kernel32.Kernel32;
+using Tutu.Windows.Interop.Kernel32;
+using static Tutu.Windows.Interop.Kernel32.Kernel32;
 
-namespace Tutu.Windows2;
+namespace Tutu.Windows;
 
 /// <summary>
 /// A wrapper around a <see cref="ScreenBuffer"/>.
@@ -211,9 +211,9 @@ internal readonly struct WindowsConsole
     /// <remarks>
     /// This wraps <see href="https://docs.microsoft.com/en-us/windows/console/readconsoleinput">ReadConsoleInputW</see>
     /// </remarks>
-    public unsafe INPUT_RECORD ReadSingleInputEvent()
+    public INPUT_RECORD ReadSingleInputEvent()
     {
-        Span<INPUT_RECORD> buffer = stackalloc INPUT_RECORD[1];
+        var buffer = new INPUT_RECORD[1];
         var events = ReadInputEvents(buffer);
         Debug.Assert(events == 1);
         return buffer[0];
@@ -234,7 +234,7 @@ internal readonly struct WindowsConsole
             return Array.Empty<INPUT_RECORD>();
         }
 
-        var buffer = new Span<INPUT_RECORD>(new INPUT_RECORD[bufLen]);
+        var buffer = new INPUT_RECORD[bufLen];
         var events = ReadInputEvents(buffer);
         Debug.Assert(events == bufLen);
         return buffer;
@@ -251,7 +251,7 @@ internal readonly struct WindowsConsole
     /// <remarks>
     /// This wraps <see href="https://docs.microsoft.com/en-us/windows/console/readconsoleinput">ReadConsoleInputW</see>
     /// </remarks>
-    private uint ReadInputEvents(Span<INPUT_RECORD> buffer)
+    private uint ReadInputEvents(INPUT_RECORD[] buffer)
     {
         if (!ReadConsoleInput(Handle, buffer, (uint)buffer.Length, out var read))
         {
@@ -301,18 +301,18 @@ internal readonly struct WindowsConsole
     public void SetBackgroundColor(Color color)
     {
         InitConsoleColor();
-        
+
         var buffer = new ScreenBuffer(Handle);
         var info = buffer.Info;
-        
+
         var attrs = info.Attributes;
         var fgColor = attrs | 0x000F;
         var value = (ushort)(fgColor | FromBackgroundColor(color));
-        if((value & ForegroundIntensity) != 0)
+        if ((value & ForegroundIntensity) != 0)
         {
             value |= BackgroundIntensity;
         }
-        
+
         SetTextAttribute(value);
     }
 
@@ -537,5 +537,20 @@ internal readonly struct WindowsConsole
         {
             SetTextAttribute((ushort)originalColor);
         }
+    }
+
+    internal const uint EnableMouseMode = 0x0010 | 0x0080 | 0x0008;
+    private static ulong _originalConsoleMode = ulong.MaxValue;
+
+    public void EnableMouseCapture()
+    {
+        Interlocked.CompareExchange(ref _originalConsoleMode, Mode, ulong.MaxValue);
+        Mode = EnableMouseMode;
+    }
+
+    public void DisableMouseCapture()
+    {
+        var originalMode = Interlocked.Read(ref _originalConsoleMode);
+        Mode = (uint)originalMode;
     }
 }

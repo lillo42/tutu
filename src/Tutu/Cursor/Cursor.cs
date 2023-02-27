@@ -1,6 +1,6 @@
 using System.Runtime.InteropServices;
 using Tutu.Unix2;
-using Tutu.Windows2;
+using Tutu.Windows;
 
 namespace Tutu.Cursor;
 

@@ -1,8 +1,8 @@
 using System.Runtime.InteropServices;
 using Tutu.Terminal;
-using static Tutu.Windows2.Interop.Kernel32.Kernel32;
+using static Tutu.Windows.Interop.Kernel32.Kernel32;
 
-namespace Tutu.Windows2;
+namespace Tutu.Windows;
 
 /// <summary>
 /// The Windows implementation of <see cref="ITerminal"/>.

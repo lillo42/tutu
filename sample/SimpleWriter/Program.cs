@@ -3,10 +3,11 @@
 // the command API instead of the "old style" direct
 // unbuffered API.
 
-using Erised.Events;
-using static Erised.Commands.Cursor;
-using static Erised.Commands.Style;
-using static Erised.Commands.Terminal;
+using Tutu.Events;
+using Tutu.Extensions;
+using static Tutu.Commands.Cursor;
+using static Tutu.Commands.Style;
+using static Tutu.Commands.Terminal;
 
 const string Text = @"
 This screen is ran on stderr.
@@ -35,13 +36,13 @@ var y = 1;
 foreach (var line in Text.Split('\n'))
 {
     queue
-        .Enqueue(MoveTo(1, (ushort)y))
+        .Enqueue(MoveTo(1, y))
         .Enqueue(Print(line))
         .Flush();
     y += 1;
 }
 
-Erised.Terminal.Terminal.EnableRawMode();
+Tutu.Terminal.Terminal.EnableRawMode();
 
 var key = ReadChar();
 
@@ -49,7 +50,7 @@ Console.Error
     .Execute(Show)
     .Execute(LeaveAlternateScreen);
 
-Erised.Terminal.Terminal.EnableRawMode();
+Tutu.Terminal.Terminal.EnableRawMode();
 
 
 if (key == '1')
@@ -73,7 +74,7 @@ static char ReadChar()
 {
     while (true)
     {
-        var @event = EventStream.Default.Read();
+        var @event = EventReader.Read();
         if (@event is Event.KeyEvent { Event.Code: KeyCode.CharKeyCode ch })
         {
             return ch.Character;

@@ -1,3 +1,5 @@
+using Tutu.Windows;
+
 namespace Tutu.Events.Commands;
 
 /// <summary>
@@ -15,8 +17,8 @@ public record DisableMouseCaptureCommand : ICommand
             $"{AnsiCodes.CSI}?1000l"
         );
 
-    public void ExecuteWindowsApi() 
-        => Windows.Events.Windows.Event.DisableMouseCapture();
+    /// <inheritdoc />
+    public void ExecuteWindowsApi() => WindowsConsole.CurrentIn.DisableMouseCapture();
 
 
     /// <inheritdoc />

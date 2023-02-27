@@ -1,4 +1,4 @@
-﻿namespace Tutu.Windows2;
+﻿namespace Tutu.Windows;
 
 /// <summary>
 /// Windows implementation of <see cref="IAnsiSupport"/>.

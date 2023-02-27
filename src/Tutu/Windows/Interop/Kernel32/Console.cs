@@ -1,6 +1,6 @@
 using System.Runtime.InteropServices;
 
-namespace Tutu.Windows2.Interop.Kernel32;
+namespace Tutu.Windows.Interop.Kernel32;
 
 internal static partial class Kernel32
 {
@@ -28,7 +28,8 @@ internal static partial class Kernel32
     public static partial bool GetConsoleScreenBufferInfo(nint hConsoleOutput,
         out CONSOLE_SCREEN_BUFFER_INFO lpConsoleScreenBufferInfo);
 
-    [LibraryImport(LibraryName, SetLastError = true, EntryPoint = "SetConsoleTitleW", StringMarshalling = StringMarshalling.Utf16)]
+    [LibraryImport(LibraryName, SetLastError = true, EntryPoint = "SetConsoleTitleW",
+        StringMarshalling = StringMarshalling.Utf16)]
     [return: MarshalAs(UnmanagedType.Bool)]
     public static partial bool SetConsoleTitle(string title);
 
@@ -44,7 +45,7 @@ internal static partial class Kernel32
     [return: MarshalAs(UnmanagedType.Bool)]
     public static partial bool ReadConsoleInput(nint hConsoleInput,
         [MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 2)]
-        Span<INPUT_RECORD> buffer, uint nLength,
+        INPUT_RECORD[] buffer, uint nLength,
         out uint lpNumberOfEventsRead);
 
     [LibraryImport(LibraryName, SetLastError = true)]
@@ -144,7 +145,7 @@ internal struct INPUT_EVENT_RECORD
 
     [FieldOffset(0)] public COORD dwMousePosition;
 
-    [FieldOffset(4)] public uint dwButtonState;
+    [FieldOffset(4)] public int dwButtonState;
 
     [FieldOffset(8)] public uint dwControlKeyStateMouse;
 
@@ -177,4 +178,13 @@ public struct CONSOLE_CURSOR_INFO
 {
     public uint dwSize;
     public int bVisible;
+}
+
+internal enum EventType : ushort
+{
+    FocusEvent = 0x0010,
+    KeyEvent = 0x0001,
+    MenuEvent = 0x0008,
+    MouseEvent = 0x0002,
+    WindowBufferSizeEvent = 0x0004
 }

@@ -1,4 +1,4 @@
-namespace Tutu.Windows2.Interop;
+namespace Tutu.Windows.Interop;
 
 public class Consts
 {

@@ -1,5 +1,4 @@
 using System.Runtime.InteropServices;
-using Tmds.Linux;
 using static Tmds.Linux.LibC;
 
 namespace Tutu.Unix;

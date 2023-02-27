@@ -1,5 +1,5 @@
 using System.Runtime.InteropServices;
-using Tutu.Windows2;
+using Tutu.Windows;
 
 namespace Tutu.Tty;
 

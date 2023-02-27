@@ -1,6 +1,6 @@
 using System.Runtime.InteropServices;
 
-namespace Tutu.Windows2.Interop;
+namespace Tutu.Windows.Interop;
 
 [StructLayout(LayoutKind.Sequential)]
 internal struct SECURITY_ATTRIBUTES
