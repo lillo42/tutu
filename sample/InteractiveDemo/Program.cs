@@ -88,7 +88,7 @@ static char ReadChar()
     while (true)
     {
         var read = EventReader.Read();
-        if (read is Tutu.Events.Event.KeyEvent { Event: { Code: KeyCode.CharKeyCode ch, Kind: KeyEventKind.Release } })
+        if (read is Tutu.Events.Event.KeyEventEvent { Event: { Code: KeyCode.CharKeyCode ch, Kind: KeyEventKind.Release } })
         {
             return ch.Character;
         }

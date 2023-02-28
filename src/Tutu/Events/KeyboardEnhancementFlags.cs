@@ -2,10 +2,12 @@ namespace Tutu.Events;
 
 /// <summary>
 /// Represents special flags that tell compatible terminals to add extra information to keyboard events.
-///
-/// See https://sw.kovidgoyal.net/kitty/keyboard-protocol/#progressive-enhancement for more information.
-/// Alternate keys and Unicode codepoints are not yet supported by crossterm.
 /// </summary>
+/// <remarks>
+/// See https://sw.kovidgoyal.net/kitty/keyboard-protocol/#progressive-enhancement for more information.
+/// Alternate keys and Unicode codepoints are not yet supported by Tutu.
+/// </remarks>
+[Flags]
 public enum KeyboardEnhancementFlags
 {
     /// <summary>

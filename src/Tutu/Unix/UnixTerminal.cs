@@ -4,7 +4,6 @@ using Tmds.Linux;
 using Tutu.Events;
 using Tutu.Exceptions;
 using Tutu.Terminal;
-using Tutu.Unix;
 using static Tutu.Events.EventReader;
 
 namespace Tutu.Unix2;
@@ -38,7 +37,7 @@ public class UnixTerminal : ITerminal
             return;
         }
 
-        var tty = Unix.Unix.FileDesc.TtyFd();
+        var tty = FileDesc.TtyFd();
         var ios = GetTerminalAttributes(tty);
         var originalModeIOS = ios;
 
@@ -57,7 +56,7 @@ public class UnixTerminal : ITerminal
             return;
         }
 
-        var tty = Unix.Unix.FileDesc.TtyFd();
+        var tty = FileDesc.TtyFd();
         var originalModeIOS = originalMode.Value.Value;
         SetTerminalAttributes(tty, ref originalModeIOS);
         originalMode.Value = null;
@@ -70,7 +69,7 @@ public class UnixTerminal : ITerminal
         {
             // http://rosettacode.org/wiki/Terminal_control/Dimensions#Library:_BSD_libc
             var size = new winsize();
-            var fd = Unix.Unix.FileDesc.TtyFd();
+            var fd = FileDesc.TtyFd();
             if (LibC.ioctl(fd.Fd, LibC.TIOCGWINSZ, &size) == 0)
             {
                 
@@ -131,7 +130,7 @@ public class UnixTerminal : ITerminal
                 if (hasEvent)
                 {
                     var read = ReadInternal(KeyboardEnhancementFlagsFilter.Default);
-                    if (read is InternalEvent.KeyboardEnhancementFlagsInternalEvent)
+                    if (read is KeyboardEnhancementFlagsInternalEvent)
                     {
                         // Flush the PrimaryDeviceAttributes out of the event queue.
                         ReadInternal(PrimaryDeviceAttributesFilter.Default);
@@ -165,7 +164,7 @@ public class UnixTerminal : ITerminal
         }
     }
 
-    private static unsafe termios GetTerminalAttributes(Unix.Unix.FileDesc fd)
+    private static unsafe termios GetTerminalAttributes(FileDesc fd)
     {
         var termios = new termios();
         if (LibC.tcgetattr(fd.Fd, &termios) == -1)
@@ -176,7 +175,7 @@ public class UnixTerminal : ITerminal
         return termios;
     }
 
-    private static unsafe void SetTerminalAttributes(Unix.Unix.FileDesc fd, ref termios termios)
+    private static unsafe void SetTerminalAttributes(FileDesc fd, ref termios termios)
     {
         fixed (termios* ptr = &termios)
         {

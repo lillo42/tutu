@@ -39,13 +39,13 @@ static async Task PrintEventsAsync()
             var @event = await reader.ReadAsync(source.Token);
 
             Console.WriteLine(@event);
-            if (@event is Event.KeyEvent { Event.Code: KeyCode.CharKeyCode { Character: 'c' } })
+            if (@event is Event.KeyEventEvent { Event.Code: KeyCode.CharKeyCode { Character: 'c' } })
             {
                 var position = Tutu.Cursor.Cursor.Position;
                 Console.WriteLine("Cursor position: ({0}, {1})", position.Column, position.Row);
             }
 
-            if (@event is Event.KeyEvent { Event.Code: KeyCode.EscKeyCode })
+            if (@event is Event.KeyEventEvent { Event.Code: KeyCode.EscKeyCode })
             {
                 await EventStream.Default.StopAsync();
                 break;

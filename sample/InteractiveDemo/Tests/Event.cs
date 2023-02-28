@@ -17,7 +17,7 @@ public class Event : AbstractTest
             var @event = EventReader.Read();
             Console.WriteLine(@event);
 
-            if (@event is Tutu.Events.Event.KeyEvent { Event.Code: KeyCode.CharKeyCode ch } keyEvent)
+            if (@event is Tutu.Events.Event.KeyEventEvent { Event.Code: KeyCode.CharKeyCode ch } keyEvent)
             {
                 if (ch.Character == 'c')
                 {

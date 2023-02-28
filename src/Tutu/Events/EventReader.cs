@@ -1,26 +1,22 @@
 using System.Runtime.InteropServices;
 using NodaTime;
+using Tutu.Unix2;
 using Tutu.Windows;
 
 namespace Tutu.Events;
 
 public static class EventReader
 {
-    private static Mutex<InternalReader> InternalReader { get; }
+    private static Mutex<InternalReader> InternalReader { get; } = new(new(CreateEventSource()));
 
-    static EventReader()
+    private static IEventSource CreateEventSource()
     {
-        InternalReader = new Mutex<InternalReader>(new InternalReader(CreateEventSource()));
-
-        static IEventSource CreateEventSource()
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
         {
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-            {
-                return new WindowsEventSource();
-            }
-
-            return new Unix.Events.Unix.EventSource(Unix.Unix.FileDesc.TtyFd());
+            return new WindowsEventSource();
         }
+
+        return UnixEventSource.Instance;
     }
 
     /// <summary>
@@ -44,7 +40,7 @@ public static class EventReader
     public static IEvent Read()
     {
         var @event = ReadInternal(EventFilter.Default);
-        if (@event is InternalEvent.PublicEvent publicEvent)
+        if (@event is PublicEvent publicEvent)
         {
             return publicEvent.Event;
         }
@@ -85,7 +81,7 @@ public static class EventReader
         }
     }
 
-    internal static InternalEvent.IInternalEvent ReadInternal<TFilter>(TFilter filter)
+    internal static IInternalEvent ReadInternal<TFilter>(TFilter filter)
         where TFilter : IFilter
     {
         using var access = InternalReader.Lock();

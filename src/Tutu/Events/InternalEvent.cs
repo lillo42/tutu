@@ -16,38 +16,38 @@ public static class InternalEvent
 
     public static KeyboardEnhancementFlagsInternalEvent KeyboardEnhancementFlags(KeyboardEnhancementFlags flags) =>
         new(flags);
-
-    /// <summary>
-    /// An internal event.
-    /// </summary>
-    /// <remarks>
-    /// Encapsulates publicly available `Event` with additional internal
-    /// events that shouldn't be publicly available to the crate users.
-    /// </remarks>
-    public interface IInternalEvent
-    {
-    }
-
-    /// <summary>
-    /// An event.
-    /// </summary>
-    /// <param name="Event"></param>
-     public record PublicEvent(IEvent Event) : IInternalEvent;
-
-    /// <summary>
-    /// A cursor position
-    /// </summary>
-    /// <param name="Column"></param>
-    /// <param name="Row"></param>
-    public record CursorPositionInternalEvent(ushort Column, ushort Row) : IInternalEvent;
-
-    /// <summary>
-    /// The progressive keyboard enhancement flags enabled by the terminal.
-    /// </summary>
-    public record KeyboardEnhancementFlagsInternalEvent(KeyboardEnhancementFlags Flags) : IInternalEvent;
-
-    /// <summary>
-    /// Attributes and architectural class of the terminal.
-    /// </summary>
-    public record PrimaryDeviceAttributesInternalEvent : IInternalEvent;
 }
+
+/// <summary>
+/// An internal event.
+/// </summary>
+/// <remarks>
+/// Encapsulates publicly available `Event` with additional internal
+/// events that shouldn't be publicly available to the crate users.
+/// </remarks>
+public interface IInternalEvent
+{
+}
+
+/// <summary>
+/// An event.
+/// </summary>
+/// <param name="Event"></param>
+public record PublicEvent(IEvent Event) : IInternalEvent;
+
+/// <summary>
+/// A cursor position
+/// </summary>
+/// <param name="Column"></param>
+/// <param name="Row"></param>
+public record CursorPositionInternalEvent(ushort Column, ushort Row) : IInternalEvent;
+
+/// <summary>
+/// The progressive keyboard enhancement flags enabled by the terminal.
+/// </summary>
+public record KeyboardEnhancementFlagsInternalEvent(KeyboardEnhancementFlags Flags) : IInternalEvent;
+
+/// <summary>
+/// Attributes and architectural class of the terminal.
+/// </summary>
+public record PrimaryDeviceAttributesInternalEvent : IInternalEvent;

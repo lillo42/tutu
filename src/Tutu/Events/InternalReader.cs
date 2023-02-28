@@ -5,8 +5,8 @@ namespace Tutu.Events;
 public class InternalReader
 {
     private readonly IEventSource _source;
-    private readonly List<InternalEvent.IInternalEvent> _events;
-    private readonly List<InternalEvent.IInternalEvent> _skippedEvents;
+    private readonly List<IInternalEvent> _events;
+    private readonly List<IInternalEvent> _skippedEvents;
 
     public InternalReader(IEventSource source)
     {
@@ -56,7 +56,7 @@ public class InternalReader
         }
     }
 
-    public InternalEvent.IInternalEvent Read<TFilter>(TFilter filter)
+    public IInternalEvent Read<TFilter>(TFilter filter)
         where TFilter : IFilter
     {
         while (true)

@@ -1,12 +1,12 @@
 using System.Runtime.CompilerServices;
 using System.Text;
 
-namespace Tutu.Unix.Extensions;
+namespace Tutu.Unix2.Extensions;
 
-public static class StringExtensions
+internal static class StringExtensions
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static Span<byte> ToPathname(this string path)
+    public static byte[] ToPathname(this string path)
     {
         var byteLength = Encoding.UTF8.GetByteCount(path) + 1;
         var bytes = new byte[byteLength];

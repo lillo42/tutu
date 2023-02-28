@@ -48,7 +48,7 @@ public class UnixCursor : ICursor
                 if (received)
                 {
                     var read = ReadInternal(CursorPositionFilter.Default);
-                    if (read is InternalEvent.CursorPositionInternalEvent cursorPositionEvent)
+                    if (read is CursorPositionInternalEvent cursorPositionEvent)
                     {
                         return new CursorPosition(cursorPositionEvent.Column, cursorPositionEvent.Row);
                     }

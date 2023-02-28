@@ -9,13 +9,13 @@ namespace Tutu.Windows;
 /// </summary>
 public class WindowsEventSource : IEventSource
 {
-    private ushort? _surrogate = null;
+    private ushort? _surrogate;
     private readonly MouseButtonPressed _mouseButtonPressed = new();
     private readonly WindowsApiPoll _poll = new();
     private readonly WindowsConsole _console = WindowsConsole.CurrentIn;
 
     /// <inheritdoc />
-    public InternalEvent.IInternalEvent? TryRead(IClock clock, Duration? timeout)
+    public IInternalEvent? TryRead(IClock clock, Duration? timeout)
     {
         var pollTimeout = new PollTimeout(clock, timeout);
         while (true)

@@ -28,7 +28,7 @@ public static class Terminal
     }
 
     /// <inheritdoc cref="ITerminal.IsRawModeEnabled"/> 
-    public static bool IsRawModeEnable => Instance.IsRawModeEnabled;
+    public static bool IsRawModeEnabled => Instance.IsRawModeEnabled;
 
     /// <inheritdoc cref="ITerminal.EnableRawMode"/> 
     public static void EnableRawMode() => Instance.EnableRawMode();

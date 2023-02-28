@@ -17,11 +17,11 @@ static string ReadLine()
     while (true)
     {
         var read = EventReader.Read();
-        if (read is Event.KeyEvent { Event: { Code: KeyCode.CharKeyCode ch, Kind: KeyEventKind.Release } })
+        if (read is Event.KeyEventEvent { Event: { Code: KeyCode.CharKeyCode ch, Kind: KeyEventKind.Release } })
         {
             line.Append(ch.Character);
         }
-        else if (read is Event.KeyEvent { Event.Code: KeyCode.EnterKeyCode })
+        else if (read is Event.KeyEventEvent { Event.Code: KeyCode.EnterKeyCode })
         {
             break;
         }
@@ -35,7 +35,7 @@ static char ReadChar()
     while (true)
     {
         var read = EventReader.Read();
-        if (read is Event.KeyEvent { Event.Code: KeyCode.CharKeyCode ch })
+        if (read is Event.KeyEventEvent { Event.Code: KeyCode.CharKeyCode ch })
         {
             return ch.Character;
         }

@@ -1,9 +1,10 @@
 using System.Runtime.InteropServices;
+using Tutu.Exceptions;
 using static Tmds.Linux.LibC;
 
-namespace Tutu.Unix;
+namespace Tutu.Unix2;
 
-public class PlatformException : Exception
+public class PlatformException : TutuException 
 {
     public PlatformException(int errno) :
         base(GetErrorMessage(errno))
@@ -26,5 +27,11 @@ public class PlatformException : Exception
         return rv == 0 ? Marshal.PtrToStringAnsi((nint)buffer) : $"errno {errno}";
     }
 
-    public static void Throw() => throw new PlatformException();
+    public static void Throw()
+    {
+        if (errno < 0)
+        {
+            throw new PlatformException();
+        }
+    }
 }
