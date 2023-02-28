@@ -25,13 +25,11 @@ public class WindowsEventSource : IEventSource
                 var isEventReady = _poll.Poll(pollTimeout.Leftover);
                 if (isEventReady)
                 {
-                    // var number = _console.NumberOfInputEvent;
-                    var reads = _console.ReadMultipleInputEvents();
+                    var number = _console.NumberOfInputEvent;
                     IEvent? @event = null;
-                    if (reads.Length != 0)
+                    if (number > 0)
                     {
-                        // var read = _console.ReadSingleInputEvent();
-                        var read = reads[0];
+                        var read = _console.ReadSingleInputEvent();
                         var eventType = (EventType)read.EventType;
                         if (eventType == EventType.KeyEvent)
                         {

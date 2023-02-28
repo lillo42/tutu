@@ -296,7 +296,7 @@ internal static class WindowsEventParse
         else
         {
             var utf16 = keyEvent.UChar;
-            if (utf16 is >= 0x00 and <= 0x1f)
+            if (utf16 is >= 0x00 and <= 0x1F)
             {
                 parse = null;
 
@@ -305,10 +305,10 @@ internal static class WindowsEventParse
                 // character the key normally maps to on the user's keyboard layout.
                 // The keys that intentionally generate control codes (ESC, ENTER, TAB, etc.)
                 // are handled by their virtual key codes above.
-                var c = GetCharForKey(keyEvent);
-                if (c != null)
+                var ch = GetCharForKey(keyEvent);
+                if (ch != null)
                 {
-                    parse = KeyCode.Char(c.Value);
+                    parse = KeyCode.Char(ch.Value);
                 }
             }
             else if (utf16 is >= 0xD800 and <= 0xDFFF)
@@ -351,7 +351,7 @@ internal static class WindowsEventParse
         var virtualScanCode = keyEvent.wVirtualScanCode;
         var keyState = new byte[256];
 
-        var utf16 = "";
+        var utf16 = " ";
 
         // Best-effort attempt at determining the currently active keyboard layout.
         // At the time of writing, this works for a console application running in Windows Terminal, but
@@ -367,8 +367,10 @@ internal static class WindowsEventParse
         // keyboard layout in the terminal, but it's what we get.
         var foregroundWindow = GetForegroundWindow();
         Marshal.ThrowExceptionForHR(Marshal.GetLastPInvokeError());
+
         var foregroundWindowThread = GetWindowThreadProcessId(foregroundWindow, out _);
         Marshal.ThrowExceptionForHR(Marshal.GetLastPInvokeError());
+
         var activeKeyboardLayout = GetKeyboardLayout(foregroundWindowThread);
         Marshal.ThrowExceptionForHR(Marshal.GetLastPInvokeError());
 
