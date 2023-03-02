@@ -78,7 +78,7 @@ public class ColorTest
         var value = _fixture.Create<byte>();
         var color = Color.ParseAnsi($"5;{value}");
         color.HasValue.Should().BeTrue();
-        color.Value.Name.Should().StartWith("Ansi");
+        color!.Value.Name.Should().StartWith("Ansi");
         color.Value.Values.Should().BeEquivalentTo(new byte[] { 5, value });
     }
     
@@ -91,7 +91,7 @@ public class ColorTest
         var b = _fixture.Create<byte>();
         var color = Color.ParseAnsi($"2;{r};{g};{b}");
         color.HasValue.Should().BeTrue();
-        color.Value.Name.Should().StartWith("RGB");
+        color!.Value.Name.Should().StartWith("RGB");
         color.Value.Values.Should().BeEquivalentTo(new byte[] { 2, r, g, b });
     }
     

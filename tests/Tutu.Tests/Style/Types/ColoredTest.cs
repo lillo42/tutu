@@ -56,14 +56,14 @@ public class ColoredTest
     {
         var colored = Colored.ParseAnsi($"38;{string.Join(";", color.Values)}");
         colored.HasValue.Should().BeTrue();
-        colored.Value.Value.Should().Be(38);
+        colored!.Value.Value.Should().Be(38);
         colored.Value.Color.ToString().Should().Be(color.ToString());
         colored.Value.IsForegroundColor.Should().BeTrue();
         
         
         colored = Colored.ParseAnsi($"39;{string.Join(";", color.Values)}");
         colored.HasValue.Should().BeTrue();
-        colored.Value.Value.Should().Be(38);
+        colored!.Value.Value.Should().Be(38);
         colored.Value.Color.ToString().Should().Be(color.ToString());
         colored.Value.IsForegroundColor.Should().BeTrue();
         
@@ -75,13 +75,13 @@ public class ColoredTest
     {
         var colored = Colored.ParseAnsi($"48;{string.Join(";", color.Values)}");
         colored.HasValue.Should().BeTrue();
-        colored.Value.Value.Should().Be(48);
+        colored!.Value.Value.Should().Be(48);
         colored.Value.Color.ToString().Should().Be(color.ToString());
         colored.Value.IsBackgroundColor.Should().BeTrue();
         
         colored = Colored.ParseAnsi($"49;{string.Join(";", color.Values)}");
         colored.HasValue.Should().BeTrue();
-        colored.Value.Value.Should().Be(48);
+        colored!.Value.Value.Should().Be(48);
         colored.Value.Color.ToString().Should().Be(color.ToString());
         colored.Value.IsBackgroundColor.Should().BeTrue();
     }
@@ -92,13 +92,13 @@ public class ColoredTest
     {
         var colored = Colored.ParseAnsi($"58;{string.Join(";", color.Values)}");
         colored.HasValue.Should().BeTrue();
-        colored.Value.Value.Should().Be(58);
+        colored!.Value.Value.Should().Be(58);
         colored.Value.Color.ToString().Should().Be(color.ToString());
         colored.Value.IsUnderlineColor.Should().BeTrue();
         
         colored = Colored.ParseAnsi($"59;{string.Join(";", color.Values)}");
         colored.HasValue.Should().BeTrue();
-        colored.Value.Value.Should().Be(58);
+        colored!.Value.Value.Should().Be(58);
         colored.Value.Color.ToString().Should().Be(color.ToString());
         colored.Value.IsUnderlineColor.Should().BeTrue();
     }
@@ -115,7 +115,7 @@ public class ColoredTest
     {
         var colored = Colored.ParseAnsi("10;38;5;255");
         colored.HasValue.Should().BeTrue();
-        colored.Value.IsForegroundColor.Should().BeFalse();
+        colored!.Value.IsForegroundColor.Should().BeFalse();
         colored.Value.IsBackgroundColor.Should().BeFalse();
         colored.Value.IsUnderlineColor.Should().BeFalse();
         colored.Value.Color.Should().Be(Color.Reset);
