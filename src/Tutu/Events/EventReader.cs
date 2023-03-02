@@ -28,7 +28,7 @@ public static class EventReader
         => Poll(SystemClock.Instance, timeout);
 
     public static bool Poll(IClock clock, Duration timeout)
-        => PollInternal(clock, timeout, EventFilter.Default);
+        => PollInternal(clock, timeout, PublicEventFilter.Default);
 
     /// <summary>
     /// Reads a single <see cref="IEvent"/>.
@@ -39,7 +39,7 @@ public static class EventReader
     /// </remarks>
     public static IEvent Read()
     {
-        var @event = ReadInternal(EventFilter.Default);
+        var @event = ReadInternal(PublicEventFilter.Default);
         if (@event is PublicEvent publicEvent)
         {
             return publicEvent.Event;

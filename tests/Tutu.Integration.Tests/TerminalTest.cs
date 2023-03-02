@@ -5,11 +5,11 @@ using Tutu.Terminal.Commands;
 
 namespace Tutu.Integration.Tests;
 
-public class Terminal
+public class TerminalTest
 {
     private readonly ITerminal _terminal;
 
-    public Terminal()
+    public TerminalTest()
     {
         _terminal = Tutu.Terminal.Terminal.Instance;
     }

@@ -1,7 +1,5 @@
 using Tutu.Events;
-using Tmds.Linux;
 using Tutu.Extensions;
-using static Tutu.Commands.Cursor;
 using static Tutu.Commands.Events;
 
 namespace InteractiveDemo.Tests;

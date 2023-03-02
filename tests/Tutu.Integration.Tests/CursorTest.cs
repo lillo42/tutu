@@ -5,11 +5,11 @@ using static Tutu.Commands.Cursor;
 
 namespace Tutu.Integration.Tests;
 
-public class Cursor
+public class CursorTest
 {
     private readonly ICursor _cursor;
 
-    public Cursor()
+    public CursorTest()
     {
         _cursor = Tutu.Cursor.Cursor.Instance;
     }

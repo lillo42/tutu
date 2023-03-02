@@ -261,22 +261,22 @@ internal readonly struct WindowsConsole
         return read;
     }
 
-    private static long _originalConsoleColor = uint.MaxValue;
-    private const ushort ForegroundBlue = 0x0001; // Text color contains blue.
-    private const ushort ForegroundGreen = 0x0002; // Text color contains green.
-    private const ushort ForegroundRed = 0x0004; // Text color contains red.
-    private const ushort ForegroundIntensity = 0x0008; // Text color is intensified.
-    private const ushort BackgroundBlue = 0x0010; // Background color contains blue.
-    private const ushort BackgroundGreen = 0x0020; // Background color contains green.
-    private const ushort BackgroundRed = 0x0040; // Background color contains red.
-    private const ushort BackgroundIntensity = 0x0080; // Background color is intensified.
-    private const ushort CommonLvbLeadingByte = 0x0100; // Leading byte.
-    private const ushort CommonLvbTrailingByte = 0x0200; // Trailing byte.
-    private const ushort CommonLvbGridHorizontal = 0x0400; // Top horizontal.
-    private const ushort CommonLvbGridLvertical = 0x0800; // Left vertical.
-    private const ushort CommonLvbGridRvertical = 0x1000; // Right vertical.
-    private const ushort CommonLvbReverseVideo = 0x4000; // Reverse foreground and background attribute.
-    private const ushort CommonLvbUnderscore = 0x8000; // Underscore
+    internal static long _originalConsoleColor = uint.MaxValue;
+    internal const ushort ForegroundBlue = 0x0001; // Text color contains blue.
+    internal const ushort ForegroundGreen = 0x0002; // Text color contains green.
+    internal const ushort ForegroundRed = 0x0004; // Text color contains red.
+    internal const ushort ForegroundIntensity = 0x0008; // Text color is intensified.
+    internal const ushort BackgroundBlue = 0x0010; // Background color contains blue.
+    internal const ushort BackgroundGreen = 0x0020; // Background color contains green.
+    internal const ushort BackgroundRed = 0x0040; // Background color contains red.
+    internal const ushort BackgroundIntensity = 0x0080; // Background color is intensified.
+    internal const ushort CommonLvbLeadingByte = 0x0100; // Leading byte.
+    internal const ushort CommonLvbTrailingByte = 0x0200; // Trailing byte.
+    internal const ushort CommonLvbGridHorizontal = 0x0400; // Top horizontal.
+    internal const ushort CommonLvbGridLvertical = 0x0800; // Left vertical.
+    internal const ushort CommonLvbGridRvertical = 0x1000; // Right vertical.
+    internal const ushort CommonLvbReverseVideo = 0x4000; // Reverse foreground and background attribute.
+    internal const ushort CommonLvbUnderscore = 0x8000; // Underscore
 
     public void SetForegroundColor(Color color)
     {
@@ -331,7 +331,7 @@ internal readonly struct WindowsConsole
         return 0;
     }
 
-    private static ushort FromForegroundColor(Color color)
+    internal static ushort FromForegroundColor(Color color)
     {
         if (color == Color.Black)
         {
@@ -425,7 +425,7 @@ internal readonly struct WindowsConsole
         return 0;
     }
 
-    private static ushort FromBackgroundColor(Color color)
+    internal static ushort FromBackgroundColor(Color color)
     {
         if (color == Color.Black)
         {

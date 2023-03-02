@@ -32,6 +32,8 @@ public record ContentStyled(
 
     public ContentStyled Attribute(Attribute attribute) => this with { Attributes = Attributes.Add(attribute) };
 
+    public StyledContent<T> Apply<T>(T content) where T : notnull => new(this, content);
+
     public ContentStyled Reset() => Attribute(Types.Attribute.Reset);
 
     public ContentStyled Bold() => Attribute(Types.Attribute.Bold);

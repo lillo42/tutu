@@ -1,5 +1,3 @@
-using System.Runtime.InteropServices;
-
 namespace Tutu.Events;
 
 /// <summary>
@@ -15,68 +13,58 @@ public interface IFilter
     bool Eval(IInternalEvent @event);
 }
 
-public record EventFilter : IFilter
+/// <summary>
+/// Public <see cref="IEvent"/> filter.
+/// </summary>
+public record PublicEventFilter : IFilter
 {
-    public static EventFilter Default { get; } = new();
+    /// <summary>
+    /// The default filter.
+    /// </summary>
+    public static PublicEventFilter Default { get; } = new();
 
-    public bool Eval(IInternalEvent @event)
-    {
-        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-        {
-            return true;
-        }
-
-        return @event is PublicEvent;
-    }
+    /// <inheritdoc />
+    public bool Eval(IInternalEvent @event) => @event is PublicEvent;
 }
 
+/// <summary>
+/// The cursor position filter.
+/// </summary>
 public record CursorPositionFilter : IFilter
 {
+    /// <summary>
+    /// The default filter.
+    /// </summary>
     public static CursorPositionFilter Default { get; } = new();
 
-    public bool Eval(IInternalEvent @event)
-    {
-        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-        {
-            return false;
-        }
-
-        return @event is CursorPositionInternalEvent;
-    }
+    /// <inheritdoc />
+    public bool Eval(IInternalEvent @event) => @event is CursorPositionInternalEvent;
 }
 
+/// <summary>
+/// The keyboard enhancement flags filter.
+/// </summary>
 public record KeyboardEnhancementFlagsFilter : IFilter
 {
+    /// <summary>
+    /// The default filter.
+    /// </summary>
     public static KeyboardEnhancementFlagsFilter Default { get; } = new();
 
-    public bool Eval(IInternalEvent @event)
-    {
-        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-        {
-            return false;
-        }
-
-        return @event is KeyboardEnhancementFlagsInternalEvent;
-    }
+    /// <inheritdoc />
+    public bool Eval(IInternalEvent @event) => @event is KeyboardEnhancementFlagsInternalEvent;
 }
 
+/// <summary>
+/// The primary device attributes filter.
+/// </summary>
 public record PrimaryDeviceAttributesFilter : IFilter
 {
+    /// <summary>
+    /// The default filter.
+    /// </summary>
     public static PrimaryDeviceAttributesFilter Default { get; } = new();
-
-    public bool Eval(IInternalEvent @event)
-    {
-        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-        {
-            return false;
-        }
-
-        return @event is PrimaryDeviceAttributesInternalEvent;
-    }
-}
-
-public record InternalEventFilter : IFilter
-{
-    public static InternalEventFilter Default { get; } = new();
-    public bool Eval(IInternalEvent @event) => true;
+    
+    /// <inheritdoc />
+    public bool Eval(IInternalEvent @event) => @event is PrimaryDeviceAttributesInternalEvent;
 }

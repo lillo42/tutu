@@ -24,9 +24,11 @@ public class PollTimeout
     }
 
     /// <summary>
-    /// Returns whether the timeout has elapsed.
-    /// It always returns `false` if the initial timeout was set to `None`.
+    /// Whether the timeout has elapsed.
     /// </summary>
+    /// <remarks>
+    /// It always returns <see langword="false"/> if the initial timeout was set to <see langword="null"/>.
+    /// </remarks>
     public bool Elapsed => _timeout != null && _clock.GetCurrentInstant() - _start >= _timeout.Value;
 
     /// <summary>

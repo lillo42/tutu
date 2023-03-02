@@ -1,9 +1,8 @@
-using System.Runtime.InteropServices;
 using FluentAssertions;
 
 namespace Tutu.Windows.Integration.Tests;
 
-public class Terminal
+public class TerminalTest
 {
     [Fact]
     public void ScrollDownWinApi()
