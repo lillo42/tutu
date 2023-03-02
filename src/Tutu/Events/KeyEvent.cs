@@ -42,8 +42,7 @@ public readonly record struct KeyEvent(KeyCode.IKeyCode Code, KeyModifiers Modif
     /// </summary>
     public KeyEventState State { get; init; }
 
-
-    public KeyEvent NormalizeCase()
+    private KeyEvent NormalizeCase()
     {
         if (Code is not KeyCode.CharKeyCode keyCode)
         {
@@ -57,9 +56,25 @@ public readonly record struct KeyEvent(KeyCode.IKeyCode Code, KeyModifiers Modif
 
         if (!Modifiers.HasFlag(KeyModifiers.Shift))
         {
-            return this with { Code = new KeyCode.CharKeyCode(char.ToUpper(keyCode.Character))};
+            return this with { Code = new KeyCode.CharKeyCode(char.ToUpper(keyCode.Character)) };
         }
 
         return this;
+    }
+
+    public bool Equals(KeyEvent? other)
+    {
+        if (other == null)
+        {
+            return false;
+        }
+
+        var lhs = NormalizeCase();
+        var rhs = other.Value.NormalizeCase();
+
+        return lhs.Code == rhs.Code
+               && lhs.Modifiers == rhs.Modifiers
+               && lhs.Kind == rhs.Kind
+               && lhs.State == rhs.State;
     }
 }
