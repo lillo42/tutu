@@ -2,7 +2,7 @@ using System.Runtime.InteropServices;
 using Tutu.Exceptions;
 using static Tmds.Linux.LibC;
 
-namespace Tutu.Unix2;
+namespace Tutu.Unix;
 
 public class PlatformException : TutuException 
 {

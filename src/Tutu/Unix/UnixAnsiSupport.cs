@@ -1,4 +1,4 @@
-﻿namespace Tutu.Unix2;
+﻿namespace Tutu.Unix;
 
 /// <summary>
 /// Unix implementation of <see cref="IAnsiSupport"/>.

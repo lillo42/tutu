@@ -1,7 +1,7 @@
 using System.Runtime.CompilerServices;
 using System.Text;
 
-namespace Tutu.Unix2.Extensions;
+namespace Tutu.Unix.Extensions;
 
 internal static class StringExtensions
 {

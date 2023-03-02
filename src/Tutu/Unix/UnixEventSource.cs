@@ -3,7 +3,7 @@ using Tmds.Linux;
 using Tutu.Events;
 using static Tmds.Linux.LibC;
 
-namespace Tutu.Unix2;
+namespace Tutu.Unix;
 
 /// <summary>
 /// Unix implementation of <see cref="IEventSource"/>.

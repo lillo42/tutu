@@ -1,7 +1,7 @@
 using Tmds.Linux;
-using Tutu.Unix2.Extensions;
+using Tutu.Unix.Extensions;
 
-namespace Tutu.Unix2;
+namespace Tutu.Unix;
 
 /// <summary>
 /// A file descriptor wrapper.

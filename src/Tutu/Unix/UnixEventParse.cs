@@ -3,7 +3,7 @@ using Tutu.Events;
 using static Tutu.Events.Event;
 using static Tutu.Events.InternalEvent;
 
-namespace Tutu.Unix2;
+namespace Tutu.Unix;
 
 internal class UnixEventParse
 {

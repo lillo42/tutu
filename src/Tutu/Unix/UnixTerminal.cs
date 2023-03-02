@@ -6,7 +6,7 @@ using Tutu.Exceptions;
 using Tutu.Terminal;
 using static Tutu.Events.EventReader;
 
-namespace Tutu.Unix2;
+namespace Tutu.Unix;
 
 /// <summary>
 /// The Unix implementation of <see cref="ITerminal"/>.
