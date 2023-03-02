@@ -11,7 +11,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "sample", "sample", "{57F820
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{0E60D1CD-9083-4C23-BEED-33155D9D59B1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Erised.Tests", "tests\Erised.Tests\Erised.Tests.csproj", "{DCB7657A-445F-47A8-987C-1DE943158654}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tutu.Tests", "tests\Tutu.Tests\Tutu.Tests.csproj", "{DCB7657A-445F-47A8-987C-1DE943158654}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Erised.WindowsTests", "tests\Erised.WindowsTests\Erised.WindowsTests.csproj", "{5B91E9E4-A06D-4426-814A-B8AF3E11EBF1}"
 EndProject
