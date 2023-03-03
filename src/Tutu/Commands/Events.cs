@@ -19,18 +19,21 @@ public static class Events
     public static ICommand DisableMouseCapture { get; } = new DisableMouseCaptureCommand();
 
     /// <summary>
-    /// A command that enables the [kitty keyboard protocol](https://sw.kovidgoyal.net/kitty/keyboard-protocol/), which adds extra information to keyboard events and removes ambiguity for modifier keys.
+    /// A command that enables the <see href="https://sw.kovidgoyal.net/kitty/keyboard-protocol/">kitty keyboard protocol</see>,
+    /// which adds extra information to keyboard events and removes ambiguity for modifier keys.
     /// </summary>
     /// <param name="flags">The <see cref="KeyboardEnhancementFlags"/></param>
     /// <remarks>
-    /// It should be paired with <see cref="PopKeyboardEnhancementFlags"/> at the end of execution.
-    /// * [kitty terminal](https://sw.kovidgoyal.net/kitty/)
-    /// * [foot terminal](https://codeberg.org/dnkl/foot/issues/319)
-    /// * [WezTerm terminal](https://wezfurlong.org/wezterm/config/lua/config/enable_kitty_keyboard.html)
-    /// * [notcurses library](https://github.com/dankamongmen/notcurses/issues/2131)
-    /// * [neovim text editor](https://github.com/neovim/neovim/pull/18181)
-    /// * [kakoune text editor](https://github.com/mawww/kakoune/issues/4103)
-    /// * [dte text editor](https://gitlab.com/craigbarnes/dte/-/issues/138)
+    /// <para>It should be paired with <see cref="PopKeyboardEnhancementFlagsCommand"/> at the end of execution.</para>
+    /// <list type="bullet">
+    ///     <item><see href="https://sw.kovidgoyal.net/kitty/">kitty terminal</see></item>
+    ///     <item><see href="https://codeberg.org/dnkl/foot/issues/319">foot terminal</see></item>
+    ///     <item><see href="https://wezfurlong.org/wezterm/config/lua/config/enable_kitty_keyboard.html">WezTerm terminal</see></item>
+    ///     <item><see href="https://github.com/dankamongmen/notcurses/issues/2131">notcurses library</see></item>
+    ///     <item><see href="https://github.com/neovim/neovim/pull/18181">neovim text editor</see></item>
+    ///     <item><see href="https://github.com/mawww/kakoune/issues/4103">kakoune text editor</see></item>
+    ///     <item><see href="https://gitlab.com/craigbarnes/dte/-/issues/138">dte text editor</see></item>
+    /// </list> 
     /// </remarks>
     public static ICommand PushKeyboardEnhancementFlags(KeyboardEnhancementFlags flags) =>
         new PushKeyboardEnhancementFlagsCommand(flags);
@@ -60,13 +63,13 @@ public static class Events
 
 
     /// <summary>
-    /// A command that enables [bracketed paste mode](https://en.wikipedia.org/wiki/Bracketed-paste).
+    /// A command that enables <see href="https://en.wikipedia.org/wiki/Bracketed-paste">bracketed paste mode</see>.
     /// </summary>
     /// <remarks>
     /// It should be paired with <see cref="DisableBracketedPasteCommand"/> at the end of execution.
     ///
     /// This is not supported in older Windows terminals without
-    /// [virtual terminal sequences](https://docs.microsoft.com/en-us/windows/console/console-virtual-terminal-sequences).
+    /// <see href="https://docs.microsoft.com/en-us/windows/console/console-virtual-terminal-sequences">virtual terminal sequences</see>.
     /// </remarks>
     public static ICommand EnableBracketedPaste { get; } = new EnableBracketedPasteCommand();
 

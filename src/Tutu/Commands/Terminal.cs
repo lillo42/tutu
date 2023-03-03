@@ -38,8 +38,8 @@ public static class Terminal
     /// A command that switches to alternate screen.
     /// </summary>
     /// <remarks>
-    /// Commands must be executed/queued for execution otherwise they do nothing.
-    /// Use <see cref="LeaveAlternateScreen"/>. command to leave the entered alternate screen.
+    /// <para>Use <see cref="LeaveAlternateScreen"/>. command to leave the entered alternate screen.</para>
+    /// <para>Commands must be executed/queued for execution otherwise they do nothing.</para>
     /// </remarks>
     public static ICommand EnterAlternateScreen { get; } = new EnterAlternateScreenCommand();
 
@@ -47,8 +47,8 @@ public static class Terminal
     /// A command that switches back to the main screen.
     /// </summary>
     /// <remarks>
-    /// Commands must be executed/queued for execution otherwise they do nothing.
-    /// Use <see cref="EnterAlternateScreen"/> to enter the alternate screen.
+    /// <para> Use <see cref="EnterAlternateScreen"/> to enter the alternate screen.</para>
+    /// <para>Commands must be executed/queued for execution otherwise they do nothing.</para>
     /// </remarks>
     public static ICommand LeaveAlternateScreen { get; } = new LeaveAlternateScreenCommand();
 
