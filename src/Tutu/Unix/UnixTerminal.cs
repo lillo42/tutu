@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Runtime.InteropServices;
 using NodaTime;
 using Tmds.Linux;
 using Tutu.Events;
@@ -187,9 +188,14 @@ public class UnixTerminal : ITerminal
     }
 
     // Transform the given mode into an raw mode (non-canonical) mode.
-    private static unsafe void RawTerminalAttribute(ref termios termios)
+    private static void RawTerminalAttribute(ref termios termios)
     {
-        Debug.Assert(termios.c_line == 0);
-        // TODO: implement cfmakeraw
+        LibCExtensions.cfmakeraw(ref termios);
     }
+}
+
+internal partial class LibCExtensions
+{
+    [LibraryImport("libc", EntryPoint = "cfmakeraw")]
+    public static partial void cfmakeraw(ref termios termios);
 }

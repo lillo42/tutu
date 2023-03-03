@@ -44,7 +44,7 @@ foreach (var line in Text.Split('\n'))
 
 Tutu.Terminal.Terminal.EnableRawMode();
 
-var key = ReadChar();
+var key = Console.ReadKey(true).KeyChar;// ReadChar();
 
 Console.Error
     .Execute(Show)
@@ -70,14 +70,14 @@ else
     Console.WriteLine(Text);
 }
 
-static char ReadChar()
-{
-    while (true)
-    {
-        var @event = EventReader.Read();
-        if (@event is Event.KeyEventEvent { Event.Code: KeyCode.CharKeyCode ch })
-        {
-            return ch.Character;
-        }
-    }
-}
+// static char ReadChar()
+// {
+//     while (true)
+//     {
+//         var @event = EventReader.Read();
+//         if (@event is Event.KeyEventEvent { Event.Code: KeyCode.CharKeyCode ch })
+//         {
+//             return ch.Character;
+//         }
+//     }
+// }
