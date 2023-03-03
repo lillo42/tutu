@@ -516,7 +516,7 @@ internal class UnixEventParse
 
             if (buffer[^1] == 'c')
             {
-                return ParseCsiPrimaryDeviceAttributes(buffer);
+                return ParseCsiPrimaryDeviceAttributes();
             }
 
             return null;
@@ -860,12 +860,12 @@ internal class UnixEventParse
         return null;
     }
 
-    private static IInternalEvent ParseCsiPrimaryDeviceAttributes(ReadOnlySpan<byte> buffer)
+    private static IInternalEvent ParseCsiPrimaryDeviceAttributes()
     {
         // ESC [ 64 ; attr1 ; attr2 ; ... ; attrn ; c
 
         // This is a stub for parsing the primary device attributes. This response is not
-        // exposed in the crossterm API so we don't need to parse the individual attributes yet.
+        // exposed in the tutu API so we don't need to parse the individual attributes yet.
         // See <https://vt100.net/docs/vt510-rm/DA1.html> 
         return PrimaryDeviceAttributes;
     }

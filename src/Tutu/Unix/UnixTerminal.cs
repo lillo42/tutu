@@ -189,6 +189,7 @@ public class UnixTerminal : ITerminal
     // Transform the given mode into an raw mode (non-canonical) mode.
     private static unsafe void RawTerminalAttribute(ref termios termios)
     {
+        Debug.Assert(termios.c_line == 0);
         // TODO: implement cfmakeraw
     }
 }

@@ -21,7 +21,7 @@ public static class StyledContentExtensions
     /// <inheritdoc cref="StyledContent{T}.Underline()"/>
     public static StyledContent<T> Underline<T>(this T content) where T : notnull =>
         new StyledContent<T>(Default, content).Underline();
-    
+
     /// <inheritdoc cref="StyledContent{T}.Reverse"/>
     public static StyledContent<T> Reverse<T>(this T content) where T : notnull =>
         new StyledContent<T>(Default, content).Reverse();
@@ -33,7 +33,7 @@ public static class StyledContentExtensions
     /// <inheritdoc cref="StyledContent{T}.Italic"/>
     public static StyledContent<T> Italic<T>(this T content) where T : notnull =>
         new StyledContent<T>(Default, content).Italic();
-    
+
     /// <inheritdoc cref="StyledContent{T}.Negative"/>
     public static StyledContent<T> Negative<T>(this T content) where T : notnull =>
         new StyledContent<T>(Default, content).Negative();
@@ -73,7 +73,7 @@ public static class StyledContentExtensions
     /// <inheritdoc cref="StyledContent{T}.DarkGrey"/>
     public static StyledContent<T> OnDarkGrey<T>(this T content) where T : notnull =>
         new StyledContent<T>(Default, content).OnDarkGrey();
-    
+
     /// <inheritdoc cref="StyledContent{T}.UnderlineDarkGrey"/>
     public static StyledContent<T> UnderlineDarkGrey<T>(this T content) where T : notnull =>
         new StyledContent<T>(Default, content).UnderlineDarkGrey();
