@@ -1,4 +1,5 @@
 ﻿using System.Runtime.InteropServices;
+using Tutu.Unix;
 using Tutu.Windows;
 
 namespace Tutu.Tty;
@@ -21,7 +22,7 @@ public static class Tty
     /// </summary>
     static Tty()
     {
-        Instance = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? new WindowsTty() : null!;
+        Instance = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? new WindowsTty() : new UnixTty();
     }
 
     /// <inheritdoc cref="ITty.IsTty"/>
