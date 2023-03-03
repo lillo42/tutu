@@ -8,7 +8,7 @@ namespace Tutu.Unix;
 /// <summary>
 /// Unix implementation of <see cref="IEventSource"/>.
 /// </summary>
-internal class UnixEventSource : IEventSource
+internal class UnixEventSource : IEventSource, IDisposable
 {
     // I (@zrzka) wasn't able to read more than 1_022 bytes when testing
     // reading on macOS/Linux -> we don't need bigger buffer and 1k of bytes
@@ -16,9 +16,10 @@ internal class UnixEventSource : IEventSource
     private const uint TTY_BUFFER_SIZE = 1024;
 
     private readonly UnixEventParse _parse;
-    private readonly byte[] _buffer = new byte[TTY_BUFFER_SIZE];
+    private readonly byte[] _buffer;
     private readonly FileDesc _tty;
     private readonly FileDesc _winchSignalReceiver;
+    private readonly FileDesc _sender;
 
     /// <summary>
     /// Singleton instance of <see cref="UnixEventSource"/>.
@@ -39,6 +40,7 @@ internal class UnixEventSource : IEventSource
         var (receiver, sender) = NonblockingUnixPair();
         Register(sender, SIGWINCH);
         _winchSignalReceiver = receiver;
+        _sender = sender;
     }
 
     private static (FileDesc, FileDesc) NonblockingUnixPair()
@@ -199,5 +201,12 @@ internal class UnixEventSource : IEventSource
         }
 
         return errno;
+    }
+
+    public void Dispose()
+    {
+        _tty.Dispose();
+        _winchSignalReceiver.Dispose();
+        _sender.Dispose();
     }
 }
