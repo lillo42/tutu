@@ -1,7 +1,7 @@
 ﻿// Demonstrates how to match on modifiers like: Control, alt, shift.
 
-using Tutu.Events;
 using NodaTime;
+using Tutu.Events;
 using Tutu.Extensions;
 using static Tutu.Commands.Events;
 using Terminal = Tutu.Terminal.Terminal;
@@ -41,7 +41,7 @@ static void PrintEvents()
             Console.WriteLine("..");
             continue;
         }
-        
+
         var @event = EventReader.Read();
         Console.WriteLine(@event);
         if (@event is Event.KeyEventEvent { Event.Code: KeyCode.CharKeyCode { Character: 'c' } })

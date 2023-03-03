@@ -1,8 +1,8 @@
-using NodaTime;
+﻿using NodaTime;
 
 namespace Tutu.Events;
 
-public class InternalReader
+internal class InternalReader
 {
     private readonly IEventSource _source;
     private readonly List<IInternalEvent> _events;

@@ -1,4 +1,4 @@
-namespace Tutu.Events;
+﻿namespace Tutu.Events;
 
 /// <summary>
 /// A mouse event kind.

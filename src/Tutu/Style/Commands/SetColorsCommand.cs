@@ -1,4 +1,4 @@
-using Tutu.Style.Types;
+﻿using Tutu.Style.Types;
 using Tutu.Windows;
 
 namespace Tutu.Style.Commands;
@@ -20,10 +20,10 @@ public record SetColorsCommand(Color? Foreground, Color? Background) : ICommand
         {
             SetForegroundColorCommand.Execute(write, Foreground.Value);
         }
-        
+
         if (Background != null)
         {
-             SetBackgroundColorCommand.Execute(write, Background.Value);
+            SetBackgroundColorCommand.Execute(write, Background.Value);
         }
     }
 

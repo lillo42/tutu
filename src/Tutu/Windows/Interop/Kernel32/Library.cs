@@ -1,4 +1,4 @@
-namespace Tutu.Windows.Interop.Kernel32;
+﻿namespace Tutu.Windows.Interop.Kernel32;
 
 internal static partial class Kernel32
 {

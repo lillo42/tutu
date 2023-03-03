@@ -1,4 +1,4 @@
-using Tutu.Cursor;
+﻿using Tutu.Cursor;
 using Tutu.Cursor.Commands;
 
 namespace Tutu.Commands;
@@ -8,7 +8,7 @@ namespace Tutu.Commands;
 /// </summary>
 public static class Cursor
 {
-    
+
     /// <inheritdoc cref="HideCursorCommand"/>
     public static ICommand Hide { get; } = new HideCursorCommand();
 

@@ -1,9 +1,9 @@
-namespace Tutu.Events;
+﻿namespace Tutu.Events;
 
 /// <summary>
 /// Interface for filtering an `InternalEvent`.
 /// </summary>
-public interface IFilter
+internal interface IFilter
 {
     /// <summary>
     /// Returns whether the given event fulfills the filter.
@@ -16,7 +16,7 @@ public interface IFilter
 /// <summary>
 /// Public <see cref="IEvent"/> filter.
 /// </summary>
-public record PublicEventFilter : IFilter
+internal record PublicEventFilter : IFilter
 {
     /// <summary>
     /// The default filter.
@@ -30,7 +30,7 @@ public record PublicEventFilter : IFilter
 /// <summary>
 /// The cursor position filter.
 /// </summary>
-public record CursorPositionFilter : IFilter
+internal record CursorPositionFilter : IFilter
 {
     /// <summary>
     /// The default filter.
@@ -44,7 +44,7 @@ public record CursorPositionFilter : IFilter
 /// <summary>
 /// The keyboard enhancement flags filter.
 /// </summary>
-public record KeyboardEnhancementFlagsFilter : IFilter
+internal record KeyboardEnhancementFlagsFilter : IFilter
 {
     /// <summary>
     /// The default filter.
@@ -58,13 +58,13 @@ public record KeyboardEnhancementFlagsFilter : IFilter
 /// <summary>
 /// The primary device attributes filter.
 /// </summary>
-public record PrimaryDeviceAttributesFilter : IFilter
+internal record PrimaryDeviceAttributesFilter : IFilter
 {
     /// <summary>
     /// The default filter.
     /// </summary>
     public static PrimaryDeviceAttributesFilter Default { get; } = new();
-    
+
     /// <inheritdoc />
     public bool Eval(IInternalEvent @event) => @event is PrimaryDeviceAttributesInternalEvent;
 }

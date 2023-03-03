@@ -57,21 +57,21 @@ public class ColorTest
     {
         Color.TryFrom(_fixture.Create<string>(), out _).Should().BeFalse();
     }
-    
+
     [Theory]
     [MemberData(nameof(Colors))]
     public void From_ShouldReturnColor(string name, Color expected)
     {
         Color.From(name).Should().Be(expected);
     }
-    
+
     [Fact]
     public void From_ShouldThrow()
     {
         Assert.Throws<ArgumentException>(() => Color.From(_fixture.Create<string>()));
     }
 
-   
+
     [Fact]
     public void ParseAnsi_ShouldReturnAnsi_WhenStartWith5()
     {
@@ -81,8 +81,8 @@ public class ColorTest
         color!.Value.Name.Should().StartWith("Ansi");
         color.Value.Values.Should().BeEquivalentTo(new byte[] { 5, value });
     }
-    
-    
+
+
     [Fact]
     public void ParseAnsi_ShouldReturnRgb_WhenStartWith2()
     {
@@ -94,7 +94,7 @@ public class ColorTest
         color!.Value.Name.Should().StartWith("RGB");
         color.Value.Values.Should().BeEquivalentTo(new byte[] { 2, r, g, b });
     }
-    
+
     [Theory]
     [InlineData("5;a")]
     [InlineData("5")]

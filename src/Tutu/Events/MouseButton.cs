@@ -1,4 +1,4 @@
-namespace Tutu.Events;
+﻿namespace Tutu.Events;
 
 /// <summary>
 /// Represents a mouse button.

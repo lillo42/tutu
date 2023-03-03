@@ -1,4 +1,4 @@
-namespace Tutu.Events;
+﻿namespace Tutu.Events;
 
 /// <summary>
 /// Represents a mouse event.
@@ -27,7 +27,7 @@ public readonly record struct MouseEvent(MouseEventKind.IMouseEventKind Kind, in
     /// The row that the event occurred on.
     /// </summary>
     public int Row { get; init; } = Row;
-    
+
     /// <summary>
     /// The key modifiers active when the event occurred.
     /// </summary>

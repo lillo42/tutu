@@ -50,17 +50,17 @@ public class QueueExecutorTest
         command1.IsAnsiCodeSupported.Returns(true);
         command1.When(c => c.WriteAnsi(Arg.Any<TextWriter>()))
             .Do(x => _writer.Write("1"));
-        
+
         var command2 = Substitute.For<ICommand>();
         command2.IsAnsiCodeSupported.Returns(true);
         command2.When(c => c.WriteAnsi(Arg.Any<TextWriter>()))
             .Do(x => _writer.Write("2"));
-        
+
         var command3 = Substitute.For<ICommand>();
         command3.IsAnsiCodeSupported.Returns(true);
         command3.When(c => c.WriteAnsi(Arg.Any<TextWriter>()))
             .Do(x => _writer.Write("3"));
-        
+
         _queueExecutor.Enqueue(command1, command2, command3);
         _queueExecutor.Flush();
         _queueExecutor.Count.Should().Be(0);

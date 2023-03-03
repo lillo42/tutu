@@ -1,4 +1,4 @@
-namespace Tutu.Style.Commands;
+﻿namespace Tutu.Style.Commands;
 
 /// <summary>
 /// A command that prints the given displayable type.

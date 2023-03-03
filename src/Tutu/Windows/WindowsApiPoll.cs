@@ -1,4 +1,4 @@
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 using NodaTime;
 using Tutu.Windows.Exceptions;
 using static Tutu.Windows.Interop.Kernel32.Kernel32;
@@ -35,7 +35,7 @@ internal class WindowsApiPoll
         {
             throw new FailToWaitPollException(Marshal.GetLastPInvokeErrorMessage());
         }
-        
+
         Marshal.ThrowExceptionForHR(Marshal.GetLastPInvokeError());
         return false;
     }

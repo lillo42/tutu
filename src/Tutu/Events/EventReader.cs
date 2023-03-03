@@ -1,10 +1,13 @@
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 using NodaTime;
 using Tutu.Unix;
 using Tutu.Windows;
 
 namespace Tutu.Events;
 
+/// <summary>
+/// The event reader.
+/// </summary>
 public static class EventReader
 {
     private static Mutex<InternalReader> InternalReader { get; } = new(new(CreateEventSource()));
@@ -20,13 +23,19 @@ public static class EventReader
     }
 
     /// <summary>
-    /// Checks if there is an [`Event`](enum.Event.html) available.
+    /// Checks if there is an <see cref="IEvent"/>.
     /// </summary>
     /// <param name="timeout">Maximum waiting time for event availability.</param>
-    /// <returns>true if an <see cref="IEvent"/> is available. otherwise return false.</returns>
+    /// <returns><see langword="true"/> if an <see cref="IEvent"/> is available; otherwise return <see langword="true"/>.</returns>
     public static bool Poll(Duration timeout)
         => Poll(SystemClock.Instance, timeout);
 
+    /// <summary>
+    /// Checks if there is an <see cref="IEvent"/>.
+    /// </summary>
+    /// <param name="clock">The <see cref="IClock"/>.</param>
+    /// <param name="timeout">Maximum waiting time for event availability.</param>
+    /// <returns><see langword="true"/> if an <see cref="IEvent"/> is available; otherwise return <see langword="true"/>.</returns>
     public static bool Poll(IClock clock, Duration timeout)
         => PollInternal(clock, timeout, PublicEventFilter.Default);
 

@@ -1,4 +1,4 @@
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using NodaTime;
 using Tmds.Linux;
 using Tutu.Events;
@@ -72,7 +72,7 @@ public class UnixTerminal : ITerminal
             var fd = FileDesc.TtyFd();
             if (LibC.ioctl(fd.Fd, LibC.TIOCGWINSZ, &size) == 0)
             {
-                
+
                 return new(size.ws_col, size.ws_row);
             }
 

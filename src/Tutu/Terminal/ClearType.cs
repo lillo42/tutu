@@ -1,4 +1,4 @@
-namespace Tutu.Terminal;
+﻿namespace Tutu.Terminal;
 
 /// <summary>
 /// Different ways to clear the terminal buffer.

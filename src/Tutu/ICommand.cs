@@ -1,4 +1,4 @@
-namespace Tutu;
+﻿namespace Tutu;
 
 /// <summary>
 /// An interface for a command that performs an action on the terminal.

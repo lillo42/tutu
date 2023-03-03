@@ -1,4 +1,4 @@
-using FluentAssertions;
+﻿using FluentAssertions;
 using Tutu.Events;
 using Tutu.Events.Commands;
 

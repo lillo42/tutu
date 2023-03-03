@@ -1,4 +1,4 @@
-using Tutu.Windows.Interop.Kernel32;
+﻿using Tutu.Windows.Interop.Kernel32;
 
 namespace Tutu.Windows;
 
@@ -14,7 +14,7 @@ internal readonly record struct Coordinate(short X, short Y)
         x = X;
         y = Y;
     }
-    
+
     internal COORD ToCoord() => new() { X = X, Y = Y };
 
     internal static Coordinate From(COORD coord)

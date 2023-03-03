@@ -1,4 +1,4 @@
-using FluentAssertions;
+﻿using FluentAssertions;
 using Tutu.Cursor;
 using Tutu.Extensions;
 using static Tutu.Commands.Cursor;
@@ -61,7 +61,7 @@ public class CursorTest
         var (x, y) = _cursor.Position;
 
         Console.Out.Execute(SavePosition, MoveTo(x + 1, y + 1), RestorePosition);
-        
+
         _cursor.Position.Should().Be(new CursorPosition(x, y));
     }
 }

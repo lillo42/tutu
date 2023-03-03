@@ -1,4 +1,4 @@
-using NodaTime;
+﻿using NodaTime;
 using Tutu.Events;
 using Tutu.Windows.Interop.Kernel32;
 
@@ -7,7 +7,7 @@ namespace Tutu.Windows;
 /// <summary>
 /// Windows implementation of <see cref="IEventSource"/>.
 /// </summary>
-public class WindowsEventSource : IEventSource
+internal class WindowsEventSource : IEventSource
 {
     private ushort? _surrogate;
     private readonly MouseButtonPressed _mouseButtonPressed = new();

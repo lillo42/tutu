@@ -1,4 +1,4 @@
-namespace Tutu.Events.Commands;
+﻿namespace Tutu.Events.Commands;
 
 /// <summary>
 /// A command that enables  <see href="https://en.wikipedia.org/wiki/Bracketed-paste">bracketed paste mode</see>.

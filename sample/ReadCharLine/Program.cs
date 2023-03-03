@@ -26,7 +26,7 @@ static string ReadLine()
             break;
         }
     }
-    
+
     return line.ToString();
 }
 

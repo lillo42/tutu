@@ -1,4 +1,4 @@
-namespace Tutu.Style.Commands;
+﻿namespace Tutu.Style.Commands;
 
 /// <summary>
 /// A command that sets a style (colors and attributes).

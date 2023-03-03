@@ -1,4 +1,4 @@
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 using System.Text;
 using Tutu.Events;
 using Tutu.Windows.Interop.Kernel32;
@@ -333,17 +333,17 @@ internal static class WindowsEventParse
         return null;
     }
 
-// Attempts to return the character for a key event accounting for the user's keyboard layout.
-// The returned character (if any) is capitalized (if applicable) based on shift and capslock state.
-// Returns None if the key doesn't map to a character or if it is a dead key.
-// We use the *currently* active keyboard layout (if it can be determined). This layout may not
-// correspond to the keyboard layout that was active when the user typed their input, since console
-// applications get their input asynchronously from the terminal. By the time a console application
-// can process a key input, the user may have changed the active layout. In this case, the character
-// returned might not correspond to what the user expects, but there is no way for a console
-// application to know what the keyboard layout actually was for a key event, so this is our best
-// effort. If a console application processes input in a timely fashion, then it is unlikely that a
-// user has time to change their keyboard layout before a key event is processed.
+    // Attempts to return the character for a key event accounting for the user's keyboard layout.
+    // The returned character (if any) is capitalized (if applicable) based on shift and capslock state.
+    // Returns None if the key doesn't map to a character or if it is a dead key.
+    // We use the *currently* active keyboard layout (if it can be determined). This layout may not
+    // correspond to the keyboard layout that was active when the user typed their input, since console
+    // applications get their input asynchronously from the terminal. By the time a console application
+    // can process a key input, the user may have changed the active layout. In this case, the character
+    // returned might not correspond to what the user expects, but there is no way for a console
+    // application to know what the keyboard layout actually was for a key event, so this is our best
+    // effort. If a console application processes input in a timely fashion, then it is unlikely that a
+    // user has time to change their keyboard layout before a key event is processed.
     private static char? GetCharForKey(INPUT_EVENT_RECORD keyEvent)
     {
         const int dontChangeKernelKeyboardState = 0x4;
@@ -482,6 +482,9 @@ internal static class WindowsEventParse
 /// </summary>
 public enum EventFlags
 {
+    /// <summary>
+    /// The first or only click (button press) occurred.
+    /// </summary>
     PressOrRelease = 0x0000,
 
     /// <summary>

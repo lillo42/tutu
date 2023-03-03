@@ -1,4 +1,4 @@
-namespace Tutu.Events.Commands;
+﻿namespace Tutu.Events.Commands;
 
 /// <summary>
 /// A command that disables extra kinds of keyboard events.
@@ -13,6 +13,7 @@ public record PopKeyboardEnhancementFlagsCommand : ICommand
     public void WriteAnsi(TextWriter write)
         => write.Write($"{AnsiCodes.CSI}<1u");
 
+    /// <inheritdoc />
     public void ExecuteWindowsApi() =>
         throw new NotSupportedException("Windows API does not support keyboard enhancements");
 

@@ -1,4 +1,4 @@
-using Tutu.Style.Types;
+﻿using Tutu.Style.Types;
 using Tutu.Windows;
 
 namespace Tutu.Style.Commands;
@@ -20,6 +20,6 @@ public record SetBackgroundColorCommand(Color Color) : ICommand
         => write.Write($"{AnsiCodes.CSI}{Colored.BackgroundColor(color)}m");
 
     /// <inheritdoc />
-    public void ExecuteWindowsApi() 
+    public void ExecuteWindowsApi()
         => WindowsConsole.CurrentOutput.SetBackgroundColor(Color);
 }

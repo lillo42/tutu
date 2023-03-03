@@ -1,4 +1,4 @@
-namespace Tutu.Style.Types;
+﻿namespace Tutu.Style.Types;
 
 /// <summary>
 /// Represents a foreground or background or underline color.
@@ -74,6 +74,7 @@ public readonly record struct Colored(int Value, Color Color)
     /// </summary>
     public bool IsUnderlineColor => Value == 58;
 
+    /// <inheritdoc />
     public override string ToString()
         => Color == Color.Reset ? (Value + 1).ToString() : $"{Value};{Color}";
 }

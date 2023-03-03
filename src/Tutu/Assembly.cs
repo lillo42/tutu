@@ -1,4 +1,4 @@
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
 
 [assembly: InternalsVisibleTo("Tutu.Tests")]
 [assembly: InternalsVisibleTo("Tutu.Windows.Integration.Tests")]

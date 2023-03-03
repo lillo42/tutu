@@ -1,4 +1,4 @@
-using AutoFixture;
+﻿using AutoFixture;
 using FluentAssertions;
 using Tutu.Style;
 using Tutu.Style.Commands;

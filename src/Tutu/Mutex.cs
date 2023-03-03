@@ -1,9 +1,9 @@
-using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics.CodeAnalysis;
 using NodaTime;
 
 namespace Tutu;
 
-public class Mutex<T>
+internal class Mutex<T>
 {
     private readonly Mutex _mutex = new();
     private T _value;
@@ -19,7 +19,7 @@ public class Mutex<T>
         return new ValueAccess(this);
     }
 
-    public bool TryLock(Duration timeout, [NotNullWhen(true)]out ValueAccess? access)
+    public bool TryLock(Duration timeout, [NotNullWhen(true)] out ValueAccess? access)
     {
         if (_mutex.WaitOne(timeout.ToTimeSpan()))
         {

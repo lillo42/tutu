@@ -1,4 +1,4 @@
-using Tutu.Extensions;
+﻿using Tutu.Extensions;
 using static Tutu.Commands.Cursor;
 using static Tutu.Commands.Style;
 

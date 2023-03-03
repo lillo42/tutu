@@ -1,4 +1,4 @@
-using FluentAssertions;
+﻿using FluentAssertions;
 using Tutu.Style.Commands;
 using Tutu.Style.Types;
 
@@ -20,19 +20,19 @@ public class SetUnderlineColorCommandTest
             }
         }
     }
-   
+
     [Theory]
     [MemberData(nameof(Colors))]
     public void WriteAnsi_ShouldWriteAnsiCode(Color color)
     {
         var command = new SetUnderlineColorCommand(color);
-        
+
         var writer = new StringWriter();
-        
+
         command.WriteAnsi(writer);
-        
+
         var expected = $"{AnsiCodes.CSI}{Colored.UnderlineColor(color)}m";
-        
+
         writer.ToString().Should().Be(expected);
     }
 }

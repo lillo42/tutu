@@ -1,4 +1,4 @@
-using FluentAssertions;
+﻿using FluentAssertions;
 using Tutu.Events.Commands;
 
 namespace Tutu.Tests.Events.Commands;
@@ -11,7 +11,7 @@ public class EnableBracketedPasteCommandTest
     {
         _command = new();
     }
-    
+
     [Fact]
     public void WriteAnsi_ShouldWriteEnableBracketedPasteAnsiCode()
     {

@@ -1,4 +1,4 @@
-namespace Tutu.Events;
+﻿namespace Tutu.Events;
 
 /// <summary>
 /// Represents a key.
@@ -107,7 +107,7 @@ public static class KeyCode
     /// </summary>
     /// <remarks>
     /// this key can only be read if <see cref="KeyboardEnhancementFlags.DisambiguateEscapeCodes"/>
-    /// has been enabled with <see cref="Events.PushKeyboardEnhancementFlags"/>
+    /// has been enabled with <see cref="Tutu.Events.Event"/>
     /// </remarks>
     public static IKeyCode CapsLock { get; } = new CapsLockKeyCode();
 
@@ -116,7 +116,7 @@ public static class KeyCode
     /// </summary>
     /// <remarks>
     /// this key can only be read if <see cref="KeyboardEnhancementFlags.DisambiguateEscapeCodes"/>
-    /// has been enabled with <see cref="Events.PushKeyboardEnhancementFlags"/>
+    /// has been enabled with <see cref="Tutu.Commands.Events.PushKeyboardEnhancementFlags"/>
     /// </remarks>
     public static IKeyCode ScrollLock { get; } = new ScrollLockKeyCode();
 
@@ -125,7 +125,7 @@ public static class KeyCode
     /// </summary>
     /// <remarks>
     /// this key can only be read if <see cref="KeyboardEnhancementFlags.DisambiguateEscapeCodes"/>
-    /// has been enabled with <see cref="Events.PushKeyboardEnhancementFlags"/>
+    /// has been enabled with <see cref="Tutu.Commands.Events.PushKeyboardEnhancementFlags"/>
     /// </remarks> 
     public static IKeyCode NumLock { get; } = new NumLockKeyCode();
 
@@ -134,7 +134,7 @@ public static class KeyCode
     /// </summary>
     /// <remarks>
     /// this key can only be read if <see cref="KeyboardEnhancementFlags.DisambiguateEscapeCodes"/>
-    /// has been enabled with <see cref="Events.PushKeyboardEnhancementFlags"/>
+    /// has been enabled with <see cref="Tutu.Commands.Events.PushKeyboardEnhancementFlags"/>
     /// </remarks>
     public static IKeyCode PrintScreen { get; } = new PrintScreenKeyCode();
 
@@ -143,7 +143,7 @@ public static class KeyCode
     /// </summary>
     /// <remarks>
     /// this key can only be read if <see cref="KeyboardEnhancementFlags.DisambiguateEscapeCodes"/>
-    /// has been enabled with <see cref="Events.PushKeyboardEnhancementFlags"/>
+    /// has been enabled with <see cref="Tutu.Commands.Events.PushKeyboardEnhancementFlags"/>
     /// </remarks>
     public static IKeyCode Pause { get; } = new PauseKeyCode();
 
@@ -152,7 +152,7 @@ public static class KeyCode
     /// </summary>
     /// <remarks>
     /// this key can only be read if <see cref="KeyboardEnhancementFlags.DisambiguateEscapeCodes"/>
-    /// has been enabled with <see cref="Events.PushKeyboardEnhancementFlags"/>
+    /// has been enabled with <see cref="Tutu.Commands.Events.PushKeyboardEnhancementFlags"/>
     /// </remarks>
     public static IKeyCode Menu { get; } = new MenuKeyCode();
 
@@ -161,7 +161,7 @@ public static class KeyCode
     /// </summary>
     /// <remarks>
     /// this key can only be read if <see cref="KeyboardEnhancementFlags.DisambiguateEscapeCodes"/>
-    /// has been enabled with <see cref="Events.PushKeyboardEnhancementFlags"/>
+    /// has been enabled with <see cref="Tutu.Commands.Events.PushKeyboardEnhancementFlags"/>
     /// </remarks>
     public static IKeyCode KeypadBegin { get; } = new KeypadBeginKeyCode();
 
@@ -172,10 +172,10 @@ public static class KeyCode
     /// <returns>New instance of <see cref="KeyCode.MediaKeyCode"/>.</returns>
     /// <remarks>
     /// this key can only be read if <see cref="KeyboardEnhancementFlags.DisambiguateEscapeCodes"/>
-    /// has been enabled with <see cref="Events.PushKeyboardEnhancementFlags"/>
+    /// has been enabled with <see cref="Tutu.Commands.Events.PushKeyboardEnhancementFlags"/>
     /// </remarks>
-    public static IKeyCode Media(Events.MediaKeyCode code) => new KeyCode.MediaKeyCode(code);
-    
+    public static IKeyCode Media(Events.MediaKeyCode code) => new MediaKeyCode(code);
+
     /// <summary>
     /// A modifier key. 
     /// </summary>
@@ -183,9 +183,9 @@ public static class KeyCode
     /// <returns>New instance of <see cref="ModifierKeyCode"/>.</returns>
     /// <remarks>
     /// this key can only be read if <see cref="KeyboardEnhancementFlags.DisambiguateEscapeCodes"/>
-    /// has been enabled with <see cref="Events.PushKeyboardEnhancementFlags"/>
+    /// has been enabled with <see cref="Tutu.Commands.Events.PushKeyboardEnhancementFlags"/>
     /// </remarks>
-    public static IKeyCode Modifier(Events.ModifierKeyCode code) => new KeyCode.ModifierKeyCode(code);
+    public static IKeyCode Modifier(Events.ModifierKeyCode code) => new ModifierKeyCode(code);
 
     /// <summary>
     /// Represents a key.
@@ -271,16 +271,20 @@ public static class KeyCode
     /// </summary>
     public record FKeyCode(ushort Number) : IKeyCode
     {
+        /// <inheritdoc />
         public override string ToString() => $"F{Number}";
     }
 
     /// <summary>
     /// A character.
-    ///
-    /// `KeyCode::Char('c')` represents `c` character, etc.
     /// </summary>
+    /// <param name="Character">The <see cref="char"/>.</param>
+    /// <remarks>
+    /// `KeyCode::Char('c')` represents `c` character, etc.
+    /// </remarks>
     public record CharKeyCode(char Character) : IKeyCode
     {
+        /// <inheritdoc />
         public override string ToString()
         {
             return Character.ToString();
@@ -299,83 +303,84 @@ public static class KeyCode
 
     /// <summary>
     /// Caps Lock key.
-    ///
-    /// **Note:** this key can only be read if
-    /// [`KeyboardEnhancementFlags::DISAMBIGUATE_ESCAPE_CODES`] has been enabled with
-    /// [`PushKeyboardEnhancementFlags`].
     /// </summary>
+    /// <remarks>
+    /// This key can only be read if <see cref="KeyboardEnhancementFlags.DisambiguateEscapeCodes"/>
+    /// has been enabled with <see cref="Tutu.Commands.Events.PushKeyboardEnhancementFlags"/>.
+    /// </remarks>
     public record CapsLockKeyCode : IKeyCode;
 
     /// <summary>
     /// Scroll Lock key.
-    ///
-    /// **Note:** this key can only be read if
-    /// [`KeyboardEnhancementFlags::DISAMBIGUATE_ESCAPE_CODES`] has been enabled with
-    /// [`PushKeyboardEnhancementFlags`].
     /// </summary>
+    /// <remarks>
+    /// This key can only be read if <see cref="KeyboardEnhancementFlags.DisambiguateEscapeCodes"/>
+    /// has been enabled with <see cref="Tutu.Commands.Events.PushKeyboardEnhancementFlags"/>.
+    /// </remarks>
     public record ScrollLockKeyCode : IKeyCode;
 
     /// <summary>
     /// Num Lock key.
-    ///
-    /// **Note:** this key can only be read if
-    /// [`KeyboardEnhancementFlags::DISAMBIGUATE_ESCAPE_CODES`] has been enabled with
-    /// [`PushKeyboardEnhancementFlags`].
     /// </summary>
+    /// <remarks>
+    /// This key can only be read if <see cref="KeyboardEnhancementFlags.DisambiguateEscapeCodes"/>
+    /// has been enabled with <see cref="Tutu.Commands.Events.PushKeyboardEnhancementFlags"/>.
+    /// </remarks>
     public record NumLockKeyCode : IKeyCode;
 
     /// <summary>
     /// Print Screen key.
-    ///
-    /// **Note:** this key can only be read if
-    /// [`KeyboardEnhancementFlags::DISAMBIGUATE_ESCAPE_CODES`] has been enabled with
-    /// [`PushKeyboardEnhancementFlags`].
     /// </summary>
+    /// <remarks>
+    /// This key can only be read if <see cref="KeyboardEnhancementFlags.DisambiguateEscapeCodes"/>
+    /// has been enabled with <see cref="Tutu.Commands.Events.PushKeyboardEnhancementFlags"/>.
+    /// </remarks>
     public record PrintScreenKeyCode : IKeyCode;
 
     /// <summary>
     /// Pause key.
-    ///
-    /// **Note:** this key can only be read if
-    /// [`KeyboardEnhancementFlags::DISAMBIGUATE_ESCAPE_CODES`] has been enabled with
-    /// [`PushKeyboardEnhancementFlags`].
     /// </summary>
+    /// <remarks>
+    /// This key can only be read if <see cref="KeyboardEnhancementFlags.DisambiguateEscapeCodes"/>
+    /// has been enabled with <see cref="Tutu.Commands.Events.PushKeyboardEnhancementFlags"/>.
+    /// </remarks>
     public record PauseKeyCode : IKeyCode;
 
     /// <summary>
     /// Menu key.
-    ///
-    /// **Note:** this key can only be read if
-    /// [`KeyboardEnhancementFlags::DISAMBIGUATE_ESCAPE_CODES`] has been enabled with
-    /// [`PushKeyboardEnhancementFlags`].
     /// </summary>
+    /// <remarks>
+    /// This key can only be read if <see cref="KeyboardEnhancementFlags.DisambiguateEscapeCodes"/>
+    /// has been enabled with <see cref="Tutu.Commands.Events.PushKeyboardEnhancementFlags"/>.
+    /// </remarks>
     public record MenuKeyCode : IKeyCode;
 
     /// <summary>
     /// The "Begin" key (often mapped to the 5 key when Num Lock is turned on).
-    ///
-    /// **Note:** this key can only be read if
-    /// [`KeyboardEnhancementFlags::DISAMBIGUATE_ESCAPE_CODES`] has been enabled with
-    /// [`PushKeyboardEnhancementFlags`].
     /// </summary>
+    /// <remarks>
+    /// This key can only be read if <see cref="KeyboardEnhancementFlags.DisambiguateEscapeCodes"/>
+    /// has been enabled with <see cref="Tutu.Commands.Events.PushKeyboardEnhancementFlags"/>.
+    /// </remarks>
     public record KeypadBeginKeyCode : IKeyCode;
 
     /// <summary>
     /// A media key.
-    ///
-    /// **Note:** these keys can only be read if
-    /// [`KeyboardEnhancementFlags::DISAMBIGUATE_ESCAPE_CODES`] has been enabled with
-    /// [`PushKeyboardEnhancementFlags`].
     /// </summary>
+    /// <param name="Media">The <see cref="Events.MediaKeyCode"/>.</param>
+    /// <remarks>
+    /// This key can only be read if <see cref="KeyboardEnhancementFlags.DisambiguateEscapeCodes"/>
+    /// has been enabled with <see cref="Tutu.Commands.Events.PushKeyboardEnhancementFlags"/>.
+    /// </remarks>
     public record MediaKeyCode(Events.MediaKeyCode Media) : IKeyCode;
 
     /// <summary>
     /// A modifier key.
-    ///
-    /// **Note:** these keys can only be read if **both**
-    /// [`KeyboardEnhancementFlags::DISAMBIGUATE_ESCAPE_CODES`] and
-    /// [`KeyboardEnhancementFlags::REPORT_ALL_KEYS_AS_ESCAPE_CODES`] have been enabled with
-    /// [`PushKeyboardEnhancementFlags`].
     /// </summary>
+    /// <param name="Modifier">The <see cref="Events.ModifierKeyCode"/>.</param>
+    /// <remarks>
+    /// This key can only be read if <see cref="KeyboardEnhancementFlags.DisambiguateEscapeCodes"/>
+    /// has been enabled with <see cref="Tutu.Commands.Events.PushKeyboardEnhancementFlags"/>.
+    /// </remarks>
     public record ModifierKeyCode(Events.ModifierKeyCode Modifier) : IKeyCode;
 }

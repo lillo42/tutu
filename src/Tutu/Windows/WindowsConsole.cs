@@ -1,4 +1,4 @@
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Runtime.InteropServices;
 using Tutu.Style.Types;
 using Tutu.Windows.Interop.Kernel32;

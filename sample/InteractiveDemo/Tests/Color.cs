@@ -1,4 +1,4 @@
-using Tutu.Extensions;
+﻿using Tutu.Extensions;
 using static Tutu.Commands.Cursor;
 using static Tutu.Commands.Style;
 
@@ -130,7 +130,7 @@ public class Color : AbstractTest
         writer.Flush();
     }
 
-   
+
 
     private static List<Tutu.Style.Types.Color> Colors => new()
     {

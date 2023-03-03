@@ -1,4 +1,4 @@
-using FluentAssertions;
+﻿using FluentAssertions;
 using Tutu.Terminal.Commands;
 
 namespace Tutu.Tests.Terminal.Commands;

@@ -1,4 +1,4 @@
-using Tutu.Windows;
+﻿using Tutu.Windows;
 
 namespace Tutu.Events.Commands;
 
@@ -21,6 +21,7 @@ public record EnableMouseCaptureCommand : ICommand
             $"{AnsiCodes.CSI}?1006h"
         );
 
+    /// <inheritdoc />
     public void ExecuteWindowsApi() => WindowsConsole.CurrentIn.EnableMouseCapture();
 
     /// <inheritdoc />

@@ -1,4 +1,4 @@
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 
 namespace Tutu;
 
@@ -11,14 +11,24 @@ public interface IExecutableCommand
     /// Executes the given command directly.
     /// </summary>
     /// <param name="command"></param>
-    /// <returns></returns>
+    /// <returns>The <see cref="IExecutableCommand"/> itself</returns>
     IExecutableCommand Execute(ICommand command);
-    
+
+    /// <summary>
+    /// Executes the given commands directly.
+    /// </summary>
+    /// <param name="commands">The command.</param>
+    /// <returns>The <see cref="IExecutableCommand"/> itself</returns>
     IExecutableCommand Execute(params ICommand[] commands);
 }
 
+/// <summary>
+/// Default implementation of <see cref="IExecutableCommand"/>.
+/// </summary>
+/// <param name="Writer"></param>
 public record ExecutableCommand(TextWriter Writer) : IExecutableCommand
 {
+    /// <inheritdoc cref="IExecutableCommand.Execute(Tutu.ICommand[])"/>
     public IExecutableCommand Execute(params ICommand[] commands)
     {
         foreach (var command in commands)
@@ -29,6 +39,7 @@ public record ExecutableCommand(TextWriter Writer) : IExecutableCommand
         return this;
     }
 
+    /// <inheritdoc cref="IExecutableCommand.Execute(Tutu.ICommand)"/>
     public IExecutableCommand Execute(ICommand command)
     {
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows) && !command.IsAnsiCodeSupported)

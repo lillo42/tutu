@@ -1,4 +1,4 @@
-namespace Tutu.Events.Commands;
+﻿namespace Tutu.Events.Commands;
 
 /// <summary>
 /// A command that enables focus event emission.
@@ -10,7 +10,7 @@ namespace Tutu.Events.Commands;
 public record EnableFocusChangeCommand : ICommand
 {
     /// <inheritdoc />
-    public void WriteAnsi(TextWriter write) 
+    public void WriteAnsi(TextWriter write)
         => write.Write($"{AnsiCodes.CSI}?1004h");
 
     /// <inheritdoc />

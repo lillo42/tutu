@@ -1,4 +1,4 @@
-using Tutu.Windows;
+﻿using Tutu.Windows;
 
 namespace Tutu.Cursor.Commands;
 
@@ -11,7 +11,7 @@ namespace Tutu.Cursor.Commands;
 public record HideCursorCommand : ICommand
 {
     /// <inheritdoc />
-    public void WriteAnsi(TextWriter write) 
+    public void WriteAnsi(TextWriter write)
         => write.Write($"{AnsiCodes.CSI}?25l");
 
     /// <inheritdoc />

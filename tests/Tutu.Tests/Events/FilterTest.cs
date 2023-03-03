@@ -1,4 +1,4 @@
-using FluentAssertions;
+﻿using FluentAssertions;
 using NSubstitute;
 using Tutu.Events;
 
@@ -48,7 +48,7 @@ public class FilterTest
         KeyboardEnhancementFlagsFilter.Default.Eval(new PrimaryDeviceAttributesInternalEvent())
             .Should().BeFalse();
     }
-    
+
     [Fact]
     public void PrimaryDeviceAttributesFilter_Should_ReturnTrue_When_PrimaryDeviceAttributes()
     {
@@ -56,7 +56,7 @@ public class FilterTest
             .Eval(new PrimaryDeviceAttributesInternalEvent())
             .Should().BeTrue();
     }
-    
+
     [Fact]
     public void PrimaryDeviceAttributesFilter_Should_ReturnFalse_When_IsNotPrimaryDeviceAttributes()
     {

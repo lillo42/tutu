@@ -1,4 +1,4 @@
-namespace Tutu.Cursor.Commands;
+﻿namespace Tutu.Cursor.Commands;
 
 /// <summary>
 /// A command that enables blinking of the terminal cursor.

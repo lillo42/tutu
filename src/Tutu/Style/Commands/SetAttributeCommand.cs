@@ -1,4 +1,4 @@
-using Attribute = Tutu.Style.Types.Attribute;
+﻿using Attribute = Tutu.Style.Types.Attribute;
 
 namespace Tutu.Style.Commands;
 

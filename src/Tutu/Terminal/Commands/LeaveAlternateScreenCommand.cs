@@ -1,4 +1,4 @@
-using Tutu.Windows;
+﻿using Tutu.Windows;
 
 namespace Tutu.Terminal.Commands;
 
@@ -12,7 +12,7 @@ namespace Tutu.Terminal.Commands;
 public record LeaveAlternateScreenCommand : ICommand
 {
     /// <inheritdoc />
-    public void WriteAnsi(TextWriter write) 
+    public void WriteAnsi(TextWriter write)
         => write.Write($"{AnsiCodes.CSI}?1049l");
 
     /// <inheritdoc />

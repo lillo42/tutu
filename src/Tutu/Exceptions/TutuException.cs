@@ -1,4 +1,4 @@
-using System.Runtime.Serialization;
+﻿using System.Runtime.Serialization;
 
 namespace Tutu.Exceptions;
 
@@ -19,7 +19,7 @@ public abstract class TutuException : Exception
     /// </summary>
     /// <param name="info">The <see cref="SerializationInfo"/>.</param>
     /// <param name="context">The <see cref="StreamContent"/>.</param>
-    protected TutuException(SerializationInfo info, StreamingContext context) 
+    protected TutuException(SerializationInfo info, StreamingContext context)
         : base(info, context)
     {
     }
@@ -37,7 +37,7 @@ public abstract class TutuException : Exception
     /// </summary>
     /// <param name="message">The error message.</param>
     /// <param name="innerException">The inner <see cref="Exception"/>.</param>
-    protected TutuException(string? message, Exception? innerException) 
+    protected TutuException(string? message, Exception? innerException)
         : base(message, innerException)
     {
     }

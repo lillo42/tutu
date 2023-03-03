@@ -1,4 +1,4 @@
-using NodaTime;
+﻿using NodaTime;
 using Tmds.Linux;
 using Tutu.Events;
 using static Tmds.Linux.LibC;
@@ -8,7 +8,7 @@ namespace Tutu.Unix;
 /// <summary>
 /// Unix implementation of <see cref="IEventSource"/>.
 /// </summary>
-public class UnixEventSource : IEventSource
+internal class UnixEventSource : IEventSource
 {
     // I (@zrzka) wasn't able to read more than 1_022 bytes when testing
     // reading on macOS/Linux -> we don't need bigger buffer and 1k of bytes
@@ -20,6 +20,9 @@ public class UnixEventSource : IEventSource
     private readonly FileDesc _tty;
     private readonly FileDesc _winchSignalReceiver;
 
+    /// <summary>
+    /// Singleton instance of <see cref="UnixEventSource"/>.
+    /// </summary>
     public static UnixEventSource Instance { get; } = new();
 
     private UnixEventSource()
@@ -78,6 +81,7 @@ public class UnixEventSource : IEventSource
     }
 
 
+    /// <inheritdoc cref="IEventSource.TryRead(NodaTime.IClock,System.Nullable{NodaTime.Duration})"/>
     public unsafe IInternalEvent? TryRead(IClock clock, Duration? timeout)
     {
         var pollTimeout = new PollTimeout(clock, timeout);

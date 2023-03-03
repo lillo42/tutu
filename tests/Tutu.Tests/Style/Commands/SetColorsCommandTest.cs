@@ -1,4 +1,4 @@
-using FluentAssertions;
+﻿using FluentAssertions;
 using Tutu.Style.Commands;
 using Tutu.Style.Types;
 

@@ -1,4 +1,4 @@
-using Tutu.Events;
+﻿using Tutu.Events;
 using Tutu.Extensions;
 using static Tutu.Commands.Events;
 
@@ -32,7 +32,7 @@ public class Event : AbstractTest
 
         writer.Execute(DisableMouseCapture);
     }
-    
+
     public static void Run(TextWriter writer)
     {
         Execute(writer, TestEvent);

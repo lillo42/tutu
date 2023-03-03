@@ -1,4 +1,4 @@
-using NodaTime;
+﻿using NodaTime;
 
 namespace Tutu.Events;
 
@@ -11,6 +11,11 @@ public class PollTimeout
     private readonly Instant _start;
     private readonly Duration? _timeout;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="PollTimeout"/> class.
+    /// </summary>
+    /// <param name="clock">The <see cref="IClock"/>.</param>
+    /// <param name="timeout">The timeout.</param>
     public PollTimeout(IClock clock, Duration? timeout)
     {
         _clock = clock;
@@ -18,6 +23,10 @@ public class PollTimeout
         _timeout = timeout;
     }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="PollTimeout"/> class.
+    /// </summary>
+    /// <param name="timeout">The timeout.</param>
     public PollTimeout(Duration? timeout)
         : this(SystemClock.Instance, timeout)
     {

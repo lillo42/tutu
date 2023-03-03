@@ -1,4 +1,4 @@
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 using Tutu.Unix;
 using Tutu.Windows;
 
@@ -26,7 +26,7 @@ public static class Cursor
     {
         Instance = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? new WindowsCursor() : new UnixCursor();
     }
-    
+
     /// <inheritdoc cref="ICursor.Position"/>
     public static CursorPosition Position => Instance.Position;
 }

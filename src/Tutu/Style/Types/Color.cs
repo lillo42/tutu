@@ -53,7 +53,7 @@ public readonly record struct Color(string Name, byte[] Values)
     /// Reset color.
     /// </summary>
     public static Color Reset { get; } = new("reset", new byte[] { 0 });
-    
+
     /// <summary>
     /// Black color.
     /// </summary>
@@ -134,7 +134,7 @@ public readonly record struct Color(string Name, byte[] Values)
     /// </summary>
     public static Color Grey { get; } = new("grey", new byte[] { 5, 15 });
 
-    internal static Color[] AllColors { get; } = 
+    internal static Color[] AllColors { get; } =
     {
         Reset,
         Black,
@@ -329,5 +329,6 @@ public readonly record struct Color(string Name, byte[] Values)
     public static Color? ParseAnsi(string ansi)
         => ParseAnsi(ansi.Split(";"));
 
+    /// <inheritdoc />
     public override string ToString() => string.Join(";", Values);
 }

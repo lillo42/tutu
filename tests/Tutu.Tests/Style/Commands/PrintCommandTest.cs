@@ -1,4 +1,4 @@
-using AutoFixture;
+﻿using AutoFixture;
 using FluentAssertions;
 using Tutu.Style.Commands;
 
@@ -12,7 +12,7 @@ public class PrintCommandTest
     {
         _fixture = new Fixture();
     }
-    
+
     [Fact]
     public void WriteAnsi_ShouldWriteContent()
     {

@@ -1,4 +1,4 @@
-namespace Tutu.Cursor.Commands;
+﻿namespace Tutu.Cursor.Commands;
 
 /// <summary>
 /// A command that sets the style of the cursor.
@@ -12,16 +12,16 @@ public record SetCursorStyleCursorCommand(CursorStyle Style) : ICommand
 {
     /// <inheritdoc />
     public void WriteAnsi(TextWriter write) => write.Write(Style switch
-        {
-            CursorStyle.DefaultUserShape => AnsiCodes.ESC + "[0 q",
-            CursorStyle.BlinkingBlock => AnsiCodes.ESC + "[1 q",
-            CursorStyle.SteadyBlock => AnsiCodes.ESC + "[2 q",
-            CursorStyle.BlinkingUnderScore => AnsiCodes.ESC + "[3 q",
-            CursorStyle.SteadyUnderScore => AnsiCodes.ESC + "[4 q",
-            CursorStyle.BlinkingBar => AnsiCodes.ESC + "[5 q",
-            CursorStyle.SteadyBar => AnsiCodes.ESC + "[6 q",
-            _ => throw new ArgumentOutOfRangeException()
-        });
+    {
+        CursorStyle.DefaultUserShape => AnsiCodes.ESC + "[0 q",
+        CursorStyle.BlinkingBlock => AnsiCodes.ESC + "[1 q",
+        CursorStyle.SteadyBlock => AnsiCodes.ESC + "[2 q",
+        CursorStyle.BlinkingUnderScore => AnsiCodes.ESC + "[3 q",
+        CursorStyle.SteadyUnderScore => AnsiCodes.ESC + "[4 q",
+        CursorStyle.BlinkingBar => AnsiCodes.ESC + "[5 q",
+        CursorStyle.SteadyBar => AnsiCodes.ESC + "[6 q",
+        _ => throw new ArgumentOutOfRangeException()
+    });
 
     /// <inheritdoc />
     public void ExecuteWindowsApi() { }

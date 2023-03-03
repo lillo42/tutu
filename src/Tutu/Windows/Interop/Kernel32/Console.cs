@@ -1,4 +1,4 @@
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 
 namespace Tutu.Windows.Interop.Kernel32;
 
@@ -126,7 +126,8 @@ internal struct INPUT_EVENT_RECORD
 {
     #region KEY_EVENT_RECORD
 
-    [FieldOffset(0)] [MarshalAs(UnmanagedType.Bool)]
+    [FieldOffset(0)]
+    [MarshalAs(UnmanagedType.Bool)]
     public bool bKeyDown;
 
     [FieldOffset(4)] public ushort wRepeatCount;
@@ -155,7 +156,8 @@ internal struct INPUT_EVENT_RECORD
 
     #region FOCUS_EVENT_RECORD
 
-    [FieldOffset(0)] [MarshalAs(UnmanagedType.Bool)]
+    [FieldOffset(0)]
+    [MarshalAs(UnmanagedType.Bool)]
     public bool bSetFocus;
 
     #endregion
@@ -174,7 +176,7 @@ internal struct INPUT_EVENT_RECORD
 }
 
 [StructLayout(LayoutKind.Sequential)]
-public struct CONSOLE_CURSOR_INFO
+internal struct CONSOLE_CURSOR_INFO
 {
     public uint dwSize;
     public int bVisible;

@@ -29,7 +29,7 @@ static async Task PrintEventsAsync()
     await EventStream.Default.StartAsync();
 
     var reader = EventStream.Default.Reader;
-    
+
     while (true)
     {
         var source = new CancellationTokenSource();

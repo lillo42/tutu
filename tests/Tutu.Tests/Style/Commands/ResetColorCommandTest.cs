@@ -1,4 +1,4 @@
-using FluentAssertions;
+﻿using FluentAssertions;
 using Tutu.Style.Commands;
 
 namespace Tutu.Tests.Style.Commands;
@@ -11,7 +11,7 @@ public class ResetColorCommandTest
     {
         _command = new();
     }
-    
+
     [Fact]
     public void WriteAnsi_ShouldWriteResetColorAnsiCode()
     {

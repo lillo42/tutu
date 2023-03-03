@@ -1,4 +1,4 @@
-using FluentAssertions;
+﻿using FluentAssertions;
 using Tutu.Extensions;
 using Tutu.Terminal;
 using Tutu.Terminal.Commands;
@@ -56,7 +56,7 @@ public class TerminalTest
 
         // now let's disable it
         _terminal.DisableRawMode();
-        
+
         // check we're back to normal mode
         _terminal.IsRawModeEnabled.Should().BeFalse();
     }

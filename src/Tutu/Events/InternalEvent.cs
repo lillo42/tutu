@@ -1,4 +1,4 @@
-namespace Tutu.Events;
+﻿namespace Tutu.Events;
 
 /// <summary>
 /// An internal event.
@@ -6,7 +6,7 @@ namespace Tutu.Events;
 /// Encapsulates publicly available `Event` with additional internal
 /// events that shouldn't be publicly available to the crate users.
 /// </summary>
-public static class InternalEvent
+internal static class InternalEvent
 {
     public static PrimaryDeviceAttributesInternalEvent PrimaryDeviceAttributes { get; } = new();
 
@@ -25,7 +25,7 @@ public static class InternalEvent
 /// Encapsulates publicly available `Event` with additional internal
 /// events that shouldn't be publicly available to the crate users.
 /// </remarks>
-public interface IInternalEvent
+internal interface IInternalEvent
 {
 }
 
@@ -33,21 +33,21 @@ public interface IInternalEvent
 /// An event.
 /// </summary>
 /// <param name="Event"></param>
-public record PublicEvent(IEvent Event) : IInternalEvent;
+internal record PublicEvent(IEvent Event) : IInternalEvent;
 
 /// <summary>
 /// A cursor position
 /// </summary>
 /// <param name="Column"></param>
 /// <param name="Row"></param>
-public record CursorPositionInternalEvent(ushort Column, ushort Row) : IInternalEvent;
+internal record CursorPositionInternalEvent(ushort Column, ushort Row) : IInternalEvent;
 
 /// <summary>
 /// The progressive keyboard enhancement flags enabled by the terminal.
 /// </summary>
-public record KeyboardEnhancementFlagsInternalEvent(KeyboardEnhancementFlags Flags) : IInternalEvent;
+internal record KeyboardEnhancementFlagsInternalEvent(KeyboardEnhancementFlags Flags) : IInternalEvent;
 
 /// <summary>
 /// Attributes and architectural class of the terminal.
 /// </summary>
-public record PrimaryDeviceAttributesInternalEvent : IInternalEvent;
+internal record PrimaryDeviceAttributesInternalEvent : IInternalEvent;

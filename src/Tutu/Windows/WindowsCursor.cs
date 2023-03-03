@@ -1,4 +1,4 @@
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 using Tutu.Cursor;
 using Tutu.Windows.Interop.Kernel32;
 using static Tutu.Windows.Interop.Kernel32.Kernel32;
@@ -76,66 +76,66 @@ public class WindowsCursor : ICursor
         }
     }
 
-    public static void MoveTo(ushort column, ushort row)
+    internal static void MoveTo(ushort column, ushort row)
         => MoveTo(ScreenBuffer.CurrentOutput, column, row);
 
-    public static void MoveToNextLine(ushort count)
+    internal static void MoveToNextLine(ushort count)
     {
         var buffer = ScreenBuffer.CurrentOutput;
         var (_, row) = GetPosition(buffer);
         MoveTo(buffer, 0, (ushort)(row + count));
     }
 
-    public static void MoveToPreviousLine(ushort count)
+    internal static void MoveToPreviousLine(ushort count)
     {
         var buffer = ScreenBuffer.CurrentOutput;
         var (_, row) = GetPosition(buffer);
         MoveTo(buffer, 0, (ushort)(row - count));
     }
 
-    public static void MoveToColumn(ushort newColumn)
+    internal static void MoveToColumn(ushort newColumn)
     {
         var buffer = ScreenBuffer.CurrentOutput;
         var (_, row) = GetPosition(buffer);
         MoveTo(buffer, newColumn, (ushort)row);
     }
 
-    public static void MoveToRow(ushort newRow)
+    internal static void MoveToRow(ushort newRow)
     {
         var buffer = ScreenBuffer.CurrentOutput;
         var (column, _) = GetPosition(buffer);
         MoveTo(buffer, (ushort)column, newRow);
     }
 
-    public static void MoveUp(ushort count)
+    internal static void MoveUp(ushort count)
     {
         var buffer = ScreenBuffer.CurrentOutput;
         var (column, row) = GetPosition(buffer);
         MoveTo(buffer, (ushort)column, (ushort)(row - count));
     }
 
-    public static void MoveRight(ushort count)
+    internal static void MoveRight(ushort count)
     {
         var buffer = ScreenBuffer.CurrentOutput;
         var (column, row) = GetPosition(buffer);
         MoveTo((ushort)(column + count), (ushort)row);
     }
 
-    public static void MoveDown(ushort count)
+    internal static void MoveDown(ushort count)
     {
         var buffer = ScreenBuffer.CurrentOutput;
         var (column, row) = GetPosition(buffer);
         MoveTo(buffer, (ushort)column, (ushort)(row + count));
     }
 
-    public static void MoveLeft(ushort count)
+    internal static void MoveLeft(ushort count)
     {
         var buffer = ScreenBuffer.CurrentOutput;
         var (column, row) = GetPosition(buffer);
         MoveTo(buffer, (ushort)(column - count), (ushort)row);
     }
 
-    public static void SavePosition()
+    internal static void SavePosition()
     {
         var (column, row) = ScreenBuffer.CurrentOutput.Info.CursorPosition;
 
@@ -143,7 +143,7 @@ public class WindowsCursor : ICursor
         Interlocked.Exchange(ref _savedCursorPosition, position);
     }
 
-    public static void RestorePosition()
+    internal static void RestorePosition()
     {
         var position = Interlocked.Read(ref _savedCursorPosition);
         if (position == ulong.MaxValue)

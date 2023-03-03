@@ -1,4 +1,4 @@
-using Tutu.Windows;
+﻿using Tutu.Windows;
 
 namespace Tutu.Events.Commands;
 
@@ -8,7 +8,7 @@ namespace Tutu.Events.Commands;
 public record DisableMouseCaptureCommand : ICommand
 {
     /// <inheritdoc />
-    public void WriteAnsi(TextWriter write) 
+    public void WriteAnsi(TextWriter write)
         => write.Write(
             $"{AnsiCodes.CSI}?1006l" +
             $"{AnsiCodes.CSI}?1015l" +

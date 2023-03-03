@@ -1,4 +1,4 @@
-using FluentAssertions;
+﻿using FluentAssertions;
 using Tutu.Style;
 using Tutu.Style.Types;
 using Attribute = Tutu.Style.Types.Attribute;
@@ -30,7 +30,7 @@ public class ContentStyleTest
             .On(Color.Red)
             .Attribute(Attribute.Bold)
             .Apply(content);
-        
+
         styledContent.Style.ForegroundColor.Should().Be(Color.Blue);
         styledContent.Style.BackgroundColor.Should().Be(Color.Red);
         styledContent.Style.Attributes.Should().Contain(Attribute.Bold);

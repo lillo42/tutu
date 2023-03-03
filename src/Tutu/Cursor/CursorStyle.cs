@@ -1,4 +1,4 @@
-namespace Tutu.Cursor;
+﻿namespace Tutu.Cursor;
 
 /// <summary>
 /// A command that sets the style of the cursor.

@@ -1,4 +1,4 @@
-namespace Tutu.Events.Commands;
+﻿namespace Tutu.Events.Commands;
 
 /// <summary>
 /// A command that disables focus event emission.

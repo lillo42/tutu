@@ -1,4 +1,4 @@
-namespace Tutu.Events.Commands;
+﻿namespace Tutu.Events.Commands;
 
 /// <summary>
 /// A command that enables the <see href="https://sw.kovidgoyal.net/kitty/keyboard-protocol/">kitty keyboard protocol</see>,
@@ -22,6 +22,7 @@ public record PushKeyboardEnhancementFlagsCommand(KeyboardEnhancementFlags Flags
     /// <inheritdoc />
     public void WriteAnsi(TextWriter write) => write.Write($"{AnsiCodes.CSI}>{(int)Flags}u");
 
+    /// <inheritdoc />
     public void ExecuteWindowsApi() =>
         throw new NotSupportedException("Windows API does not support keyboard enhancement flags.");
 

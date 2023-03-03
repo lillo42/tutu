@@ -34,5 +34,6 @@ public class WindowsAnsiSupport : IAnsiSupport
         return true;
     }
 
+    /// <inheritdoc cref="IAnsiSupport.IsAnsiSupported"/>
     public bool IsAnsiSupported => _isAnsiSupported;
 }

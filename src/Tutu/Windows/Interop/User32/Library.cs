@@ -1,4 +1,4 @@
-namespace Tutu.Windows.Interop.User32;
+﻿namespace Tutu.Windows.Interop.User32;
 
 internal static partial class User32
 {

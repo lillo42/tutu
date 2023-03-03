@@ -1,4 +1,4 @@
-using FluentAssertions;
+﻿using FluentAssertions;
 using Tutu.Style.Types;
 
 namespace Tutu.Windows.Integration.Tests;
@@ -24,9 +24,9 @@ public class WindowsConsoleTest
     {
         var originalColor = Interlocked.Read(ref WindowsConsole._originalConsoleColor);
         originalColor.Should().Be(uint.MaxValue);
-        
+
         WindowsConsole.CurrentOutput.SetForegroundColor(Color.Red);
-        
+
         originalColor = Interlocked.Read(ref WindowsConsole._originalConsoleColor);
         originalColor.Should().NotBe(uint.MaxValue);
     }

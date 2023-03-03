@@ -1,4 +1,4 @@
-using System.Text;
+﻿using System.Text;
 using Tutu.Events;
 using static Tutu.Events.Event;
 using static Tutu.Events.InternalEvent;
@@ -66,16 +66,16 @@ internal class UnixEventParse
         }
     }
 
-// Event parsing
-//
-// This code are kind of ugly. We have to think about this,
-// because it's really not maintainable, no tests, etc.
-//
-// Every fn returns Result<Option<InputEvent>>
-//
-// Ok(None) -> wait for more bytes
-// Err(_) -> failed to parse event, clear the buffer
-// Ok(Some(event)) -> we have event, clear the buffer
+    // Event parsing
+    //
+    // This code are kind of ugly. We have to think about this,
+    // because it's really not maintainable, no tests, etc.
+    //
+    // Every fn returns Result<Option<InputEvent>>
+    //
+    // Ok(None) -> wait for more bytes
+    // Err(_) -> failed to parse event, clear the buffer
+    // Ok(Some(event)) -> we have event, clear the buffer
     private static IInternalEvent? ParseEvent(Span<byte> buffer, bool isInputAvailable)
     {
         if (buffer.IsEmpty)

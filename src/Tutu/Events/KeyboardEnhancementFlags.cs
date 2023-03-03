@@ -1,4 +1,4 @@
-namespace Tutu.Events;
+﻿namespace Tutu.Events;
 
 /// <summary>
 /// Represents special flags that tell compatible terminals to add extra information to keyboard events.
@@ -14,7 +14,7 @@ public enum KeyboardEnhancementFlags
     /// 
     /// </summary>
     None = 0,
-    
+
     /// <summary>
     /// Represent Escape and modified keys using CSI-u sequences, so they can be unambiguously
     /// read.

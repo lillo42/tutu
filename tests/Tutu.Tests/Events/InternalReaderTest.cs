@@ -1,4 +1,4 @@
-using FluentAssertions;
+﻿using FluentAssertions;
 using NodaTime;
 using NSubstitute;
 using NSubstitute.ReturnsExtensions;

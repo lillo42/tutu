@@ -1,4 +1,4 @@
-using Tutu.Windows;
+﻿using Tutu.Windows;
 
 namespace Tutu.Terminal.Commands;
 
@@ -13,15 +13,15 @@ public record ClearCommand(ClearType Type) : ICommand
 {
     /// <inheritdoc />
     public void WriteAnsi(TextWriter write) => write.Write(Type switch
-        {
-            ClearType.All => $"{AnsiCodes.CSI}2J",
-            ClearType.Purge => $"{AnsiCodes.CSI}3J",
-            ClearType.FromCursorDown => $"{AnsiCodes.CSI}J",
-            ClearType.FromCursorUp => $"{AnsiCodes.CSI}1J",
-            ClearType.CurrentLine => $"{AnsiCodes.CSI}2K",
-            ClearType.UntilNewLine => $"{AnsiCodes.CSI}K",
-            _ => throw new ArgumentOutOfRangeException()
-        });
+    {
+        ClearType.All => $"{AnsiCodes.CSI}2J",
+        ClearType.Purge => $"{AnsiCodes.CSI}3J",
+        ClearType.FromCursorDown => $"{AnsiCodes.CSI}J",
+        ClearType.FromCursorUp => $"{AnsiCodes.CSI}1J",
+        ClearType.CurrentLine => $"{AnsiCodes.CSI}2K",
+        ClearType.UntilNewLine => $"{AnsiCodes.CSI}K",
+        _ => throw new ArgumentOutOfRangeException()
+    });
 
     /// <inheritdoc />
     public void ExecuteWindowsApi() => WindowsTerminal.Clear(Type);

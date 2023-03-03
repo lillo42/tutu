@@ -1,4 +1,4 @@
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 
 namespace Tutu.Windows.Interop;
 
@@ -7,7 +7,7 @@ internal struct SECURITY_ATTRIBUTES
 {
     public int nLength;
     public nint lpSecurityDescriptor;
-    
-    [MarshalAs(UnmanagedType.Bool)] 
+
+    [MarshalAs(UnmanagedType.Bool)]
     public bool bInheritHandle;
 }

@@ -1,4 +1,4 @@
-namespace Tutu.Cursor;
+﻿namespace Tutu.Cursor;
 
 /// <summary>
 /// The cursor position.

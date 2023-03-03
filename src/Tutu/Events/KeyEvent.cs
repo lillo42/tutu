@@ -1,16 +1,31 @@
-namespace Tutu.Events;
+﻿namespace Tutu.Events;
 
 /// <summary>
-/// 
+/// The Key event. 
 /// </summary>
+/// <param name="Code">The <see cref="KeyCode.IKeyCode"/>.</param>
+/// <param name="Modifiers">The <see cref="KeyModifiers"/>.</param>
 public readonly record struct KeyEvent(KeyCode.IKeyCode Code, KeyModifiers Modifiers)
 {
+    /// <summary>
+    /// Initializes a new instance of the <see cref="KeyEvent"/> struct.
+    /// </summary>
+    /// <param name="code">The <see cref="KeyCode.IKeyCode"/>.</param>
+    /// <param name="modifiers">The <see cref="KeyModifiers"/>.</param>
+    /// <param name="kind">The <see cref="KeyEventKind"/>.</param>
     public KeyEvent(KeyCode.IKeyCode code, KeyModifiers modifiers, KeyEventKind kind)
         : this(code, modifiers)
     {
         Kind = kind;
     }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="KeyEvent"/> struct.
+    /// </summary>
+    /// <param name="code">The <see cref="KeyCode.IKeyCode"/>.</param>
+    /// <param name="modifiers">The <see cref="KeyModifiers"/>.</param>
+    /// <param name="kind">The <see cref="KeyEventKind"/>.</param>
+    /// <param name="state">The <see cref="KeyEventState"/>.</param>
     public KeyEvent(KeyCode.IKeyCode code, KeyModifiers modifiers, KeyEventKind kind, KeyEventState state)
         : this(code, modifiers, kind)
     {
@@ -29,52 +44,19 @@ public readonly record struct KeyEvent(KeyCode.IKeyCode Code, KeyModifiers Modif
 
     /// <summary>
     /// Kind of event.
-    ///
-    /// Only set if <see cref="KeyboardEnhancementFlags.ReportEventTypes"/> has been enabled with [`PushKeyboardEnhancementFlags`].
     /// </summary>
+    /// <remarks>
+    /// Only set if <see cref="KeyboardEnhancementFlags.ReportEventTypes"/> has been enabled with
+    /// <see cref="Tutu.Commands.Events.PushKeyboardEnhancementFlags"/>
+    /// </remarks>
     public KeyEventKind Kind { get; init; }
 
     /// <summary>
     /// Keyboard state.
-    ///
-    /// Only set if <see cref="KeyboardEnhancementFlags.DisambiguateEscapeCodes"/> has been enabled with
-    /// [`PushKeyboardEnhancementFlags`].
     /// </summary>
+    /// <remarks>
+    /// Only set if <see cref="KeyboardEnhancementFlags.ReportEventTypes"/> has been enabled with
+    /// <see cref="Tutu.Commands.Events.PushKeyboardEnhancementFlags"/>
+    /// </remarks>
     public KeyEventState State { get; init; }
-
-    private KeyEvent NormalizeCase()
-    {
-        if (Code is not KeyCode.CharKeyCode keyCode)
-        {
-            return this;
-        }
-
-        if (char.IsUpper(keyCode.Character))
-        {
-            return this with { Modifiers = Modifiers | KeyModifiers.Shift };
-        }
-
-        if (!Modifiers.HasFlag(KeyModifiers.Shift))
-        {
-            return this with { Code = new KeyCode.CharKeyCode(char.ToUpper(keyCode.Character)) };
-        }
-
-        return this;
-    }
-
-    public bool Equals(KeyEvent? other)
-    {
-        if (other == null)
-        {
-            return false;
-        }
-
-        var lhs = NormalizeCase();
-        var rhs = other.Value.NormalizeCase();
-
-        return lhs.Code == rhs.Code
-               && lhs.Modifiers == rhs.Modifiers
-               && lhs.Kind == rhs.Kind
-               && lhs.State == rhs.State;
-    }
 }

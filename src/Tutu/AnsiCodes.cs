@@ -1,4 +1,4 @@
-namespace Tutu;
+﻿namespace Tutu;
 
 internal static class AnsiCodes
 {

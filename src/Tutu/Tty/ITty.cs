@@ -1,4 +1,4 @@
-namespace Tutu.Tty;
+﻿namespace Tutu.Tty;
 
 /// <summary>
 /// The TTY interface.

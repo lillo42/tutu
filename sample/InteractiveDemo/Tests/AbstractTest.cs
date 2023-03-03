@@ -1,4 +1,4 @@
-using Tutu.Events;
+﻿using Tutu.Events;
 using Tutu.Extensions;
 using Tutu.Terminal;
 using static Tutu.Commands.Cursor;
@@ -25,7 +25,7 @@ public abstract class AbstractTest
             action(writer);
 
             writer.Flush();
-            
+
             var ch = ReadChar();
             if (ch == 'q')
             {

@@ -1,19 +1,29 @@
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 using Tutu.Exceptions;
 using static Tmds.Linux.LibC;
 
 namespace Tutu.Unix;
 
-public class PlatformException : TutuException 
+/// <summary>
+/// Exception thrown when a platform call fails.
+/// </summary>
+public class PlatformException : TutuException
 {
-    public PlatformException(int errno) :
-        base(GetErrorMessage(errno))
+    /// <summary>
+    /// Initializes a new instance of the <see cref="PlatformException"/> class.
+    /// </summary>
+    /// <param name="errno"></param>
+    public PlatformException(int errno)
+        : base(GetErrorMessage(errno))
     {
         HResult = errno;
     }
 
-    public PlatformException() :
-        this(errno)
+    /// <summary>
+    /// Initializes a new instance of the <see cref="PlatformException"/> class.
+    /// </summary>
+    public PlatformException()
+        : this(errno)
     {
     }
 
@@ -27,7 +37,7 @@ public class PlatformException : TutuException
         return rv == 0 ? Marshal.PtrToStringAnsi((nint)buffer) : $"errno {errno}";
     }
 
-    public static void Throw()
+    internal static void Throw()
     {
         if (errno < 0)
         {

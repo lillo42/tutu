@@ -1,4 +1,4 @@
-namespace Tutu.Terminal;
+﻿namespace Tutu.Terminal;
 
 /// <summary>
 /// The terminal size.

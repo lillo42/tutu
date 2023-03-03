@@ -1,4 +1,4 @@
-using Tutu.Style.Types;
+﻿using Tutu.Style.Types;
 
 namespace Tutu.Style.Commands;
 
@@ -13,7 +13,7 @@ public record SetUnderlineColorCommand(Color Color) : ICommand
 {
     /// <inheritdoc />
     public void WriteAnsi(TextWriter write)
-        => Execute(write, Color); 
+        => Execute(write, Color);
 
     internal static void Execute(TextWriter write, Color color)
         => write.Write($"{AnsiCodes.CSI}{Colored.UnderlineColor(color)}m");

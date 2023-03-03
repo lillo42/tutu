@@ -1,4 +1,4 @@
-namespace Tutu.Style.Types;
+﻿namespace Tutu.Style.Types;
 
 /// <summary>
 /// Represents an attribute.
@@ -208,7 +208,7 @@ public readonly record struct Attribute(string Name, string Value)
     public static Attribute Underdashed { get; } = new("Underdashed", "4:5");
 
     /// <summary>
-    /// Makes the text blinking ( < 150 per minute).
+    /// Makes the text blinking ( less 150 per minute).
     /// </summary>
     /// <remarks>
     /// Sets blinking to less than 150 times per minute.
