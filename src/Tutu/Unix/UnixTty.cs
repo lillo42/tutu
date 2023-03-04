@@ -1,5 +1,5 @@
-﻿using Tmds.Linux;
-using Tutu.Tty;
+﻿using Tutu.Tty;
+using Tutu.Unix.Interop.LibC;
 
 namespace Tutu.Unix;
 

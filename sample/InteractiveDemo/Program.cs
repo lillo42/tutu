@@ -6,7 +6,7 @@ using static Tutu.Commands.Style;
 using static Tutu.Commands.Terminal;
 using Terminal = Tutu.Terminal.Terminal;
 
-const string Menu = @"Erised interactive test
+const string Menu = @"Tutu interactive test
 
 Controls:
 

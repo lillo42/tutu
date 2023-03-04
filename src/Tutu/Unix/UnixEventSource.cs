@@ -1,14 +1,15 @@
-﻿using NodaTime;
-using Tmds.Linux;
+﻿using System.Runtime.InteropServices;
+using NodaTime;
 using Tutu.Events;
-using static Tmds.Linux.LibC;
+using Tutu.Unix.Interop.LibC;
+using static Tutu.Unix.Interop.LibC.LibC;
 
 namespace Tutu.Unix;
 
 /// <summary>
 /// Unix implementation of <see cref="IEventSource"/>.
 /// </summary>
-internal class UnixEventSource : IEventSource, IDisposable
+internal class UnixEventSource : IEventSource 
 {
     // I (@zrzka) wasn't able to read more than 1_022 bytes when testing
     // reading on macOS/Linux -> we don't need bigger buffer and 1k of bytes
@@ -18,8 +19,8 @@ internal class UnixEventSource : IEventSource, IDisposable
     private readonly UnixEventParse _parse;
     private readonly byte[] _buffer;
     private readonly FileDesc _tty;
-    private readonly FileDesc _winchSignalReceiver;
-    private readonly FileDesc _sender;
+    // private readonly FileDesc _winchSignalReceiver;
+    // private readonly FileDesc _sender;
 
     /// <summary>
     /// Singleton instance of <see cref="UnixEventSource"/>.
@@ -37,10 +38,10 @@ internal class UnixEventSource : IEventSource, IDisposable
         _buffer = new byte[TTY_BUFFER_SIZE];
         _parse = new UnixEventParse();
 
-        var (receiver, sender) = NonblockingUnixPair();
+        /*var (receiver, sender) = NonblockingUnixPair();
         Register(sender, SIGWINCH);
         _winchSignalReceiver = receiver;
-        _sender = sender;
+        _sender = sender;*/
     }
 
     private static (FileDesc, FileDesc) NonblockingUnixPair()
@@ -51,16 +52,15 @@ internal class UnixEventSource : IEventSource, IDisposable
         return (receiver, sender);
     }
 
-    private static unsafe (FileDesc, FileDesc) CreateUnixStreamPair()
+    private static (FileDesc, FileDesc) CreateUnixStreamPair()
     {
         var fds = new int[2];
 
-        fixed (int* ptr = fds)
+        if (socketpair(AF_UNIX, SOCK_STREAM, 0, fds) < 0)
         {
-            socketpair(LibC.AF_UNIX, LibC.SOCK_STREAM | LibC.SOCK_CLOEXEC, 0, ptr);
+            Marshal.ThrowExceptionForHR(Marshal.GetLastWin32Error());
         }
 
-        PlatformException.Throw();
 
         return (new FileDesc(fds[0], true), new FileDesc(fds[1], true));
     }
@@ -68,29 +68,29 @@ internal class UnixEventSource : IEventSource, IDisposable
     private static void SetNonblocking(FileDesc fd, bool nonblocking)
     {
         ioctl(fd, FIONBIO, nonblocking ? 1 : 0);
-        PlatformException.Throw();
+        Marshal.ThrowExceptionForHR(Marshal.GetLastPInvokeError());
     }
 
     private static unsafe void Register(FileDesc socket, int flags)
     {
-        var tmp = new byte[0];
+        var tmp = Array.Empty<byte>();
         fixed (void* ptr = tmp)
         {
             send(socket, ptr, 0, flags);
         }
 
-        PlatformException.Throw();
+        Marshal.ThrowExceptionForHR(Marshal.GetLastPInvokeError());
     }
 
 
     /// <inheritdoc cref="IEventSource.TryRead(NodaTime.IClock,System.Nullable{NodaTime.Duration})"/>
-    public unsafe IInternalEvent? TryRead(IClock clock, Duration? timeout)
+    public IInternalEvent? TryRead(IClock clock, Duration? timeout)
     {
         var pollTimeout = new PollTimeout(clock, timeout);
 
-        Span<pollfd> fds = stackalloc pollfd[2];
+        Span<pollfd> fds = new pollfd[1];
         fds[0] = CreatePollFd(_tty);
-        fds[1] = CreatePollFd(_winchSignalReceiver);
+        // fds[1] = CreatePollFd(_winchSignalReceiver);
 
         while (pollTimeout.Leftover == null || pollTimeout.Leftover.Value != Duration.Zero)
         {
@@ -100,7 +100,7 @@ internal class UnixEventSource : IEventSource, IDisposable
                 return @event;
             }
 
-            var ans = Poll(fds, (int)(timeout?.TotalMilliseconds ?? 0));
+            var ans = Poll(fds, (int)(timeout?.TotalMilliseconds ?? -1));
             if (ans == EINTR)
             {
                 continue;
@@ -108,10 +108,10 @@ internal class UnixEventSource : IEventSource, IDisposable
 
             if (ans < 0)
             {
-                PlatformException.Throw();
+                Marshal.ThrowExceptionForHR(Marshal.GetLastPInvokeError());                                 
             }
 
-            if ((fds[0].revents & POLLIN) != 0)
+            if ((fds[0].revents & POLLIN) != 0) 
             {
                 while (true)
                 {
@@ -134,12 +134,13 @@ internal class UnixEventSource : IEventSource, IDisposable
                 }
             }
 
-            if ((fds[1].revents & POLLIN) != 0)
-            {
+            // if ((fds[1].revents & POLLIN) > 10000)
+            // {
+                // ReadComplete(_winchSignalReceiver, new byte[TTY_BUFFER_SIZE]);
                 // drain the pipe
-                while (ReadComplete(_winchSignalReceiver, new byte[TTY_BUFFER_SIZE]) != 0)
-                {
-                }
+                // while (ReadComplete(_winchSignalReceiver, new byte[TTY_BUFFER_SIZE]) != 0)
+                // {                                   
+                // }
 
                 // TODO Should we remove tput?
                 //
@@ -148,9 +149,9 @@ internal class UnixEventSource : IEventSource, IDisposable
                 // not a really long time from the absolute time point of view, but
                 // it's a really long time from the mio, async-std/tokio executor, ...
                 // point of view.
-                var newSize = Terminal.Terminal.Size;
-                return InternalEvent.Event(new Event.ScreenResizeEvent(newSize.Width, newSize.Height));
-            }
+                // var newSize = Terminal.Terminal.Size;
+                // return InternalEvent.Event(new Event.ScreenResizeEvent(newSize.Width, newSize.Height));
+            // }
         }
 
         return null;
@@ -178,7 +179,7 @@ internal class UnixEventSource : IEventSource, IDisposable
             }
             catch (PlatformException ex)
             {
-                if (ex.HResult == EWOULDBLOCK || ex.HResult == EAGAIN)
+                if (ex.HResult is EWOULDBLOCK or EAGAIN)
                 {
                     return 0;
                 }
@@ -190,23 +191,14 @@ internal class UnixEventSource : IEventSource, IDisposable
 
                 throw;
             }
+            catch
+            {
+                throw;
+            }
         }
+        
     }
 
-    private static unsafe int Poll(Span<pollfd> fds, int timeout)
-    {
-        fixed (pollfd* ptr = fds)
-        {
-            poll(ptr, (uint)fds.Length, timeout);
-        }
-
-        return errno;
-    }
-
-    public void Dispose()
-    {
-        _tty.Dispose();
-        _winchSignalReceiver.Dispose();
-        _sender.Dispose();
-    }
+    private static int Poll(Span<pollfd> fds, int timeout) 
+        => poll(fds, (uint)fds.Length, timeout);
 }

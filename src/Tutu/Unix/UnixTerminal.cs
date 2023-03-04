@@ -1,10 +1,10 @@
 ﻿using System.Diagnostics;
 using System.Runtime.InteropServices;
 using NodaTime;
-using Tmds.Linux;
 using Tutu.Events;
 using Tutu.Exceptions;
 using Tutu.Terminal;
+using Tutu.Unix.Interop.LibC;
 using static Tutu.Events.EventReader;
 
 namespace Tutu.Unix;
@@ -71,9 +71,8 @@ public class UnixTerminal : ITerminal
             // http://rosettacode.org/wiki/Terminal_control/Dimensions#Library:_BSD_libc
             var size = new winsize();
             var fd = FileDesc.TtyFd();
-            if (LibC.ioctl(fd.Fd, LibC.TIOCGWINSZ, &size) == 0)
+            if (LibC.ioctl(fd, LibC.TIOCGWINSZ, &size) == 0)
             {
-
                 return new(size.ws_col, size.ws_row);
             }
 
@@ -165,37 +164,28 @@ public class UnixTerminal : ITerminal
         }
     }
 
-    private static unsafe termios GetTerminalAttributes(FileDesc fd)
+    private static termios GetTerminalAttributes(FileDesc fd)
     {
         var termios = new termios();
-        if (LibC.tcgetattr(fd.Fd, &termios) == -1)
+        if (LibC.tcgetattr(fd, ref termios) < 0)
         {
-            PlatformException.Throw();
+            Marshal.ThrowExceptionForHR(Marshal.GetLastWin32Error());
         }
 
         return termios;
     }
 
-    private static unsafe void SetTerminalAttributes(FileDesc fd, ref termios termios)
+    private static void SetTerminalAttributes(FileDesc fd, ref termios termios)
     {
-        fixed (termios* ptr = &termios)
+        if (LibC.tcsetattr(fd, LibC.TCSANOW, ref termios) < 0)
         {
-            if (LibC.tcsetattr(fd.Fd, (int)LibC.TCSANOW, ptr) == -1)
-            {
-                PlatformException.Throw();
-            }
+            Marshal.ThrowExceptionForHR(Marshal.GetLastWin32Error());
         }
     }
 
     // Transform the given mode into an raw mode (non-canonical) mode.
     private static void RawTerminalAttribute(ref termios termios)
     {
-        LibCExtensions.cfmakeraw(ref termios);
+        LibC.cfmakeraw(ref termios);
     }
-}
-
-internal partial class LibCExtensions
-{
-    [LibraryImport("libc", EntryPoint = "cfmakeraw")]
-    public static partial void cfmakeraw(ref termios termios);
 }

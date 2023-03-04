@@ -1,5 +1,6 @@
-﻿using Tmds.Linux;
+﻿using System.Runtime.InteropServices;
 using Tutu.Unix.Extensions;
+using Tutu.Unix.Interop.LibC;
 
 namespace Tutu.Unix;
 
@@ -17,19 +18,15 @@ internal readonly record struct FileDesc(int Fd, bool CloseOnDispose) : IDisposa
     /// Creates a file descriptor pointing to the standard input or `/dev/tty`.
     /// </summary>
     /// <returns></returns>
-    public static unsafe FileDesc TtyFd()
+    public static FileDesc TtyFd()
     {
-        var fd = LibC.isatty(LibC.STDIN_FILENO);
-        if (fd == 1)
+        if (LibC.isatty(LibC.STDIN_FILENO) == 1)
         {
             return new(LibC.STDIN_FILENO, false);
         }
 
         var path = "/dev/tty".ToPathname();
-        fixed (byte* ptr = path)
-        {
-            fd = LibC.open(ptr, LibC.O_RDWR);
-        }
+        var fd = LibC.open(path, LibC.O_RDWR);
 
         return new FileDesc(fd, true);
     }
@@ -44,7 +41,7 @@ internal readonly record struct FileDesc(int Fd, bool CloseOnDispose) : IDisposa
 
         if (read < 0)
         {
-            PlatformException.Throw();
+            Marshal.ThrowExceptionForHR(Marshal.GetLastPInvokeError());
         }
 
         return (uint)read;
@@ -59,4 +56,6 @@ internal readonly record struct FileDesc(int Fd, bool CloseOnDispose) : IDisposa
     }
 
     public static implicit operator int(FileDesc fd) => fd.Fd;
+    
+    // public static implicit operator nint(FileDesc fd) => fd.Fd;
 }

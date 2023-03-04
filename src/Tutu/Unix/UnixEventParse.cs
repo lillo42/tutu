@@ -156,8 +156,12 @@ internal class UnixEventParse
         {
             return Event(Key(new KeyEvent(KeyCode.Enter, KeyModifiers.None)));
         }
-
-        if (buffer[0] == '\n' && Terminal.Terminal.IsRawModeEnabled)
+        
+        // Issue #371: \n = 0xA, which is also the keycode for Ctrl+J. The only reason we get
+        // newlines as input is because the terminal converts \r into \n for us. When we
+        // enter raw mode, we disable that, so \n no longer has any meaning - it's better to
+        // use Ctrl+J. Waiting to handle it here means it gets picked up later
+        if (buffer[0] == '\n' && !Terminal.Terminal.IsRawModeEnabled)
         {
             return Event(Key(new KeyEvent(KeyCode.Enter, KeyModifiers.None)));
         }

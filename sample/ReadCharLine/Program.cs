@@ -17,7 +17,7 @@ static string ReadLine()
     while (true)
     {
         var read = EventReader.Read();
-        if (read is Event.KeyEventEvent { Event: { Code: KeyCode.CharKeyCode ch, Kind: KeyEventKind.Release } })
+        if (read is Event.KeyEventEvent { Event: { Code: KeyCode.CharKeyCode ch, Kind: KeyEventKind.Press } })
         {
             line.Append(ch.Character);
         }
