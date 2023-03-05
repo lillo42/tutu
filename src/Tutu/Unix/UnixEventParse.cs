@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Runtime.InteropServices;
+using System.Text;
 using Tutu.Events;
 using static Tutu.Events.Event;
 using static Tutu.Events.InternalEvent;
@@ -42,12 +43,12 @@ internal class UnixEventParse
     {
         for (var idx = 0; idx < buffer.Length; idx++)
         {
-            var more = idx + 1 < _buffer.Count || hasMore;
+            var more = idx + 1 < buffer.Length || hasMore;
             _buffer.Add(buffer[idx]);
 
             try
             {
-                var @event = ParseEvent(_buffer.ToArray(), more);
+                var @event = ParseEvent(CollectionsMarshal.AsSpan(_buffer), more);
 
                 // Event can't be parsed, because we don't have enough bytes for
                 // the current sequence. Keep the buffer and process next bytes.
@@ -526,7 +527,7 @@ internal class UnixEventParse
             return null;
         }
 
-        if (buffer[2] >= '0' && buffer[2] <= '9')
+        if (buffer[2] is >= (byte)'0' and <= (byte)'9')
         {
             // Numbered escape code.
             if (buffer.Length == 3)
@@ -537,7 +538,7 @@ internal class UnixEventParse
             // The final byte of a CSI sequence can be in the range 64-126, so
             // let's keep reading anything else.
             var lastByte = buffer[^1];
-            if (lastByte is >= 64 and <= 126)
+            if (lastByte is not (>= 64 and <= 126))
             {
                 return null;
             }

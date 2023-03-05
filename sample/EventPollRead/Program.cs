@@ -1,6 +1,7 @@
 ﻿// Demonstrates how to match on modifiers like: Control, alt, shift.
 
 using NodaTime;
+using Tutu.Commands;
 using Tutu.Events;
 using Tutu.Extensions;
 using static Tutu.Commands.Events;
@@ -16,6 +17,7 @@ const string Help = @"Blocking poll() & non-blocking read()
 Console.WriteLine(Help);
 
 Terminal.EnableRawMode();
+
 var stdout = Console.Out;
 stdout.Execute(EnableMouseCapture);
 
@@ -31,19 +33,26 @@ catch (Exception e)
 stdout.Execute(DisableMouseCapture);
 Terminal.DisableRawMode();
 
-static void PrintEvents()
+void PrintEvents()
 {
     while (true)
     {
-        var isPolled = EventReader.Poll(Duration.FromSeconds(1));
-        if (!isPolled)
+        int top;
+        if (!EventReader.Poll(Duration.FromSeconds(1)))
         {
-            Console.WriteLine("..");
+            Console.WriteLine(".");
+            (_, top) = Console.GetCursorPosition();
+            Console.SetCursorPosition(0, top);
             continue;
         }
 
         var @event = EventReader.Read();
+        
         Console.WriteLine(@event);
+        
+        (_, top) = Console.GetCursorPosition();
+        Console.SetCursorPosition(0, top);
+        
         if (@event is Event.KeyEventEvent { Event.Code: KeyCode.CharKeyCode { Character: 'c' } })
         {
             var position = Tutu.Cursor.Cursor.Position;

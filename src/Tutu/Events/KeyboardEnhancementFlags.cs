@@ -26,6 +26,15 @@ public enum KeyboardEnhancementFlags
     /// <see cref="KeyEventKind.Release"/> when keys are autorepeated or released.
     /// </summary>
     ReportEventTypes = 0b0000_0010,
+    
+    /// <summary>
+    /// Send <see href="https://sw.kovidgoyal.net/kitty/keyboard-protocol/#key-codes">alternate keycodes</see>
+    /// </summary>
+    /// <remarks>
+    /// in addition to the base keycode. The alternate keycode overrides the base keycode in
+    /// resulting <see cref="KeyEvent"/>..
+    /// </remarks>
+    ReportAlternateKeys = 0b0000_0100,
 
     /// <summary>
     /// Represent all keyboard events as CSI-u sequences. This is required to get repeat/release
