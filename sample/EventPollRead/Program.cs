@@ -1,10 +1,11 @@
 ﻿// Demonstrates how to match on modifiers like: Control, alt, shift.
 
 using NodaTime;
-using Tutu.Commands;
 using Tutu.Events;
 using Tutu.Extensions;
+using static Tutu.Commands.Cursor;
 using static Tutu.Commands.Events;
+using static Tutu.Commands.Style;
 using Terminal = Tutu.Terminal.Terminal;
 
 const string Help = @"Blocking poll() & non-blocking read()
@@ -37,26 +38,29 @@ void PrintEvents()
 {
     while (true)
     {
-        int top;
         if (!EventReader.Poll(Duration.FromSeconds(1)))
         {
-            Console.WriteLine(".");
-            (_, top) = Console.GetCursorPosition();
-            Console.SetCursorPosition(0, top);
+            stdout
+                .Execute(Print("."))
+                .Execute(Print(Environment.NewLine))
+                .Execute(MoveToColumn(0));
             continue;
         }
 
         var @event = EventReader.Read();
-        
-        Console.WriteLine(@event);
-        
-        (_, top) = Console.GetCursorPosition();
-        Console.SetCursorPosition(0, top);
-        
+
+        stdout
+            .Execute(Print(@event))
+            .Execute(Print(Environment.NewLine))
+            .Execute(MoveToColumn(0));
+
         if (@event is Event.KeyEventEvent { Event.Code: KeyCode.CharKeyCode { Character: 'c' } })
         {
             var position = Tutu.Cursor.Cursor.Position;
-            Console.WriteLine("Cursor position: ({0}, {1})", position.Column, position.Row);
+            stdout
+                .Execute(Print($"Cursor position: ({position.Column}, {position.Row})"))
+                .Execute(Print(Environment.NewLine))
+                .Execute(MoveToColumn(0));
         }
 
         if (@event is Event.KeyEventEvent { Event.Code: KeyCode.EscKeyCode })
