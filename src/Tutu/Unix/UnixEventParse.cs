@@ -175,7 +175,7 @@ internal class UnixEventParse
             return Event(Key(new KeyEvent(KeyCode.Tab, KeyModifiers.None)));
         }
 
-        if (buffer[0] == '\x7f')
+        if (buffer[0] == '\x7F')
         {
             return Event(Key(new KeyEvent(KeyCode.Backspace, KeyModifiers.None)));
         }
@@ -186,7 +186,7 @@ internal class UnixEventParse
             return Event(Key(new KeyEvent(KeyCode.Char(key), KeyModifiers.Control)));
         }
 
-        if (buffer[0] >= '\x1C' && buffer[0] <= '\x1F')
+        if (buffer[0] is >= (byte)'\x1C' and <= (byte)'\x1F')
         {
             var key = (char)(buffer[0] - 0x1C + (byte)'4');
             return Event(Key(new KeyEvent(KeyCode.Char(key), KeyModifiers.Control)));
@@ -427,10 +427,9 @@ internal class UnixEventParse
 
             // NOTE (@imdaveho): cannot find when this occurs;
             // having another '[' after ESC[ not a likely scenario
-            if (buffer[3] >= 'A' && buffer[3] <= 'E')
+            if (buffer[3] is >= (byte)'A' and <= (byte)'E')
             {
-                const byte a = (byte)'A';
-                return Event(Key(new KeyEvent(KeyCode.F((ushort)(1 + buffer[3] - a)), KeyModifiers.None)));
+                return Event(Key(new KeyEvent(KeyCode.F((ushort)(1 + buffer[3] - (byte)'A')), KeyModifiers.None)));
             }
 
             // TODO: throw exception

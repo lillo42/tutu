@@ -1,4 +1,5 @@
-﻿using System.Runtime.InteropServices;
+﻿using System.Net.Sockets;
+using System.Runtime.InteropServices;
 using NodaTime;
 using Tutu.Events;
 using Tutu.Unix.Interop.LibC;
@@ -9,7 +10,7 @@ namespace Tutu.Unix;
 /// <summary>
 /// Unix implementation of <see cref="IEventSource"/>.
 /// </summary>
-internal class UnixEventSource : IEventSource 
+internal class UnixEventSource : IEventSource
 {
     // I (@zrzka) wasn't able to read more than 1_022 bytes when testing
     // reading on macOS/Linux -> we don't need bigger buffer and 1k of bytes
@@ -19,8 +20,9 @@ internal class UnixEventSource : IEventSource
     private readonly UnixEventParse _parse;
     private readonly byte[] _buffer;
     private readonly FileDesc _tty;
-    // private readonly FileDesc _winchSignalReceiver;
-    // private readonly FileDesc _sender;
+
+    private readonly FileDesc _winchSignalReceiver;
+    private readonly FileDesc _sender;
 
     /// <summary>
     /// Singleton instance of <see cref="UnixEventSource"/>.
@@ -38,10 +40,10 @@ internal class UnixEventSource : IEventSource
         _buffer = new byte[TTY_BUFFER_SIZE];
         _parse = new UnixEventParse();
 
-        /*var (receiver, sender) = NonblockingUnixPair();
-        Register(sender, SIGWINCH);
+        var (receiver, sender) = NonblockingUnixPair();
+        Pipe.Register(sender, SIGWINCH);
         _winchSignalReceiver = receiver;
-        _sender = sender;*/
+        _sender = sender;
     }
 
     private static (FileDesc, FileDesc) NonblockingUnixPair()
@@ -56,12 +58,11 @@ internal class UnixEventSource : IEventSource
     {
         var fds = new int[2];
 
-        if (socketpair(AF_UNIX, SOCK_STREAM, 0, fds) < 0)
+        var close = RuntimeInformation.IsOSPlatform(OSPlatform.OSX) ? 0 : SOCK_CLOEXEC;
+        if (socketpair(AF_UNIX, SOCK_STREAM | close, 0, fds) < 0)
         {
             Marshal.ThrowExceptionForHR(Marshal.GetLastWin32Error());
         }
-
-
         return (new FileDesc(fds[0], true), new FileDesc(fds[1], true));
     }
 
@@ -71,26 +72,14 @@ internal class UnixEventSource : IEventSource
         Marshal.ThrowExceptionForHR(Marshal.GetLastPInvokeError());
     }
 
-    private static unsafe void Register(FileDesc socket, int flags)
-    {
-        var tmp = Array.Empty<byte>();
-        fixed (void* ptr = tmp)
-        {
-            send(socket, ptr, 0, flags);
-        }
-
-        Marshal.ThrowExceptionForHR(Marshal.GetLastPInvokeError());
-    }
-
-
     /// <inheritdoc cref="IEventSource.TryRead(NodaTime.IClock,System.Nullable{NodaTime.Duration})"/>
     public IInternalEvent? TryRead(IClock clock, Duration? timeout)
     {
         var pollTimeout = new PollTimeout(clock, timeout);
 
-        Span<pollfd> fds = new pollfd[1];
+        Span<pollfd> fds = new pollfd[2];
         fds[0] = CreatePollFd(_tty);
-        // fds[1] = CreatePollFd(_winchSignalReceiver);
+        fds[1] = CreatePollFd(_winchSignalReceiver);
 
         while (pollTimeout.Leftover == null || pollTimeout.Leftover.Value != Duration.Zero)
         {
@@ -108,10 +97,10 @@ internal class UnixEventSource : IEventSource
 
             if (ans < 0)
             {
-                Marshal.ThrowExceptionForHR(Marshal.GetLastPInvokeError());                                 
+                Marshal.ThrowExceptionForHR(Marshal.GetLastPInvokeError());
             }
 
-            if ((fds[0].revents & POLLIN) != 0) 
+            if ((fds[0].revents & POLLIN) != 0)
             {
                 while (true)
                 {
@@ -134,13 +123,10 @@ internal class UnixEventSource : IEventSource
                 }
             }
 
-            // if ((fds[1].revents & POLLIN) > 10000)
-            // {
-                // ReadComplete(_winchSignalReceiver, new byte[TTY_BUFFER_SIZE]);
+            if ((fds[1].revents & POLLIN) != 0)
+            {
                 // drain the pipe
-                // while (ReadComplete(_winchSignalReceiver, new byte[TTY_BUFFER_SIZE]) != 0)
-                // {                                   
-                // }
+                ReadComplete(_winchSignalReceiver, new byte[TTY_BUFFER_SIZE]);
 
                 // TODO Should we remove tput?
                 //
@@ -149,19 +135,14 @@ internal class UnixEventSource : IEventSource
                 // not a really long time from the absolute time point of view, but
                 // it's a really long time from the mio, async-std/tokio executor, ...
                 // point of view.
-                // var newSize = Terminal.Terminal.Size;
-                // return InternalEvent.Event(new Event.ScreenResizeEvent(newSize.Width, newSize.Height));
-            // }
+                var newSize = Terminal.Terminal.Size;
+                return InternalEvent.Event(new Event.ScreenResizeEvent(newSize.Width, newSize.Height));
+            }
         }
 
         return null;
 
-        static pollfd CreatePollFd(int fd) => new()
-        {
-            fd = fd,
-            events = POLLIN,
-            revents = 0
-        };
+        static pollfd CreatePollFd(int fd) => new() { fd = fd, events = POLLIN, revents = 0 };
     }
 
     /// read_complete reads from a non-blocking file descriptor
@@ -177,28 +158,21 @@ internal class UnixEventSource : IEventSource
             {
                 return fd.Read(buffer);
             }
-            catch (PlatformException ex)
+            catch (IOException ex)
             {
-                if (ex.HResult is EWOULDBLOCK or EAGAIN)
+                switch (ex.HResult)
                 {
-                    return 0;
+                    case EWOULDBLOCK or EAGAIN:
+                        return 0;
+                    case EINTR:
+                        continue;
+                    default:
+                        throw;
                 }
-
-                if (ex.HResult == EINTR)
-                {
-                    continue;
-                }
-
-                throw;
-            }
-            catch
-            {
-                throw;
             }
         }
-        
     }
 
-    private static int Poll(Span<pollfd> fds, int timeout) 
+    private static int Poll(Span<pollfd> fds, int timeout)
         => poll(fds, (uint)fds.Length, timeout);
 }

@@ -24,8 +24,8 @@ public interface ITerminal
     /// Disables raw mode.
     /// </summary>
     /// <remarks>
-    /// On unix system, More precisely, reset the whole <see cref="Tmds.Linux.termios" /> mode to what it was before the first call
-    /// to <see cref="EnableRawMode"/>. If you don't mess with <see cref="Tmds.Linux.termios" /> outside of Tutu, it's
+    /// On unix system, More precisely, reset the whole termios mode to what it was before the first call
+    /// to <see cref="EnableRawMode"/>. If you don't mess with termios outside of Tutu, it's
     /// effectively disabling the raw mode and doing nothing else.
     /// </remarks>
     void DisableRawMode();

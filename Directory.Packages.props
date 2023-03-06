@@ -2,7 +2,6 @@
   <ItemGroup>
     <PackageVersion Include="NodaTime" Version="3.1.6" />
     <PackageVersion Include="System.Runtime.InteropServices" Version="4.3.0" />
-    <PackageVersion Include="Tmds.LibC" Version="0.5.0" />
     <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="1.1.1" />
   </ItemGroup>
   <ItemGroup>

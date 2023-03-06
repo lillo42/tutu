@@ -6,6 +6,7 @@ using Tutu.Exceptions;
 using Tutu.Terminal;
 using Tutu.Unix.Interop.LibC;
 using static Tutu.Events.EventReader;
+using static Tutu.Unix.Interop.LibC.LibC;
 
 namespace Tutu.Unix;
 
@@ -68,15 +69,33 @@ public class UnixTerminal : ITerminal
     {
         get
         {
-            // http://rosettacode.org/wiki/Terminal_control/Dimensions#Library:_BSD_libc
-            var size = new winsize();
-            var fd = FileDesc.TtyFd();
-            if (LibC.ioctl(fd, LibC.TIOCGWINSZ, &size) == 0)
+            FileStream? file = null;
+            try
             {
-                return new(size.ws_col, size.ws_row);
-            }
+                FileDesc fd;
+                try
+                {
+                    file = File.Open("/dev/tty", FileMode.Create);
+                    fd = new FileDesc(file.SafeFileHandle.DangerousGetHandle().ToInt32(), false);
+                }
+                catch
+                {
+                    fd = new FileDesc(STDOUT_FILENO, false);
+                }
 
-            return new(TputValue("cols"), TputValue("rows"));
+                // http://rosettacode.org/wiki/Terminal_control/Dimensions#Library:_BSD_libc
+                var size = new winsize();
+                if (ioctl(fd, TIOCGWINSZ, &size) == 0)
+                {
+                    return new(size.ws_col, size.ws_row);
+                }
+
+                return new(TputValue("cols"), TputValue("rows"));
+            }
+            finally
+            {
+                file?.Dispose();
+            }
 
             // execute tput with the given argument and parse
             // the output as a u16.
@@ -89,6 +108,7 @@ public class UnixTerminal : ITerminal
                 {
                     throw new IOException("Could not parse tput output.");
                 }
+
                 return value;
             }
         }
@@ -146,7 +166,8 @@ public class UnixTerminal : ITerminal
                 continue;
             }
 
-            throw new KeyboardEnhancementException("The keyboard enhancement status could not be read within a normal duration");
+            throw new KeyboardEnhancementException(
+                "The keyboard enhancement status could not be read within a normal duration");
         }
     }
 
@@ -167,7 +188,7 @@ public class UnixTerminal : ITerminal
     private static termios GetTerminalAttributes(FileDesc fd)
     {
         var termios = new termios();
-        if (LibC.tcgetattr(fd, ref termios) < 0)
+        if (tcgetattr(fd, ref termios) < 0)
         {
             Marshal.ThrowExceptionForHR(Marshal.GetLastWin32Error());
         }
@@ -177,7 +198,7 @@ public class UnixTerminal : ITerminal
 
     private static void SetTerminalAttributes(FileDesc fd, ref termios termios)
     {
-        if (LibC.tcsetattr(fd, LibC.TCSANOW, ref termios) < 0)
+        if (tcsetattr(fd, TCSANOW, ref termios) < 0)
         {
             Marshal.ThrowExceptionForHR(Marshal.GetLastWin32Error());
         }
@@ -186,6 +207,7 @@ public class UnixTerminal : ITerminal
     // Transform the given mode into an raw mode (non-canonical) mode.
     private static void RawTerminalAttribute(ref termios termios)
     {
-        LibC.cfmakeraw(ref termios);
+        cfmakeraw(ref termios);
+        Marshal.ThrowExceptionForHR(Marshal.GetLastPInvokeError());
     }
 }
