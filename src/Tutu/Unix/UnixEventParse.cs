@@ -97,6 +97,16 @@ internal class UnixEventParse
                 {
                     return null;
                 }
+                
+                if (buffer[2] == 'D')
+                {
+                    return Event(Key(new KeyEvent(KeyCode.Left, KeyModifiers.None)));
+                }
+                
+                if (buffer[2] == 'C')
+                {
+                    return Event(Key(new KeyEvent(KeyCode.Right, KeyModifiers.None)));
+                }
 
                 if (buffer[2] == 'A')
                 {
@@ -106,16 +116,6 @@ internal class UnixEventParse
                 if (buffer[2] == 'B')
                 {
                     return Event(Key(new KeyEvent(KeyCode.Down, KeyModifiers.None)));
-                }
-
-                if (buffer[2] == 'C')
-                {
-                    return Event(Key(new KeyEvent(KeyCode.Right, KeyModifiers.None)));
-                }
-
-                if (buffer[2] == 'D')
-                {
-                    return Event(Key(new KeyEvent(KeyCode.Left, KeyModifiers.None)));
                 }
 
                 if (buffer[2] == 'H')
@@ -128,11 +128,14 @@ internal class UnixEventParse
                     return Event(Key(new KeyEvent(KeyCode.End, KeyModifiers.None)));
                 }
 
-                if (buffer[2] >= 'P' && buffer[2] <= 'S')
+                if (buffer[2] is >= (byte)'P' and <= (byte)'S')
                 {
                     const byte p = (byte)'P';
                     return Event(Key(new KeyEvent(KeyCode.F((ushort)(1 + buffer[2] - p)), KeyModifiers.None)));
                 }
+
+                // TODO: Improve exception message
+                throw new Exception();
             }
 
             if (buffer[1] == '[')
@@ -177,9 +180,9 @@ internal class UnixEventParse
             return Event(Key(new KeyEvent(KeyCode.Backspace, KeyModifiers.None)));
         }
 
-        if (buffer[0] >= '\x01' && buffer[0] <= '\x1A')
+        if (buffer[0] is >= (byte)'\x01' and <= (byte)'\x1A')
         {
-            var key = (char)(buffer[0] - 0x1C + (byte)'4');
+            var key = (char)(buffer[0] - 0x1 + (byte)'a');
             return Event(Key(new KeyEvent(KeyCode.Char(key), KeyModifiers.Control)));
         }
 
@@ -430,6 +433,7 @@ internal class UnixEventParse
                 return Event(Key(new KeyEvent(KeyCode.F((ushort)(1 + buffer[3] - a)), KeyModifiers.None)));
             }
 
+            // TODO: throw exception
             return null;
         }
 
@@ -571,6 +575,7 @@ internal class UnixEventParse
             return ParseCsiModifierKeyCode(buffer);
         }
 
+        // TODO: throw exception
         return null;
     }
 
