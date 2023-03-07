@@ -30,7 +30,7 @@ internal class Pipe
 
         if (s_register.Add(wake))
         {
-            Register(signal, _ => wake.Wake());
+            Register(signal, wake.Wake);
         }
     }
 
@@ -57,7 +57,7 @@ internal record WakeFd(int Fd, WakeMethod Method)
         }
     }
 
-    public unsafe void Wake()
+    public unsafe void Wake(int signal)
     {
         // This writes some data into the pipe.
         //

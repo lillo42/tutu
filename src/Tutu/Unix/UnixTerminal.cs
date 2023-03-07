@@ -75,7 +75,7 @@ public class UnixTerminal : ITerminal
                 FileDesc fd;
                 try
                 {
-                    file = File.Open("/dev/tty", FileMode.Create);
+                    file = File.Open("/dev/tty", FileMode.Open);
                     fd = new FileDesc(file.SafeFileHandle.DangerousGetHandle().ToInt32(), false);
                 }
                 catch
@@ -90,7 +90,7 @@ public class UnixTerminal : ITerminal
                     return new(size.ws_col, size.ws_row);
                 }
 
-                return new(TputValue("cols"), TputValue("rows"));
+                return new(TputValue("cols"), TputValue("lines"));
             }
             finally
             {
@@ -102,7 +102,13 @@ public class UnixTerminal : ITerminal
             // The arg should be "cols" or "lines"
             static ushort TputValue(string arg)
             {
-                using var process = Process.Start("tput", arg);
+                using var process = new Process();
+                process.StartInfo.FileName = "tput";
+                process.StartInfo.Arguments = arg;
+                process.StartInfo.UseShellExecute = false;
+                process.StartInfo.RedirectStandardOutput = true;
+                process.Start();
+                process.WaitForExit();
                 var output = process.StandardOutput.ReadToEnd();
                 if (!ushort.TryParse(output, out var value))
                 {
