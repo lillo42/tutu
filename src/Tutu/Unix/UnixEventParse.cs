@@ -202,7 +202,6 @@ internal class UnixEventParse
             return Event(Key(new KeyEvent(KeyCode.Char(' '), KeyModifiers.Control)));
         }
 
-
         var ch = ParseUt8Char(buffer);
         if (ch == null)
         {
@@ -213,11 +212,12 @@ internal class UnixEventParse
             char.IsUpper(ch.Value) ? KeyModifiers.Shift : KeyModifiers.None)));
     }
 
+    private static readonly Encoding UTF8 = new UTF8Encoding(false, true);
     private static char? ParseUt8Char(ReadOnlySpan<byte> buffer)
     {
         try
         {
-            var s = Encoding.UTF8.GetString(buffer);
+            var s = UTF8.GetString(buffer);
             return s[0];
         }
         catch
@@ -293,7 +293,7 @@ internal class UnixEventParse
 
         try
         {
-            s = Encoding.UTF8.GetString(buffer[2..^1]);
+            s = UTF8.GetString(buffer[2..^1]);
         }
         catch
         {
@@ -323,7 +323,7 @@ internal class UnixEventParse
         var s = string.Empty;
         try
         {
-            s = Encoding.UTF8.GetString(buffer[2..^1]);
+            s = UTF8.GetString(buffer[2..^1]);
         }
         catch
         {
@@ -617,7 +617,7 @@ internal class UnixEventParse
             return null;
         }
 
-        var s = Encoding.UTF8.GetString(buffer[6..^6]);
+        var s = UTF8.GetString(buffer[6..^6]);
         return Event(Pasted(s));
     }
 
@@ -626,7 +626,7 @@ internal class UnixEventParse
         var s = string.Empty;
         try
         {
-            s = Encoding.UTF8.GetString(buffer[2..^1]);
+            s = UTF8.GetString(buffer[2..^1]);
         }
         catch
         {
@@ -649,7 +649,7 @@ internal class UnixEventParse
             // the `CSI u` (a.k.a. "Fix Keyboard Input on Terminals - Please", https://www.leonerd.org.uk/hacks/fixterms/)
             // or Kitty Keyboard Protocol (https://sw.kovidgoyal.net/kitty/keyboard-protocol/) specifications.
             // This CSI sequence is a tuple of semicolon-separated numbers.
-            s = Encoding.UTF8.GetString(buffer[2..^1]);
+            s = UTF8.GetString(buffer[2..^1]);
         }
         catch
         {
@@ -940,7 +940,7 @@ internal class UnixEventParse
 
         try
         {
-            s = Encoding.UTF8.GetString(buffer[3..^1]);
+            s = UTF8.GetString(buffer[3..^1]);
         }
         catch
         {
@@ -986,7 +986,7 @@ internal class UnixEventParse
 
         try
         {
-            s = Encoding.UTF8.GetString(buffer[2..^1]);
+            s = UTF8.GetString(buffer[2..^1]);
         }
         catch
         {
