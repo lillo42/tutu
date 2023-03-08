@@ -1,5 +1,4 @@
-﻿using System.Net.Sockets;
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 using NodaTime;
 using Tutu.Events;
 using Tutu.Unix.Interop.LibC;
