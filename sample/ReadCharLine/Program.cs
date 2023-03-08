@@ -1,8 +1,17 @@
 ﻿// Demonstrates how to block read characters or a full line.
 // Just note that Tutu is not required to do this and can be done with `Console.ReadLine`.
 
+using System.Runtime.InteropServices;
 using System.Text;
+using NodaTime;
 using Tutu.Events;
+
+// Windows is returning Enter that have been used to start the sample
+// when we use dotnet run
+if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows) && EventReader.Poll(Duration.FromMilliseconds(10)))
+{
+    _ = EventReader.Read();
+}
 
 Console.WriteLine("read line:");
 Console.WriteLine(ReadLine());
