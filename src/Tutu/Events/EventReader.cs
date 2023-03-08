@@ -27,7 +27,7 @@ public static class EventReader
     /// </summary>
     /// <param name="timeout">Maximum waiting time for event availability.</param>
     /// <returns><see langword="true"/> if an <see cref="IEvent"/> is available; otherwise return <see langword="true"/>.</returns>
-    public static bool Poll(Duration timeout)
+    public static bool Poll(Duration? timeout = null)
         => Poll(SystemClock.Instance, timeout);
 
     /// <summary>
@@ -36,7 +36,7 @@ public static class EventReader
     /// <param name="clock">The <see cref="IClock"/>.</param>
     /// <param name="timeout">Maximum waiting time for event availability.</param>
     /// <returns><see langword="true"/> if an <see cref="IEvent"/> is available; otherwise return <see langword="true"/>.</returns>
-    public static bool Poll(IClock clock, Duration timeout)
+    public static bool Poll(IClock clock, Duration? timeout = null)
         => PollInternal(clock, timeout, PublicEventFilter.Default);
 
     /// <summary>

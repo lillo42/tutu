@@ -50,6 +50,7 @@ while (true)
     queue.Flush();
 
     var ch = ReadChar();
+
     if (ch == '1')
     {
         InteractiveDemo.Tests.Cursor.Run(stdout);
@@ -88,7 +89,7 @@ static char ReadChar()
     while (true)
     {
         var read = EventReader.Read();
-        if (read is Tutu.Events.Event.KeyEventEvent { Event: { Code: KeyCode.CharKeyCode ch, Kind: KeyEventKind.Release } })
+        if (read is Event.KeyEventEvent { Event: { Code: KeyCode.CharKeyCode ch, Kind: KeyEventKind.Press } })
         {
             return ch.Character;
         }

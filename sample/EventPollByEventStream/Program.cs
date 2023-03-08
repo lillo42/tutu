@@ -3,7 +3,9 @@
 using NodaTime;
 using Tutu.Events;
 using Tutu.Extensions;
+using static Tutu.Commands.Cursor;
 using static Tutu.Commands.Events;
+using static Tutu.Commands.Style;
 using Terminal = Tutu.Terminal.Terminal;
 
 const string Help = @"Event Stream for read Events
@@ -16,6 +18,7 @@ const string Help = @"Event Stream for read Events
 Console.WriteLine(Help);
 
 Terminal.EnableRawMode();
+
 var stdout = Console.Out;
 stdout.Execute(EnableMouseCapture);
 
@@ -24,7 +27,7 @@ await PrintEventsAsync();
 stdout.Execute(DisableMouseCapture);
 Terminal.DisableRawMode();
 
-static async Task PrintEventsAsync()
+async Task PrintEventsAsync()
 {
     await EventStream.Default.StartAsync();
 
@@ -38,11 +41,18 @@ static async Task PrintEventsAsync()
             source.CancelAfter(Duration.FromSeconds(1).ToTimeSpan());
             var @event = await reader.ReadAsync(source.Token);
 
-            Console.WriteLine(@event);
+            stdout
+                .Execute(Print(@event))
+                .Execute(Print(Environment.NewLine))
+                .Execute(MoveToColumn(0));
+
             if (@event is Event.KeyEventEvent { Event.Code: KeyCode.CharKeyCode { Character: 'c' } })
             {
                 var position = Tutu.Cursor.Cursor.Position;
-                Console.WriteLine("Cursor position: ({0}, {1})", position.Column, position.Row);
+                stdout
+                    .Execute(Print($"Cursor position: ({position.Column}, {position.Row})"))
+                    .Execute(Print(Environment.NewLine))
+                    .Execute(MoveToColumn(0));
             }
 
             if (@event is Event.KeyEventEvent { Event.Code: KeyCode.EscKeyCode })
@@ -53,7 +63,10 @@ static async Task PrintEventsAsync()
         }
         catch (OperationCanceledException)
         {
-            Console.WriteLine("..");
+            stdout
+                .Execute(Print("."))
+                .Execute(Print(Environment.NewLine))
+                .Execute(MoveToColumn(0));
         }
     }
 }

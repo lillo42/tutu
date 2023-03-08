@@ -1,6 +1,8 @@
 ﻿using Tutu.Events;
 using Tutu.Extensions;
+using static Tutu.Commands.Cursor;
 using static Tutu.Commands.Events;
+using static Tutu.Commands.Style;
 
 namespace InteractiveDemo.Tests;
 
@@ -10,17 +12,25 @@ public class Event : AbstractTest
     {
         writer.Execute(EnableMouseCapture);
 
+        var stdout = Console.Out;
         while (true)
         {
             var @event = EventReader.Read();
-            Console.WriteLine(@event);
 
-            if (@event is Tutu.Events.Event.KeyEventEvent { Event.Code: KeyCode.CharKeyCode ch } keyEvent)
+            stdout
+                .Execute(Print(@event))
+                .Execute(Print(Environment.NewLine))
+                .Execute(MoveToColumn(0));
+
+            if (@event is Tutu.Events.Event.KeyEventEvent { Event.Code: KeyCode.CharKeyCode ch })
             {
                 if (ch.Character == 'c')
                 {
                     var position = Tutu.Cursor.Cursor.Position;
-                    Console.WriteLine("Cursor position: ({0}, {1})", position.Column, position.Row);
+                    stdout
+                        .Execute(Print($"Cursor position: ({position.Column}, {position.Row})"))
+                        .Execute(Print(Environment.NewLine))
+                        .Execute(MoveToColumn(0));
                 }
 
                 if (ch.Character == 'q')
