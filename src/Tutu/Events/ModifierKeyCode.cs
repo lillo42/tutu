@@ -1,7 +1,7 @@
 ﻿namespace Tutu.Events;
 
 /// <summary>
-/// Represents a modifier key (as part of [`KeyCode::Modifier`]).
+/// Represents a modifier key (as part of <see cref="KeyCode.Modifier"/>).
 /// </summary>
 public enum ModifierKeyCode
 {

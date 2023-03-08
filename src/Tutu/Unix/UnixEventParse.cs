@@ -1,8 +1,11 @@
-﻿using System.Runtime.InteropServices;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Runtime.InteropServices;
 using System.Text;
 using Tutu.Events;
+using Tutu.Exceptions;
 using static Tutu.Events.Event;
 using static Tutu.Events.InternalEvent;
+using static System.Convert;
 
 namespace Tutu.Unix;
 
@@ -39,7 +42,7 @@ internal class UnixEventParse
         return ans;
     }
 
-    public void Advance(Span<byte> buffer, bool hasMore)
+    public void Advance(ReadOnlySpan<byte> buffer, bool hasMore)
     {
         for (var idx = 0; idx < buffer.Length; idx++)
         {
@@ -77,7 +80,7 @@ internal class UnixEventParse
     // Ok(None) -> wait for more bytes
     // Err(_) -> failed to parse event, clear the buffer
     // Ok(Some(event)) -> we have event, clear the buffer
-    private static IInternalEvent? ParseEvent(Span<byte> buffer, bool isInputAvailable)
+    private static IInternalEvent? ParseEvent(ReadOnlySpan<byte> buffer, bool isInputAvailable)
     {
         if (buffer.IsEmpty)
         {
@@ -97,12 +100,12 @@ internal class UnixEventParse
                 {
                     return null;
                 }
-                
+
                 if (buffer[2] == 'D')
                 {
                     return Event(Key(new KeyEvent(KeyCode.Left, KeyModifiers.None)));
                 }
-                
+
                 if (buffer[2] == 'C')
                 {
                     return Event(Key(new KeyEvent(KeyCode.Right, KeyModifiers.None)));
@@ -145,22 +148,24 @@ internal class UnixEventParse
 
             if (buffer[1] == '\x1B')
             {
-                var @event = ParseEvent(buffer[1..], isInputAvailable);
-                return @event switch
-                {
-                    null => null,
-                    PublicEvent { Event: KeyEventEvent keyEvent } => Event(Key(new KeyEvent(keyEvent.Event.Code,
-                        keyEvent.Event.Modifiers | KeyModifiers.Alt))),
-                    _ => @event
-                };
+                return Event(Key(new KeyEvent(KeyCode.Esc, KeyModifiers.None, KeyEventKind.Press)));
             }
+
+            var @event = ParseEvent(buffer[1..], isInputAvailable);
+            return @event switch
+            {
+                null => null,
+                PublicEvent { Event: KeyEventEvent keyEvent } => Event(Key(new KeyEvent(keyEvent.Event.Code,
+                    keyEvent.Event.Modifiers | KeyModifiers.Alt))),
+                _ => @event
+            };
         }
 
         if (buffer[0] == '\r')
         {
             return Event(Key(new KeyEvent(KeyCode.Enter, KeyModifiers.None)));
         }
-        
+
         // Issue #371: \n = 0xA, which is also the keycode for Ctrl+J. The only reason we get
         // newlines as input is because the terminal converts \r into \n for us. When we
         // enter raw mode, we disable that, so \n no longer has any meaning - it's better to
@@ -199,10 +204,16 @@ internal class UnixEventParse
 
 
         var ch = ParseUt8Char(buffer);
-        return Event(Key(new KeyEvent(KeyCode.Char(ch), char.IsUpper(ch) ? KeyModifiers.Shift : KeyModifiers.None)));
+        if (ch == null)
+        {
+            return null;
+        }
+
+        return Event(Key(new KeyEvent(KeyCode.Char(ch.Value),
+            char.IsUpper(ch.Value) ? KeyModifiers.Shift : KeyModifiers.None)));
     }
 
-    private static char ParseUt8Char(ReadOnlySpan<byte> buffer)
+    private static char? ParseUt8Char(ReadOnlySpan<byte> buffer)
     {
         try
         {
@@ -220,7 +231,7 @@ internal class UnixEventParse
                 >= 0xC0 and <= 0xDF => 2, // 110xxxxx 10xxxxxx
                 >= 0xE0 and <= 0xEF => 3, // 1110xxxx 10xxxxxx 10xxxxxx
                 >= 0xF0 and <= 0xF7 => 4, // 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
-                _ => throw new IOException("Invalid UTF-8 sequence")
+                >= 0x80 and <= 0xBF or >= 0xF8 and <= 0xFF => throw CouldNotParseEvent(),
             };
 
             if (requiredBytes > 1 && buffer.Length > 1)
@@ -229,17 +240,18 @@ internal class UnixEventParse
                 {
                     if ((@byte & ~0b0011_1111) != 0b1000_0000)
                     {
-                        throw new IOException("Invalid UTF-8 sequence");
+                        ThrowCouldNotParseEvent();
                     }
                 }
             }
 
             if (buffer.Length < requiredBytes)
             {
-                return default;
+                return null;
             }
 
-            throw new IOException("Invalid UTF-8 sequence");
+            ThrowCouldNotParseEvent();
+            return null;
         }
     }
 
@@ -251,65 +263,91 @@ internal class UnixEventParse
             return null;
         }
 
-        var cb = (byte)(buffer[3] - 32);
+        byte cb = 0;
+        try
+        {
+            cb = (byte)(buffer[3] - 32);
+        }
+        catch
+        {
+            ThrowCouldNotParseEvent();
+        }
+
         var (kind, modifiers) = ParseCb(cb);
 
         // See http://www.xfree86.org/current/ctlseqs.html#Mouse%20Tracking
         // The upper left character position on the terminal is denoted as 1,1.
         // Subtract 1 to keep it synced with cursor
-        var cx = (ushort)(unchecked(buffer[4] - 32) - 1);
-        var cy = (ushort)(unchecked(buffer[5] - 32) - 1);
+        var cx = unchecked(buffer[4] - 32) - 1;
+        var cy = unchecked(buffer[5] - 32) - 1;
 
         return Event(Mouse(new MouseEvent(kind, cx, cy, modifiers)));
     }
 
-    private static IInternalEvent? ParseCsiRxvtMouse(ReadOnlySpan<byte> buffer)
+    private static IInternalEvent ParseCsiRxvtMouse(ReadOnlySpan<byte> buffer)
     {
         // rxvt mouse encoding:
         // ESC [ Cb ; Cx ; Cy ; M
 
-        var s = Encoding.UTF8.GetString(buffer);
-        var parts = s.Split(';');
+        var s = string.Empty;
 
-        if (!byte.TryParse(parts[0], out var cb))
+        try
         {
-            return null;
+            s = Encoding.UTF8.GetString(buffer[2..^1]);
+        }
+        catch
+        {
+            ThrowCouldNotParseEvent();
         }
 
-        cb -= 32;
+        var split = s.Split(';');
+
+        byte cb = 0;
+        try
+        {
+            cb = ToByte(ToByte(split[0]) - 32);
+        }
+        catch
+        {
+            ThrowCouldNotParseEvent();
+        }
+
         var (kind, modifiers) = ParseCb(cb);
-        if (!ushort.TryParse(parts[1], out var cx))
-        {
-            return null;
-        }
-
-        if (ushort.TryParse(parts[2], out var cy))
-        {
-            return null;
-        }
-
-        return Event(Mouse(new MouseEvent(kind, --cx, --cy, modifiers)));
+        var cx = ToByte(split[1]) - 1;
+        var cy = ToByte(split[2]) - 1;
+        return Event(Mouse(new MouseEvent(kind, cx, cy, modifiers)));
     }
 
-    private static IInternalEvent? ParseCsiSpecialKeyCode(ReadOnlySpan<byte> buffer)
+    private static IInternalEvent ParseCsiSpecialKeyCode(ReadOnlySpan<byte> buffer)
     {
-        var s = Encoding.UTF8.GetString(buffer[2..^1]);
-        var split = s.Split(';');
-        if (!byte.TryParse(split[0], out var first))
+        var s = string.Empty;
+        try
         {
-            return null;
+            s = Encoding.UTF8.GetString(buffer[2..^1]);
         }
+        catch
+        {
+            ThrowCouldNotParseEvent();
+        }
+
+        var split = s.Split(';').AsSpan();
+
+        var first = ToByte(split[0]);
 
         var modifiers = KeyModifiers.None;
         var kind = KeyEventKind.Press;
         var state = KeyEventState.None;
 
-        var parsed = ModifierAndKindParsed(split.AsSpan()[1..]);
-        if (parsed != null)
+        try
         {
-            modifiers = ParseModifiers(parsed.Value.Item1);
-            kind = ParseKeyEventKind(parsed.Value.Item2);
-            state = ParseModifiersToState(parsed.Value.Item1);
+            var (modifierMask, kindCode) = ModifierAndKindParsed(split[1..]);
+            modifiers = ParseModifiers(modifierMask);
+            kind = ParseKeyEventKind(kindCode);
+            state = ParseModifiersToState(modifierMask);
+        }
+        catch
+        {
+            // Ignoring
         }
 
         var keyCode = first switch
@@ -320,25 +358,20 @@ internal class UnixEventParse
             4 or 8 => KeyCode.End,
             5 => KeyCode.PageUp,
             6 => KeyCode.PageDown,
-            >= 11 and <= 15 => KeyCode.F((ushort)(first - 10)),
-            >= 17 and <= 21 => KeyCode.F((ushort)(first - 11)),
-            >= 23 and <= 26 => KeyCode.F((ushort)(first - 12)),
-            >= 28 and <= 29 => KeyCode.F((ushort)(first - 15)),
-            >= 31 and <= 34 => KeyCode.F((ushort)(first - 17)),
-            _ => null
+            >= 11 and <= 15 => KeyCode.F(first - 10),
+            >= 17 and <= 21 => KeyCode.F(first - 11),
+            >= 23 and <= 26 => KeyCode.F(first - 12),
+            >= 28 and <= 29 => KeyCode.F(first - 15),
+            >= 31 and <= 34 => KeyCode.F(first - 17),
+            _ => throw CouldNotParseEvent()
         };
-
-        if (keyCode is null)
-        {
-            return null;
-        }
 
         return Event(Key(new KeyEvent(keyCode, modifiers, kind, state)));
     }
 
     private static KeyEventState ParseModifiersToState(byte mask)
     {
-        var modifiersMask = unchecked((byte)(mask - 1));
+        var modifiersMask = ToByte(unchecked(mask - 1));
         var state = KeyEventState.None;
 
         if ((modifiersMask & 64) != 0)
@@ -374,7 +407,7 @@ internal class UnixEventParse
     private static (MouseEventKind.IMouseEventKind, KeyModifiers) ParseCb(byte cb)
     {
         var buttonNumber = (cb & 0b0000_0111) | ((cb & 0b1100_0000) >> 4);
-        var isDragging = (cb & 0b0010_0000) != 0;
+        var isDragging = (cb & 0b0010_0000) == 0b0010_0000;
 
         var kind = (buttonNumber, isDragging) switch
         {
@@ -389,7 +422,7 @@ internal class UnixEventParse
             (4, false) => MouseEventKind.ScrollUp,
             (5, false) => MouseEventKind.ScrollDown,
             // We do not support other buttons.
-            _ => throw new NotSupportedException("Unsupported mouse button number.")
+            _ => throw CouldNotParseEvent()
         };
 
         var modifiers = KeyModifiers.None;
@@ -429,11 +462,10 @@ internal class UnixEventParse
             // having another '[' after ESC[ not a likely scenario
             if (buffer[3] is >= (byte)'A' and <= (byte)'E')
             {
-                return Event(Key(new KeyEvent(KeyCode.F((ushort)(1 + buffer[3] - (byte)'A')), KeyModifiers.None)));
+                return Event(Key(new KeyEvent(KeyCode.F(1 + buffer[3] - (byte)'A'), KeyModifiers.None)));
             }
 
-            // TODO: throw exception
-            return null;
+            ThrowCouldNotParseEvent();
         }
 
         if (buffer[2] == 'D')
@@ -493,7 +525,7 @@ internal class UnixEventParse
 
         if (buffer[2] == ';')
         {
-            return ParseCsiModifierKey(buffer);
+            return ParseCsiModifierKeyCode(buffer);
         }
 
         // P, Q, and S for compatibility with Kitty keyboard protocol,
@@ -548,7 +580,7 @@ internal class UnixEventParse
 
             if (buffer.StartsWith("\x1B[200~"u8.ToArray().AsSpan()))
             {
-                return ParseCSIBracketedPaste(buffer);
+                return ParseCsiBracketedPaste(buffer);
             }
 
             if (lastByte == 'M')
@@ -574,11 +606,11 @@ internal class UnixEventParse
             return ParseCsiModifierKeyCode(buffer);
         }
 
-        // TODO: throw exception
+        ThrowCouldNotParseEvent();
         return null;
     }
 
-    private static IInternalEvent? ParseCSIBracketedPaste(ReadOnlySpan<byte> buffer)
+    private static IInternalEvent? ParseCsiBracketedPaste(ReadOnlySpan<byte> buffer)
     {
         if (!buffer.EndsWith("\x1b[201~"u8.ToArray()))
         {
@@ -589,115 +621,100 @@ internal class UnixEventParse
         return Event(Pasted(s));
     }
 
-    private static IInternalEvent? ParseCsiModifierKeyCode(ReadOnlySpan<byte> buffer)
+    private static IInternalEvent ParseCsiCursorPosition(ReadOnlySpan<byte> buffer)
     {
-        var s = Encoding.UTF8.GetString(buffer[2..^1]);
+        var s = string.Empty;
+        try
+        {
+            s = Encoding.UTF8.GetString(buffer[2..^1]);
+        }
+        catch
+        {
+            ThrowCouldNotParseEvent();
+        }
+
         var split = s.Split(';');
 
-        var modifiers = KeyModifiers.None;
-        var kind = KeyEventKind.Press;
-
-        var parsed = ModifierAndKindParsed(split[1..]);
-        if (parsed != null)
-        {
-            modifiers = ParseModifiers(parsed.Value.Item1);
-            kind = ParseKeyEventKind(parsed.Value.Item2);
-        }
-        else if (buffer.Length > 3)
-        {
-            try
-            {
-                var ch = Convert.ToChar(buffer[^2]);
-                modifiers = ParseModifiers((byte)ch);
-            }
-            catch
-            {
-                return null;
-            }
-        }
-
-        var key = buffer[^1];
-
-        var keyCode = key switch
-        {
-            (byte)'A' => KeyCode.Up,
-            (byte)'B' => KeyCode.Down,
-            (byte)'C' => KeyCode.Right,
-            (byte)'D' => KeyCode.Left,
-            (byte)'F' => KeyCode.End,
-            (byte)'H' => KeyCode.Home,
-            (byte)'P' => KeyCode.F(1),
-            (byte)'Q' => KeyCode.F(2),
-            (byte)'R' => KeyCode.F(3),
-            (byte)'S' => KeyCode.F(4),
-            _ => null
-        };
-
-        if (keyCode == null)
-        {
-            return null;
-        }
-
-        return Event(Key(new KeyEvent(keyCode, modifiers, kind)));
+        var y = ToUInt16(split[0]) - 1;
+        var x = ToUInt16(split[1]) - 1;
+        return CursorPosition(x, y);
     }
 
-    private static IInternalEvent? ParseCsiCursorPosition(ReadOnlySpan<byte> buffer)
+    private static IInternalEvent ParseCsiUEncodedKeyCode(ReadOnlySpan<byte> buffer)
     {
-        var s = Encoding.UTF8.GetString(buffer[2..^1]);
-        var split = s.Split(';');
-
-        if (!ushort.TryParse(split[0], out var y))
+        var s = string.Empty;
+        try
         {
-            return null;
+            // This function parses `CSI … u` sequences. These are sequences defined in either
+            // the `CSI u` (a.k.a. "Fix Keyboard Input on Terminals - Please", https://www.leonerd.org.uk/hacks/fixterms/)
+            // or Kitty Keyboard Protocol (https://sw.kovidgoyal.net/kitty/keyboard-protocol/) specifications.
+            // This CSI sequence is a tuple of semicolon-separated numbers.
+            s = Encoding.UTF8.GetString(buffer[2..^1]);
+        }
+        catch
+        {
+            ThrowCouldNotParseEvent();
         }
 
-        if (!ushort.TryParse(split[1], out var x))
+        var split = s.Split(';').AsSpan();
+
+        // In `CSI u`, this is parsed as:
+        //
+        //     CSI codepoint ; modifiers u
+        //     codepoint: ASCII Dec value
+        //
+        // The Kitty Keyboard Protocol extends this with optional components that can be
+        // enabled progressively. The full sequence is parsed as:
+        //
+        //     CSI unicode-key-code:alternate-key-codes ; modifiers:event-type ; text-as-codepoints u
+        var codepoints = split[0].Split(':').AsSpan();
+
+        uint codepoint = 0;
+
+        try
         {
-            return null;
+            codepoint = ToUInt32(codepoints[0]);
         }
-
-        return CursorPosition(--x, --y);
-    }
-
-    private static IInternalEvent? ParseCsiUEncodedKeyCode(ReadOnlySpan<byte> buffer)
-    {
-        var s = Encoding.UTF8.GetString(buffer[2..^1]);
-        var split = s.Split(';');
-
-        if (!uint.TryParse(split[0], out var codePoint))
+        catch
         {
-            return null;
+            ThrowCouldNotParseEvent();
         }
 
         var modifiers = KeyModifiers.None;
         var kind = KeyEventKind.Press;
         var state = KeyEventState.None;
 
-        var parsed = ModifierAndKindParsed(split[1..].AsSpan());
-        if (parsed != null)
+        try
         {
-            modifiers = ParseModifiers(parsed.Value.Item1);
-            kind = ParseKeyEventKind(parsed.Value.Item2);
-            state = ParseModifiersToState(parsed.Value.Item1);
+            var (modifiersMask, kindCode) = ModifierAndKindParsed(split[1..]);
+            modifiers = ParseModifiers(modifiersMask);
+            kind = ParseKeyEventKind(kindCode);
+            state = ParseModifiersToState(modifiersMask);
+        }
+        catch
+        {
+            // ignoring 
         }
 
+
         KeyCode.IKeyCode keyCode;
-        KeyEventState stateFromKeyCode = KeyEventState.None;
-        var trans = TranslateFunctionalKeyCode(codePoint);
-        if (trans != null)
+        var stateFromKeyCode = KeyEventState.None;
+
+        var translate = TranslateFunctionalKeyCode(codepoint);
+        if (translate != null)
         {
-            (keyCode, stateFromKeyCode) = trans.Value;
+            (keyCode, stateFromKeyCode) = translate.Value;
         }
         else
         {
-            char ch;
+            var ch = '0';
             try
             {
-                ch = Convert.ToChar(codePoint);
+                ch = ToChar(codepoint);
             }
             catch
             {
-                return null;
+                ThrowCouldNotParseEvent();
             }
 
             keyCode = ch switch
@@ -709,7 +726,7 @@ internal class UnixEventParse
                 // newlines as input is because the terminal converts \r into \n for us. When we
                 // enter raw mode, we disable that, so \n no longer has any meaning - it's better to
                 // use Ctrl+J. Waiting to handle it here means it gets picked up later
-                '\n' when Terminal.Terminal.IsRawModeEnabled => KeyCode.Enter,
+                '\n' when !Terminal.Terminal.IsRawModeEnabled => KeyCode.Enter,
                 '\t' when modifiers.HasFlag(KeyModifiers.Shift) => KeyCode.BackTab,
                 '\t' => KeyCode.Tab,
                 '\x7F' => KeyCode.Backspace,
@@ -719,47 +736,41 @@ internal class UnixEventParse
 
         if (keyCode is KeyCode.ModifierKeyCode modifierKeyCode)
         {
-            if (modifierKeyCode.Modifier.HasFlag(ModifierKeyCode.LeftAlt)
-                || modifierKeyCode.Modifier.HasFlag(ModifierKeyCode.RightAlt))
+            modifiers |= modifierKeyCode.Modifier switch
             {
-                modifiers |= KeyModifiers.Alt;
-            }
+                ModifierKeyCode.LeftAlt or ModifierKeyCode.RightAlt => KeyModifiers.Alt,
+                ModifierKeyCode.LeftControl or ModifierKeyCode.RightControl => KeyModifiers.Control,
+                ModifierKeyCode.LeftShift or ModifierKeyCode.RightShift => KeyModifiers.Shift,
+                ModifierKeyCode.LeftSuper or ModifierKeyCode.RightSuper => KeyModifiers.Super,
+                ModifierKeyCode.LeftHyper or ModifierKeyCode.RightHyper => KeyModifiers.Hyper,
+                ModifierKeyCode.LeftMeta or ModifierKeyCode.RightMeta => KeyModifiers.Meta,
+                _ => KeyModifiers.None
+            };
+        }
 
-            if (modifierKeyCode.Modifier.HasFlag(ModifierKeyCode.LeftControl)
-                || modifierKeyCode.Modifier.HasFlag(ModifierKeyCode.RightControl))
+        // When the "report alternate keys" flag is enabled in the Kitty Keyboard Protocol
+        // and the terminal sends a keyboard event containing shift, the sequence will
+        // contain an additional codepoint separated by a ':' character which contains
+        // the shifted character according to the keyboard layout.
+        if (modifiers.HasFlag(KeyModifiers.Shift))
+        {
+            try
             {
-                modifiers |= KeyModifiers.Control;
-            }
-
-            if (modifierKeyCode.Modifier.HasFlag(ModifierKeyCode.LeftShift)
-                || modifierKeyCode.Modifier.HasFlag(ModifierKeyCode.RightShift))
-            {
+                var shifted = ToChar(ToInt32(codepoints[1]));
+                keyCode = KeyCode.Char(shifted);
                 modifiers |= KeyModifiers.Shift;
             }
-
-            if (modifierKeyCode.Modifier.HasFlag(ModifierKeyCode.LeftSuper)
-                || modifierKeyCode.Modifier.HasFlag(ModifierKeyCode.RightSuper))
+            catch
             {
-                modifiers |= KeyModifiers.Super;
-            }
-
-            if (modifierKeyCode.Modifier.HasFlag(ModifierKeyCode.LeftHyper)
-                || modifierKeyCode.Modifier.HasFlag(ModifierKeyCode.RightHyper))
-            {
-                modifiers |= KeyModifiers.Hyper;
-            }
-
-            if (modifierKeyCode.Modifier.HasFlag(ModifierKeyCode.LeftMeta)
-                || modifierKeyCode.Modifier.HasFlag(ModifierKeyCode.RightMeta))
-            {
-                modifiers |= KeyModifiers.Meta;
+                // ignoring
             }
         }
+
 
         return Event(Key(new KeyEvent(keyCode, modifiers, kind, state | stateFromKeyCode)));
     }
 
-    private static (KeyCode.IKeyCode, KeyEventState)? TranslateFunctionalKeyCode(uint codepoint)
+    private static (KeyCode.IKeyCode specialKeyCode, KeyEventState state)? TranslateFunctionalKeyCode(uint codepoint)
     {
         var keyCode = codepoint switch
         {
@@ -890,7 +901,6 @@ internal class UnixEventParse
         var bits = buffer[3];
         var flags = Events.KeyboardEnhancementFlags.None;
 
-
         if ((bits & 1) != 0)
         {
             flags |= Events.KeyboardEnhancementFlags.DisambiguateEscapeCodes;
@@ -901,18 +911,17 @@ internal class UnixEventParse
             flags |= Events.KeyboardEnhancementFlags.ReportEventTypes;
         }
 
-        // *Note*: this is not yet supported by erised.
-        // if ((bits & 4) != 0)
-        // {
-        //     flags |= KeyboardEnhancementFlags::REPORT_ALTERNATE_KEYS;
-        // }
+        if ((bits & 4) != 0)
+        {
+            flags |= Events.KeyboardEnhancementFlags.ReportAlternateKeys;
+        }
 
         if ((bits & 8) != 0)
         {
             flags |= Events.KeyboardEnhancementFlags.ReportAllKeysAsEscapeCodes;
         }
 
-        // *Note*: this is not yet supported by crossterm.
+        // *Note*: this is not yet supported by tutu.
         // if bits & 16 != 0 {
         //     flags |= KeyboardEnhancementFlags::REPORT_ASSOCIATED_TEXT;
         // }
@@ -922,13 +931,24 @@ internal class UnixEventParse
 
     private static IInternalEvent? ParseCsiSgrMouse(ReadOnlySpan<byte> buffer)
     {
-        if (buffer[^1] != 'm' && buffer[^1] != 'M')
+        if (buffer[^1] is not ((byte)'m' or (byte)'M'))
         {
             return null;
         }
 
-        var s = Encoding.UTF8.GetString(buffer[3..^1]);
-        var split = s.Split(';').AsSpan();
+        var s = string.Empty;
+
+        try
+        {
+            s = Encoding.UTF8.GetString(buffer[3..^1]);
+        }
+        catch
+        {
+            ThrowCouldNotParseEvent();
+        }
+
+        var split = s.Split(';');
+
         var cb = byte.Parse(split[0]);
 
         var (kind, modifiers) = ParseCb(cb);
@@ -936,18 +956,8 @@ internal class UnixEventParse
         // See http://www.xfree86.org/current/ctlseqs.html#Mouse%20Tracking
         // The upper left character position on the terminal is denoted as 1,1.
         // Subtract 1 to keep it synced with cursor.
-        if (!ushort.TryParse(split[1], out var cx))
-        {
-            return null;
-        }
-
-        if (!ushort.TryParse(split[2], out var cy))
-        {
-            return null;
-        }
-
-        cx--;
-        cy--;
+        var cx = ToUInt16(split[1]) - 1;
+        var cy = ToUInt16(split[2]) - 1;
 
         // When button 3 in Cb is used to represent mouse release, you can't tell which button was
         // released. SGR mode solves this by having the sequence end with a lowercase m if it's a
@@ -963,28 +973,42 @@ internal class UnixEventParse
         return Event(Mouse(new MouseEvent(kind, cx, cy, modifiers)));
     }
 
-
-    private static IInternalEvent? ParseCsiModifierKey(ReadOnlySpan<byte> buffer)
+    private static IInternalEvent ParseCsiModifierKeyCode(ReadOnlySpan<byte> buffer)
     {
+        // ESC [
+
         if (buffer.Length < 3)
         {
-            throw new IOException("Could not parse event");
+            ThrowCouldNotParseEvent();
         }
 
-        var s = Encoding.UTF8.GetString(buffer[2..^1]);
+        var s = string.Empty;
+
+        try
+        {
+            s = Encoding.UTF8.GetString(buffer[2..^1]);
+        }
+        catch
+        {
+            ThrowCouldNotParseEvent();
+        }
+
         var split = s.Split(';').AsSpan();
 
-        KeyModifiers keyModifier;
+        var keyModifier = KeyModifiers.None;
         var keyEventKind = KeyEventKind.Press;
-        var modifiers = ModifierAndKindParsed(split[1..]);
-        if (modifiers.HasValue)
+
+        try
         {
-            keyModifier = ParseModifiers(modifiers.Value.Item1);
-            keyEventKind = ParseKeyEventKind(modifiers.Value.Item2);
+            var (modifierMask, kind) = ModifierAndKindParsed(split[1..]);
+            (keyModifier, keyEventKind) = (ParseModifiers(modifierMask), ParseKeyEventKind(kind));
         }
-        else
+        catch
         {
-            keyModifier = ParseModifiers((char)buffer[^2]);
+            if (buffer.Length > 3)
+            {
+                keyModifier = ParseModifiers(ToByte(ToChar(buffer[^2]) - '0'));
+            }
         }
 
         var key = buffer[^1];
@@ -1000,27 +1024,27 @@ internal class UnixEventParse
             (byte)'Q' => KeyCode.F(2),
             (byte)'R' => KeyCode.F(3),
             (byte)'S' => KeyCode.F(4),
-            _ => null
+            _ => throw CouldNotParseEvent()
         };
 
-        return keyCode == null ? null : Event(Key(new KeyEvent(keyCode, keyModifier, keyEventKind)));
+        return Event(Key(new KeyEvent(keyCode, keyModifier, keyEventKind)));
     }
 
-    private static (byte, byte)? ModifierAndKindParsed(ReadOnlySpan<string> iter)
+    private static (byte modifierMask, byte kindCode) ModifierAndKindParsed(ReadOnlySpan<string> iter)
     {
         if (iter.IsEmpty)
         {
-            return null;
+            ThrowCouldNotParseEvent();
         }
 
         var sub = iter[0].Split(':');
         if (sub.Length < 2)
         {
-            return null;
+            ThrowCouldNotParseEvent();
         }
 
-        byte.TryParse(sub[0], out var modifiers);
-        return byte.TryParse(sub[1], out var kind) ? (modifiers, kind) : ((byte, byte))(modifiers, 1);
+        var modifierMask = ToByte(sub[0]);
+        return byte.TryParse(sub[1], out var kind) ? (modifierMask, kind) : (modifierMask, (byte)1);
     }
 
     private static KeyEventKind ParseKeyEventKind(ushort kind)
@@ -1032,9 +1056,9 @@ internal class UnixEventParse
             _ => KeyEventKind.Press
         };
 
-    private static KeyModifiers ParseModifiers(ushort mask)
+    private static KeyModifiers ParseModifiers(byte mask)
     {
-        var modifierMask = unchecked(mask - 1);
+        var modifierMask = ToByte(unchecked(mask - 1));
         var modifiers = KeyModifiers.None;
         if ((modifierMask & 1) != 0)
         {
@@ -1068,4 +1092,9 @@ internal class UnixEventParse
 
         return modifiers;
     }
+
+    [DoesNotReturn]
+    private static void ThrowCouldNotParseEvent() => throw CouldNotParseEvent();
+
+    private static CouldNotParseEventException CouldNotParseEvent() => new("Could not parse an event.");
 }

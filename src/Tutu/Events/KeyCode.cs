@@ -81,7 +81,7 @@ public static class KeyCode
     /// `KeyCode::F(1)` represents F1 key, etc.
     /// </summary>
     /// <returns>New instance <see cref="FKeyCode"/>.</returns>
-    public static IKeyCode F(ushort number) => new FKeyCode(number);
+    public static IKeyCode F(int number) => new FKeyCode(number);
 
     /// <summary>
     /// A character.
@@ -269,7 +269,7 @@ public static class KeyCode
     ///
     /// `KeyCode::F(1)` represents F1 key, etc.
     /// </summary>
-    public record FKeyCode(ushort Number) : IKeyCode
+    public record FKeyCode(int Number) : IKeyCode
     {
         /// <inheritdoc />
         public override string ToString() => $"F{Number}";

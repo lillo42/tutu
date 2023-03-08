@@ -12,7 +12,7 @@ internal static class InternalEvent
 
     public static PublicEvent Event(IEvent @event) => new(@event);
 
-    public static CursorPositionInternalEvent CursorPosition(ushort column, ushort row) => new(column, row);
+    public static CursorPositionInternalEvent CursorPosition(int column, int row) => new(column, row);
 
     public static KeyboardEnhancementFlagsInternalEvent KeyboardEnhancementFlags(KeyboardEnhancementFlags flags) =>
         new(flags);
@@ -40,7 +40,7 @@ internal record PublicEvent(IEvent Event) : IInternalEvent;
 /// </summary>
 /// <param name="Column"></param>
 /// <param name="Row"></param>
-internal record CursorPositionInternalEvent(ushort Column, ushort Row) : IInternalEvent;
+internal record CursorPositionInternalEvent(int Column, int Row) : IInternalEvent;
 
 /// <summary>
 /// The progressive keyboard enhancement flags enabled by the terminal.
