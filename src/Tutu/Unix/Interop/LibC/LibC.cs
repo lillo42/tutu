@@ -15,8 +15,11 @@ internal static partial class LibC
     [LibraryImport(LibraryName, SetLastError = true)]
     public static partial int fcntl(int fd, int cmd, int arg);
 
+    public static int ioctl(int fd, syscall_arg request)
+        => ioctl(fd, request, 0);
+    
     [LibraryImport(LibraryName, SetLastError = true)]
-    public static unsafe partial int ioctl(int fd, syscall_arg request, syscall_arg arg);
+    public static partial int ioctl(int fd, syscall_arg request, syscall_arg arg);
 
     public static int ioctl(int fd, int request, int arg) => ioctl(fd, (syscall_arg)request, arg);
 

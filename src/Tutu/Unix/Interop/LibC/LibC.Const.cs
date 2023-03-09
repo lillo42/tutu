@@ -5,6 +5,8 @@ internal static partial class LibC
     private const string LibraryName = "libc";
     // private const string LibraryName = "libSystem.dylib";
 
+    public const int FIOCLEX = 0x20006601;
+
     public const int F_GETFL = 3;
     public const int F_SETFL = 4;
 

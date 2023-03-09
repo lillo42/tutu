@@ -47,22 +47,10 @@ internal class UnixEventSource : IEventSource
 
     private static (FileDesc, FileDesc) NonblockingUnixPair()
     {
-        var (receiver, sender) = CreateUnixStreamPair();
+        var (receiver, sender) = UnixStream.CreateUnixStreamPair();
         SetNonblocking(receiver, true);
         SetNonblocking(sender, true);
         return (receiver, sender);
-    }
-
-    private static (FileDesc, FileDesc) CreateUnixStreamPair()
-    {
-        var fds = new int[2];
-
-        var close = RuntimeInformation.IsOSPlatform(OSPlatform.OSX) ? 0 : SOCK_CLOEXEC;
-        if (socketpair(AF_UNIX, SOCK_STREAM | close, 0, fds) < 0)
-        {
-            Marshal.ThrowExceptionForHR(Marshal.GetLastWin32Error());
-        }
-        return (new FileDesc(fds[0], true), new FileDesc(fds[1], true));
     }
 
     private static void SetNonblocking(FileDesc fd, bool nonblocking)
