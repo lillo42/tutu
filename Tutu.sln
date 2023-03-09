@@ -37,6 +37,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		global.json = global.json
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tutu.Unix.Integration.Tests", "tests\Tutu.Unix.Integration.Tests\Tutu.Unix.Integration.Tests.csproj", "{BBC58D7B-670F-477A-A31D-FFBB1F297AE7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -86,6 +88,10 @@ Global
 		{2C24F4E9-4A0F-48F0-9AAD-8A54BCB3605E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2C24F4E9-4A0F-48F0-9AAD-8A54BCB3605E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2C24F4E9-4A0F-48F0-9AAD-8A54BCB3605E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BBC58D7B-670F-477A-A31D-FFBB1F297AE7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BBC58D7B-670F-477A-A31D-FFBB1F297AE7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BBC58D7B-670F-477A-A31D-FFBB1F297AE7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BBC58D7B-670F-477A-A31D-FFBB1F297AE7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{8700A065-CC09-4866-BF3A-41E91CE47DA0} = {F42DEB4E-EFB3-4E79-8239-9EB138169F90}
@@ -98,5 +104,6 @@ Global
 		{60C97B80-7A49-4D77-9CAE-C9170DAFF6F1} = {57F820AF-2566-4A83-8DB1-8A23482D6400}
 		{C70271AF-E6A9-40C1-8235-5699CCF0697D} = {0E60D1CD-9083-4C23-BEED-33155D9D59B1}
 		{2C24F4E9-4A0F-48F0-9AAD-8A54BCB3605E} = {0E60D1CD-9083-4C23-BEED-33155D9D59B1}
+		{BBC58D7B-670F-477A-A31D-FFBB1F297AE7} = {0E60D1CD-9083-4C23-BEED-33155D9D59B1}
 	EndGlobalSection
 EndGlobal

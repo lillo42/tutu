@@ -85,12 +85,17 @@ public static class KeyCode
 
     /// <summary>
     /// A character.
-    ///
-    /// `KeyCode::Char('c')` represents `c` character, etc.
     /// </summary>
     /// <param name="c">The pressed char</param>
     /// <returns>New instance <see cref="CharKeyCode"/>.</returns>
-    public static IKeyCode Char(char c) => new CharKeyCode(c);
+    public static IKeyCode Char(char c) => Char(c.ToString());
+
+    /// <summary>
+    /// A character.
+    /// </summary>
+    /// <param name="c">The pressed char</param>
+    /// <returns>New instance <see cref="CharKeyCode"/>.</returns>
+    public static IKeyCode Char(string c) => new CharKeyCode(c);
 
     /// <summary>
     /// Null key.
@@ -278,18 +283,11 @@ public static class KeyCode
     /// <summary>
     /// A character.
     /// </summary>
-    /// <param name="Character">The <see cref="char"/>.</param>
+    /// <param name="Character">The character.</param>
     /// <remarks>
-    /// `KeyCode::Char('c')` represents `c` character, etc.
+    /// Because we need to support UTF-8 character, not all value can be inside in <see langword="char"/>. 
     /// </remarks>
-    public record CharKeyCode(char Character) : IKeyCode
-    {
-        /// <inheritdoc />
-        public override string ToString()
-        {
-            return Character.ToString();
-        }
-    }
+    public record CharKeyCode(string Character) : IKeyCode;
 
     /// <summary>
     /// Null.

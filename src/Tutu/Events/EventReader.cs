@@ -1,4 +1,5 @@
-﻿using System.Runtime.InteropServices;
+﻿using System.Diagnostics;
+using System.Runtime.InteropServices;
 using NodaTime;
 using Tutu.Unix;
 using Tutu.Windows;
@@ -6,9 +7,39 @@ using Tutu.Windows;
 namespace Tutu.Events;
 
 /// <summary>
-/// The event reader.
+/// The event reader
 /// </summary>
-public static class EventReader
+public interface IEventReader
+{
+    /// <summary>
+    /// Checks if there is an <see cref="IEvent"/>.
+    /// </summary>
+    /// <param name="timeout">Maximum waiting time for event availability.</param>
+    /// <returns><see langword="true"/> if an <see cref="IEvent"/> is available; otherwise return <see langword="true"/>.</returns>
+    bool Poll(Duration? timeout = null);
+
+    /// <summary>
+    /// Checks if there is an <see cref="IEvent"/>.
+    /// </summary>
+    /// <param name="clock">The <see cref="IClock"/>.</param>
+    /// <param name="timeout">Maximum waiting time for event availability.</param>
+    /// <returns><see langword="true"/> if an <see cref="IEvent"/> is available; otherwise return <see langword="true"/>.</returns>
+    bool Poll(IClock clock, Duration? timeout = null);
+
+    /// <summary>
+    /// Reads a single <see cref="IEvent"/>.
+    /// </summary>
+    /// <returns></returns>
+    /// <remarks>
+    /// This function blocks until an <see cref="IEvent"/> is available.
+    /// </remarks>
+    IEvent Read();
+}
+
+/// <summary>
+/// The default implementation of <see cref="IEventReader"/>
+/// </summary>
+public class DefaultEventReader : IEventReader
 {
     private static Mutex<InternalReader> InternalReader { get; } = new(new(CreateEventSource()));
 
@@ -22,31 +53,16 @@ public static class EventReader
         return UnixEventSource.Instance;
     }
 
-    /// <summary>
-    /// Checks if there is an <see cref="IEvent"/>.
-    /// </summary>
-    /// <param name="timeout">Maximum waiting time for event availability.</param>
-    /// <returns><see langword="true"/> if an <see cref="IEvent"/> is available; otherwise return <see langword="true"/>.</returns>
-    public static bool Poll(Duration? timeout = null)
+
+    /// <inheritdoc cref="IEventReader.Poll(System.Nullable{NodaTime.Duration})"/>
+    public bool Poll(Duration? timeout = null)
         => Poll(SystemClock.Instance, timeout);
 
-    /// <summary>
-    /// Checks if there is an <see cref="IEvent"/>.
-    /// </summary>
-    /// <param name="clock">The <see cref="IClock"/>.</param>
-    /// <param name="timeout">Maximum waiting time for event availability.</param>
-    /// <returns><see langword="true"/> if an <see cref="IEvent"/> is available; otherwise return <see langword="true"/>.</returns>
-    public static bool Poll(IClock clock, Duration? timeout = null)
-        => PollInternal(clock, timeout, PublicEventFilter.Default);
+    /// <inheritdoc cref="IEventReader.Poll(NodaTime.IClock, System.Nullable{NodaTime.Duration})" />
+    public bool Poll(IClock clock, Duration? timeout = null) => PollInternal(clock, timeout, PublicEventFilter.Default);
 
-    /// <summary>
-    /// Reads a single <see cref="IEvent"/>.
-    /// </summary>
-    /// <returns></returns>
-    /// <remarks>
-    /// This function blocks until an <see cref="IEvent"/> is available.
-    /// </remarks>
-    public static IEvent Read()
+    /// <see cref="IEventReader.Read"/>
+    public IEvent Read()
     {
         var @event = ReadInternal(PublicEventFilter.Default);
         if (@event is PublicEvent publicEvent)
@@ -54,10 +70,8 @@ public static class EventReader
             return publicEvent.Event;
         }
 
-        // TODO: throw a better exception.
-        throw new Exception();
+        throw new UnreachableException("Invalid parse & filter code");
     }
-
 
     internal static bool PollInternal<TFilter>(Duration? timeout, TFilter filter)
         where TFilter : IFilter
@@ -96,4 +110,27 @@ public static class EventReader
         using var access = InternalReader.Lock();
         return access.Value.Read(filter);
     }
+}
+
+/// <summary>
+/// The static event reader.
+/// </summary>
+public static class EventReader
+{
+    /// <summary>
+    /// The singleton instance of <see cref="IEventReader"/>.
+    /// </summary>
+    public static IEventReader Instance { get; } = new DefaultEventReader();
+
+
+    /// <inheritdoc cref="IEventReader.Poll(System.Nullable{NodaTime.Duration})"/>
+    public static bool Poll(Duration? timeout = null) => Instance.Poll(timeout);
+
+    /// <inheritdoc cref="IEventReader.Poll(NodaTime.IClock, System.Nullable{NodaTime.Duration})" />
+    public static bool Poll(IClock clock, Duration? timeout = null)
+        => Instance.Poll(clock, timeout);
+
+    /// <see cref="IEventReader.Read"/>
+    public static IEvent Read()
+        => Instance.Read();
 }

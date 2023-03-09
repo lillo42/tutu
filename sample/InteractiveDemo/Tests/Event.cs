@@ -24,7 +24,7 @@ public class Event : AbstractTest
 
             if (@event is Tutu.Events.Event.KeyEventEvent { Event.Code: KeyCode.CharKeyCode ch })
             {
-                if (ch.Character == 'c')
+                if (ch.Character[0] == 'c')
                 {
                     var position = Tutu.Cursor.Cursor.Position;
                     stdout
@@ -33,7 +33,7 @@ public class Event : AbstractTest
                         .Execute(MoveToColumn(0));
                 }
 
-                if (ch.Character == 'q')
+                if (ch.Character[0] == 'q')
                 {
                     break;
                 }

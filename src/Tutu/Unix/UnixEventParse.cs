@@ -82,11 +82,6 @@ internal class UnixEventParse
     // Ok(Some(event)) -> we have event, clear the buffer
     private static IInternalEvent? ParseEvent(ReadOnlySpan<byte> buffer, bool isInputAvailable)
     {
-        if (buffer.IsEmpty)
-        {
-            return null;
-        }
-
         if (buffer[0] == '\x1B')
         {
             if (buffer.Length == 1)
@@ -133,12 +128,11 @@ internal class UnixEventParse
 
                 if (buffer[2] is >= (byte)'P' and <= (byte)'S')
                 {
-                    const byte p = (byte)'P';
-                    return Event(Key(new KeyEvent(KeyCode.F((ushort)(1 + buffer[2] - p)), KeyModifiers.None)));
+                    const byte P = (byte)'P';
+                    return Event(Key(new KeyEvent(KeyCode.F(1 + buffer[2] - P), KeyModifiers.None)));
                 }
 
-                // TODO: Improve exception message
-                throw new Exception();
+                ThrowCouldNotParseEvent();
             }
 
             if (buffer[1] == '[')
@@ -208,17 +202,18 @@ internal class UnixEventParse
             return null;
         }
 
-        return Event(Key(new KeyEvent(KeyCode.Char(ch.Value),
-            char.IsUpper(ch.Value) ? KeyModifiers.Shift : KeyModifiers.None)));
+        return Event(Key(new KeyEvent(KeyCode.Char(ch),
+          ch.Length == 1 &&  char.IsUpper(ch[0]) ? KeyModifiers.Shift : KeyModifiers.None)));
     }
 
     private static readonly Encoding UTF8 = new UTF8Encoding(false, true);
-    private static char? ParseUt8Char(ReadOnlySpan<byte> buffer)
+
+    private static string? ParseUt8Char(ReadOnlySpan<byte> buffer)
     {
         try
         {
             var s = UTF8.GetString(buffer);
-            return s[0];
+            return s;
         }
         catch
         {
@@ -758,7 +753,7 @@ internal class UnixEventParse
             {
                 var shifted = ToChar(ToInt32(codepoints[1]));
                 keyCode = KeyCode.Char(shifted);
-                modifiers |= KeyModifiers.Shift;
+                modifiers &= ~KeyModifiers.Shift;
             }
             catch
             {
@@ -973,15 +968,9 @@ internal class UnixEventParse
         return Event(Mouse(new MouseEvent(kind, cx, cy, modifiers)));
     }
 
-    private static IInternalEvent ParseCsiModifierKeyCode(ReadOnlySpan<byte> buffer)
+    private static IInternalEvent? ParseCsiModifierKeyCode(ReadOnlySpan<byte> buffer)
     {
         // ESC [
-
-        if (buffer.Length < 3)
-        {
-            ThrowCouldNotParseEvent();
-        }
-
         var s = string.Empty;
 
         try
@@ -1024,8 +1013,13 @@ internal class UnixEventParse
             (byte)'Q' => KeyCode.F(2),
             (byte)'R' => KeyCode.F(3),
             (byte)'S' => KeyCode.F(4),
-            _ => throw CouldNotParseEvent()
+            _ => null
         };
+
+        if (keyCode == null)
+        {
+            return null;
+        }
 
         return Event(Key(new KeyEvent(keyCode, keyModifier, keyEventKind)));
     }
@@ -1038,21 +1032,22 @@ internal class UnixEventParse
         }
 
         var sub = iter[0].Split(':');
-        if (sub.Length < 2)
+        var modifierMask = ToByte(sub[0]);
+
+        if (sub.Length < 2 || !byte.TryParse(sub[1], out var kind))
         {
-            ThrowCouldNotParseEvent();
+            return (modifierMask, 1);
         }
 
-        var modifierMask = ToByte(sub[0]);
-        return byte.TryParse(sub[1], out var kind) ? (modifierMask, kind) : (modifierMask, (byte)1);
+        return (modifierMask, kind);
     }
 
     private static KeyEventKind ParseKeyEventKind(ushort kind)
         => kind switch
         {
             1 => KeyEventKind.Press,
-            2 => KeyEventKind.Release,
-            3 => KeyEventKind.Repeat,
+            2 => KeyEventKind.Repeat,
+            3 => KeyEventKind.Release,
             _ => KeyEventKind.Press
         };
 

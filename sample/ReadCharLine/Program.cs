@@ -39,7 +39,7 @@ static string ReadLine()
     return line.ToString();
 }
 
-static char ReadChar()
+static string ReadChar()
 {
     while (true)
     {

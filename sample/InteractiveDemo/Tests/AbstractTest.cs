@@ -27,7 +27,7 @@ public abstract class AbstractTest
             writer.Flush();
 
             var ch = ReadChar();
-            if (ch == 'q')
+            if (ch == "q")
             {
                 break;
             }
@@ -45,7 +45,7 @@ public abstract class AbstractTest
         return new string(' ', diff) + text;
     }
 
-    private static char ReadChar()
+    private static string ReadChar()
     {
         while (true)
         {

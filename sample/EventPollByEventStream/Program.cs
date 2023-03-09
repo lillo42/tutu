@@ -46,7 +46,7 @@ async Task PrintEventsAsync()
                 .Execute(Print(Environment.NewLine))
                 .Execute(MoveToColumn(0));
 
-            if (@event is Event.KeyEventEvent { Event.Code: KeyCode.CharKeyCode { Character: 'c' } })
+            if (@event is Event.KeyEventEvent { Event.Code: KeyCode.CharKeyCode { Character: "c" } })
             {
                 var position = Tutu.Cursor.Cursor.Position;
                 stdout

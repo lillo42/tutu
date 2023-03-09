@@ -49,7 +49,7 @@ while (true)
 
     queue.Flush();
 
-    var ch = ReadChar();
+    var ch = ReadChar()[0];
 
     if (ch == '1')
     {
@@ -84,7 +84,7 @@ stdout
 Terminal.DisableRawMode();
 
 
-static char ReadChar()
+static string ReadChar()
 {
     while (true)
     {

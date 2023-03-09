@@ -1,7 +1,7 @@
 ﻿using NodaTime;
 using Tutu.Cursor;
 using Tutu.Events;
-using static Tutu.Events.EventReader;
+using static Tutu.Events.DefaultEventReader;
 
 namespace Tutu.Unix;
 

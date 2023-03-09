@@ -53,15 +53,15 @@ Console.Error
 Tutu.Terminal.Terminal.DisableRawMode();
 
 
-if (key == '1')
+if (key[0] == '1')
 {
     Console.WriteLine("..");
 }
-else if (key == '2')
+else if (key[0] == '2')
 {
     Console.WriteLine("/");
 }
-else if (key == '3')
+else if (key[0] == '3')
 {
     Console.WriteLine("~");
 }
@@ -70,7 +70,7 @@ else
     Console.WriteLine(Text);
 }
 
-static char ReadChar()
+static string ReadChar()
 {
     while (true)
     {
