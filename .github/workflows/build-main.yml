@@ -1,0 +1,33 @@
+name: Build Main
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  os_matrix:
+    strategy:
+      matrix:
+        os: [ ubuntu-latest, windows-latest ]
+  build:
+    name: build & tests
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v1
+      - name: Build & Test
+        run: ./build.sh Tests
+      - uses: actions/upload-artifact@v1
+        with:
+          name: test-results
+          path: artifacts/test-results
+  package:
+    name: Create nuget package
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - name: Packages
+        run: ./build.sh Pack
+      - uses: actions/upload-artifact@v1
+        with:
+          name: packages
+          path: artifacts/packages

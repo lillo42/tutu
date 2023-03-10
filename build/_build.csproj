@@ -18,4 +18,8 @@
     <PackageDownload Include="GitVersion.Tool" Version="[5.12.0]" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="ci" />
+  </ItemGroup>
+
 </Project>
