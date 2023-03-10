@@ -30,7 +30,7 @@ class Build : NukeBuild
     [Parameter("Configuration to build - Default is 'Debug' (local) or 'Release' (server)")]
     readonly Configuration Configuration = IsLocalBuild ? Configuration.Debug : Configuration.Release;
 
-    [Parameter("Nuget API key", Name = "api-key")] readonly string ApiKey;
+    [Parameter("Nuget API key", Name = "api-key")] readonly string NugetApiKey;
 
     [Parameter("NuGet Source for Packages", Name = "nuget-source")]
     readonly string NugetSource = "https://api.nuget.org/v3/index.json";
@@ -161,15 +161,26 @@ class Build : NukeBuild
         });
 
     Target Publish => _ => _
-        .After(Clean, Tests, Pack)
+        .After(Pack)
         .Consumes(Pack)
-        .Requires(() => ApiKey)
+        .Requires(() => NugetApiKey)
         .Requires(() => Configuration.Equals(Configuration.Release))
         .Executes(() =>
         {
-            DotNetNuGetPush(s => s
-                .SetApiKey(ApiKey)
+           DotNetNuGetPush(s => s
+                .SetSource(NugetSource)
+                .SetApiKey(NugetApiKey)
                 .EnableSkipDuplicate()
-                .SetSource(NugetSource));
+                .CombineWith(
+                    PackageDirectory.GlobFiles("*.nupkg"),
+                    (_, v) => _.SetTargetPath(v)));
+            
+            DotNetNuGetPush(s => s
+                .SetSource(NugetSource)
+                .SetApiKey(NugetApiKey)
+                .EnableSkipDuplicate()
+                .CombineWith(
+                    PackageDirectory.GlobFiles("*.snupkg"),
+                    (_, v) => _.SetTargetPath(v)));
         });
 }
