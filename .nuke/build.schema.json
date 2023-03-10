@@ -83,10 +83,11 @@
               "Clean",
               "Compile",
               "Coverage",
+              "IntegrationTests",
               "Pack",
               "Publish",
               "Restore",
-              "Test"
+              "Tests"
             ]
           }
         },
@@ -103,10 +104,11 @@
               "Clean",
               "Compile",
               "Coverage",
+              "IntegrationTests",
               "Pack",
               "Publish",
               "Restore",
-              "Test"
+              "Tests"
             ]
           }
         },

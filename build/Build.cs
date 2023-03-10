@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using Nuke.Common;
 using Nuke.Common.CI;
 using Nuke.Common.CI.GitHubActions;
@@ -11,6 +12,7 @@ using Nuke.Common.Tools.Coverlet;
 using Nuke.Common.Tools.DotNet;
 using Nuke.Common.Tools.GitVersion;
 using Nuke.Common.Utilities.Collections;
+using Serilog;
 using static Nuke.Common.IO.FileSystemTasks;
 using static Nuke.Common.Tools.DotNet.DotNetTasks;
 
@@ -37,6 +39,7 @@ class Build : NukeBuild
     [Solution] readonly Solution Solution;
     [GitRepository] readonly GitRepository GitRepository;
     [GitVersion(NoFetch = true)] readonly GitVersion GitVersion;
+    [CI] GitHubActions GitHubActions;
 
     AbsolutePath SourceDirectory => RootDirectory / "src";
     AbsolutePath TestsDirectory => RootDirectory / "tests";
@@ -47,7 +50,6 @@ class Build : NukeBuild
     AbsolutePath TestResultDirectory => ArtifactsDirectory / "test-results";
 
     AbsolutePath CoverageReportDirectory => ArtifactsDirectory / "coverage-report";
-    IEnumerable<Project> TestProjects => Solution.GetProjects("*.Test");
 
     Target Clean => _ => _
         .Before(Restore)
@@ -62,6 +64,7 @@ class Build : NukeBuild
         });
 
     Target Restore => _ => _
+        .After(Clean)
         .Executes(() =>
         {
             DotNetRestore(s => s
@@ -70,6 +73,7 @@ class Build : NukeBuild
 
     Target Compile => _ => _
         .DependsOn(Restore)
+        .DependsOn(Clean)
         .Executes(() =>
         {
             DotNetBuild(s => s
@@ -85,12 +89,19 @@ class Build : NukeBuild
         .Produces(CoverageReportDirectory)
         .Executes(() => { });
 
-    Target Test => _ => _
+    Target Tests => _ => _
         .DependsOn(Compile)
         .Produces(TestResultDirectory / "*.trx")
         .Produces(TestResultDirectory / "*.xml")
         .Executes(() =>
         {
+            var testProjects = new List<Project> { Solution.GetProject("Tutu.Tests") };
+
+            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                testProjects.Add(Solution.GetProject("Tutu.Unix.Integration.Tests"));
+            }
+
             DotNetTest(s => s
                 .SetProjectFile(Solution)
                 .SetNoBuild(InvokedTargets.Contains(Compile))
@@ -101,7 +112,33 @@ class Build : NukeBuild
                     .EnableCollectCoverage()
                     .SetCoverletOutputFormat(CoverletOutputFormat.opencover)
                     .When(IsServerBuild, _ => _.EnableUseSourceLink()))
-                .CombineWith(TestProjects, (_, v) => _
+                .CombineWith(testProjects, (_, v) => _
+                    .SetProjectFile(v)
+                    .SetLoggers($"trx;LogFileName={v.Name}.trx")
+                    .SetCoverletOutput(TestResultDirectory / $"{v.Name}.xml")));
+        });
+
+    Target IntegrationTests => _ => _
+        .DependsOn(Compile)
+        .Executes(() =>
+        {
+            var testProjects = new List<Project>();
+
+            var os = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "Windows" : "Unix";
+            testProjects.Add(Solution.GetProject($"Tutu.{os}.Integration.Tests"));
+            testProjects.Add(Solution.GetProject("Tutu.Integration.Tests"));
+
+            DotNetTest(s => s
+                .SetProjectFile(Solution)
+                .SetNoBuild(InvokedTargets.Contains(Compile))
+                .SetResultsDirectory(TestResultDirectory)
+                .SetConfiguration(Configuration)
+                .EnableNoRestore()
+                .When(InvokedTargets.Contains(Coverage) || IsServerBuild, _ => _
+                    .EnableCollectCoverage()
+                    .SetCoverletOutputFormat(CoverletOutputFormat.opencover)
+                    .When(IsServerBuild, _ => _.EnableUseSourceLink()))
+                .CombineWith(testProjects, (_, v) => _
                     .SetProjectFile(v)
                     .SetLoggers($"trx;LogFileName={v.Name}.trx")
                     .SetCoverletOutput(TestResultDirectory / $"{v.Name}.xml")));
@@ -125,7 +162,7 @@ class Build : NukeBuild
         });
 
     Target Publish => _ => _
-        .DependsOn(Clean, Test, Pack)
+        .After(Clean, Tests, Pack)
         .Consumes(Pack)
         .Requires(() => ApiKey)
         .Requires(() => Configuration.Equals(Configuration.Release))
