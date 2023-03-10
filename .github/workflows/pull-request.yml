@@ -14,14 +14,22 @@ env:
   TERM: xterm
 
 jobs:
-  build:
-    strategy:
-      matrix:
-        os: [ ubuntu-latest, windows-latest ]
-    name: build & tests
-    runs-on: ${{ matrix.os }}
+  build-ubuntu:
+    name: build & tests on Ubuntu
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v1
+      - name: add build.sh permission
+        run: chmod +x ./build.sh
+      - name: Build & Test
+        run: ./build.sh Tests
+  
+  build-windows:
+    name: build & tests on Windows
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v1
       - name: Build & Test
-        run: ./build.sh Tests
+        run: ./build.ps1 Tests
