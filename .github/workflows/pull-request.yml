@@ -1,15 +1,27 @@
 name: Pull Request
-on: pull_request
+on:
+  pull_request:
+    branches: [ main ]
+
+env:
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+  DOTNET_GENERATE_ASPNET_CERTIFICATE: false
+  DOTNET_MULTILEVEL_LOOKUP: 0
+  DOTNET_NOLOGO: true
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
+  DOTNET_SYSTEM_CONSOLE_ALLOW_ANSI_COLOR_REDIRECTION: 1
+  FORCE_COLOR: 3
+  TERM: xterm
 
 jobs:
-  build_matrix:
+  build:
     strategy:
       matrix:
         os: [ ubuntu-latest, windows-latest ]
-    build:
-      name: build & tests
-      runs-on: ${{ matrix.os }}
-      steps:
-        - uses: actions/checkout@v1
-        - name: Build & Test
-          run: ./build.sh Tests
+    name: build & tests
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v1
+      - name: Build & Test
+        run: ./build.sh Tests
