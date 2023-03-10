@@ -31,7 +31,10 @@ jobs:
     name: Create nuget package
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
+      - name: Checkout code
+        uses: actions/checkout@v1
+      - name: add build.sh permission
+        run: chmod +x ./build.sh
       - name: Packages
         run: ./build.sh Pack
       - uses: actions/upload-artifact@v1
