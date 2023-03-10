@@ -1,6 +1,8 @@
-using Erised.Events;
-using static Erised.Commands.Cursor;
-using static Erised.Commands.Events;
+﻿using Tutu.Events;
+using Tutu.Extensions;
+using static Tutu.Commands.Cursor;
+using static Tutu.Commands.Events;
+using static Tutu.Commands.Style;
 
 namespace InteractiveDemo.Tests;
 
@@ -10,30 +12,37 @@ public class Event : AbstractTest
     {
         writer.Execute(EnableMouseCapture);
 
+        var stdout = Console.Out;
         while (true)
         {
-            var @event = EventStream.Instance.Read();
-            if (@event != null)
+            var @event = EventReader.Read();
+
+            stdout
+                .Execute(Print(@event))
+                .Execute(Print(Environment.NewLine))
+                .Execute(MoveToColumn(0));
+
+            if (@event is Tutu.Events.Event.KeyEventEvent { Event.Code: KeyCode.CharKeyCode ch })
             {
-                Console.WriteLine(@event);
-
-                if (@event is Erised.Events.Event.KeyEvent { Event.Code: KeyCode.CharKeyCode ch })
+                if (ch.Character[0] == 'c')
                 {
-                    if (ch.Character == 'c')
-                    {
-                        var position = Position;
-                        Console.WriteLine("Cursor position: ({0}, {1})", position.Column, position.Row);
-                    }
+                    var position = Tutu.Cursor.Cursor.Position;
+                    stdout
+                        .Execute(Print($"Cursor position: ({position.Column}, {position.Row})"))
+                        .Execute(Print(Environment.NewLine))
+                        .Execute(MoveToColumn(0));
+                }
 
-                    if (ch.Character == 'q')
-                    {
-                        break;
-                    }
+                if (ch.Character[0] == 'q')
+                {
+                    break;
                 }
             }
         }
+
+        writer.Execute(DisableMouseCapture);
     }
-    
+
     public static void Run(TextWriter writer)
     {
         Execute(writer, TestEvent);

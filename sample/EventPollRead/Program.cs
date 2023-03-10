@@ -1,10 +1,12 @@
 ﻿// Demonstrates how to match on modifiers like: Control, alt, shift.
 
-using Erised.Commands;
-using Erised.Events;
 using NodaTime;
-using static Erised.Commands.Events;
-using Terminal = Erised.Terminal.Terminal;
+using Tutu.Events;
+using Tutu.Extensions;
+using static Tutu.Commands.Cursor;
+using static Tutu.Commands.Events;
+using static Tutu.Commands.Style;
+using Terminal = Tutu.Terminal.Terminal;
 
 const string Help = @"Blocking poll() & non-blocking read()
  - Keyboard, mouse and terminal resize events enabled
@@ -16,6 +18,7 @@ const string Help = @"Blocking poll() & non-blocking read()
 Console.WriteLine(Help);
 
 Terminal.EnableRawMode();
+
 var stdout = Console.Out;
 stdout.Execute(EnableMouseCapture);
 
@@ -31,26 +34,38 @@ catch (Exception e)
 stdout.Execute(DisableMouseCapture);
 Terminal.DisableRawMode();
 
-static void PrintEvents()
+void PrintEvents()
 {
     while (true)
     {
-        var @event = EventStream.Instance.Read(
-            Duration.FromSeconds(1),
-            () => Console.WriteLine("."));
-        if (@event != null)
+        if (!EventReader.Poll(Duration.FromSeconds(1)))
         {
-            Console.WriteLine(@event);
-            if (@event is Event.KeyEvent { Event.Code: KeyCode.CharKeyCode { Character: 'c' } })
-            {
-                var position = Cursor.Position;
-                Console.WriteLine("Cursor position: ({0}, {1})", position.Column, position.Row);
-            }
+            stdout
+                .Execute(Print("."))
+                .Execute(Print(Environment.NewLine))
+                .Execute(MoveToColumn(0));
+            continue;
+        }
 
-            if (@event is Event.KeyEvent { Event.Code: KeyCode.EscKeyCode })
-            {
-                break;
-            }
+        var @event = EventReader.Read();
+
+        stdout
+            .Execute(Print(@event))
+            .Execute(Print(Environment.NewLine))
+            .Execute(MoveToColumn(0));
+
+        if (@event is Event.KeyEventEvent { Event.Code: KeyCode.CharKeyCode { Character: "c" } })
+        {
+            var position = Tutu.Cursor.Cursor.Position;
+            stdout
+                .Execute(Print($"Cursor position: ({position.Column}, {position.Row})"))
+                .Execute(Print(Environment.NewLine))
+                .Execute(MoveToColumn(0));
+        }
+
+        if (@event is Event.KeyEventEvent { Event.Code: KeyCode.EscKeyCode })
+        {
+            break;
         }
     }
 }

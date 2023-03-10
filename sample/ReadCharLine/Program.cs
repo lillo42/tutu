@@ -1,8 +1,17 @@
 ﻿// Demonstrates how to block read characters or a full line.
-// Just note that Erised is not required to do this and can be done with `Console.ReadLine`.
+// Just note that Tutu is not required to do this and can be done with `Console.ReadLine`.
 
+using System.Runtime.InteropServices;
 using System.Text;
-using Erised.Events;
+using NodaTime;
+using Tutu.Events;
+
+// Windows is returning Enter that have been used to start the sample
+// when we use dotnet run
+if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows) && EventReader.Poll(Duration.FromMilliseconds(10)))
+{
+    _ = EventReader.Read();
+}
 
 Console.WriteLine("read line:");
 Console.WriteLine(ReadLine());
@@ -16,26 +25,26 @@ static string ReadLine()
 
     while (true)
     {
-        var read = EventStream.Instance.Read();
-        if (read is Event.KeyEvent { Event.Code: KeyCode.CharKeyCode ch })
+        var read = EventReader.Read();
+        if (read is Event.KeyEventEvent { Event: { Code: KeyCode.CharKeyCode ch, Kind: KeyEventKind.Press } })
         {
             line.Append(ch.Character);
         }
-        else if (read is Event.KeyEvent { Event.Code: KeyCode.EnterKeyCode })
+        else if (read is Event.KeyEventEvent { Event.Code: KeyCode.EnterKeyCode })
         {
             break;
         }
     }
-    
+
     return line.ToString();
 }
 
-static char ReadChar()
+static string ReadChar()
 {
     while (true)
     {
-        var read = EventStream.Instance.Read();
-        if (read is Event.KeyEvent { Event.Code: KeyCode.CharKeyCode ch })
+        var read = EventReader.Read();
+        if (read is Event.KeyEventEvent { Event.Code: KeyCode.CharKeyCode ch })
         {
             return ch.Character;
         }

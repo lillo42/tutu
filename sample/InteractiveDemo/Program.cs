@@ -1,11 +1,12 @@
-﻿using Erised.Events;
-using Erised.Terminal;
-using static Erised.Commands.Cursor;
-using static Erised.Commands.Style;
-using static Erised.Commands.Terminal;
-using Terminal = Erised.Terminal.Terminal;
+﻿using Tutu.Events;
+using Tutu.Extensions;
+using Tutu.Terminal;
+using static Tutu.Commands.Cursor;
+using static Tutu.Commands.Style;
+using static Tutu.Commands.Terminal;
+using Terminal = Tutu.Terminal.Terminal;
 
-const string Menu = @"Erised interactive test
+const string Menu = @"Tutu interactive test
 
 Controls:
 
@@ -32,7 +33,6 @@ Terminal.EnableRawMode();
 
 while (true)
 {
-    
     var queue = stdout
         .Enqueue(
             Reset,
@@ -49,7 +49,8 @@ while (true)
 
     queue.Flush();
 
-    var ch = ReadChar();
+    var ch = ReadChar()[0];
+
     if (ch == '1')
     {
         InteractiveDemo.Tests.Cursor.Run(stdout);
@@ -59,8 +60,8 @@ while (true)
     {
         InteractiveDemo.Tests.Color.Run(stdout);
     }
-    
-    if(ch == '3')
+
+    if (ch == '3')
     {
         InteractiveDemo.Tests.Attribute.Run(stdout);
     }
@@ -83,12 +84,12 @@ stdout
 Terminal.DisableRawMode();
 
 
-static char ReadChar()
+static string ReadChar()
 {
     while (true)
     {
-        var read = EventStream.Instance.Read();
-        if (read is Event.KeyEvent { Event.Code: KeyCode.CharKeyCode ch })
+        var read = EventReader.Read();
+        if (read is Event.KeyEventEvent { Event: { Code: KeyCode.CharKeyCode ch, Kind: KeyEventKind.Press } })
         {
             return ch.Character;
         }

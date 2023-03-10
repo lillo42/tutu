@@ -1,8 +1,9 @@
-using Erised;
-using Erised.Cursor;
-using Erised.Style.Extensions;
-using static Erised.Commands.Cursor;
-using static Erised.Commands.Style;
+﻿using Tutu;
+using Tutu.Cursor;
+using Tutu.Extensions;
+using Tutu.Style.Extensions;
+using static Tutu.Commands.Cursor;
+using static Tutu.Commands.Style;
 
 namespace InteractiveDemo.Tests;
 
@@ -102,7 +103,7 @@ public class Cursor : AbstractTest
             .Execute(
                 Hide,
                 MoveTo(0, 0),
-                SetForegroundColor(Erised.Style.Types.Color.Red),
+                SetForegroundColor(Tutu.Style.Types.Color.Red),
                 Print(
                     $"Red box is the center. After the action: '{description}' '√' is drawn to reflect the action from the center."));
 

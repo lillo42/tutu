@@ -1,10 +1,12 @@
 ﻿// Demonstrates how to read events asynchronously.
 
-using Erised.Commands;
-using Erised.Events;
 using NodaTime;
-using static Erised.Commands.Events;
-using Terminal = Erised.Terminal.Terminal;
+using Tutu.Events;
+using Tutu.Extensions;
+using static Tutu.Commands.Cursor;
+using static Tutu.Commands.Events;
+using static Tutu.Commands.Style;
+using Terminal = Tutu.Terminal.Terminal;
 
 const string Help = @"Event Stream for read Events
  - Keyboard, mouse and terminal resize events enabled
@@ -16,6 +18,7 @@ const string Help = @"Event Stream for read Events
 Console.WriteLine(Help);
 
 Terminal.EnableRawMode();
+
 var stdout = Console.Out;
 stdout.Execute(EnableMouseCapture);
 
@@ -24,27 +27,46 @@ await PrintEventsAsync();
 stdout.Execute(DisableMouseCapture);
 Terminal.DisableRawMode();
 
-static async Task PrintEventsAsync()
+async Task PrintEventsAsync()
 {
-    EventStream.Instance.Start(
-        Duration.FromSeconds(1),
-        () => Console.WriteLine("."));
-    var reader = EventStream.Instance.Reader;
-    while (await reader.WaitToReadAsync())
-    {
-        var @event = await reader.ReadAsync();
-        
-        Console.WriteLine(@event);
-        if (@event is Event.KeyEvent { Event.Code: KeyCode.CharKeyCode { Character: 'c' } })
-        {
-            var position = Cursor.Position;
-            Console.WriteLine("Cursor position: ({0}, {1})", position.Column, position.Row);
-        }
+    await EventStream.Default.StartAsync();
 
-        if (@event is Event.KeyEvent { Event.Code: KeyCode.EscKeyCode })
+    var reader = EventStream.Default.Reader;
+
+    while (true)
+    {
+        var source = new CancellationTokenSource();
+        try
         {
-            EventStream.Instance.Stop();
-            break;
+            source.CancelAfter(Duration.FromSeconds(1).ToTimeSpan());
+            var @event = await reader.ReadAsync(source.Token);
+
+            stdout
+                .Execute(Print(@event))
+                .Execute(Print(Environment.NewLine))
+                .Execute(MoveToColumn(0));
+
+            if (@event is Event.KeyEventEvent { Event.Code: KeyCode.CharKeyCode { Character: "c" } })
+            {
+                var position = Tutu.Cursor.Cursor.Position;
+                stdout
+                    .Execute(Print($"Cursor position: ({position.Column}, {position.Row})"))
+                    .Execute(Print(Environment.NewLine))
+                    .Execute(MoveToColumn(0));
+            }
+
+            if (@event is Event.KeyEventEvent { Event.Code: KeyCode.EscKeyCode })
+            {
+                await EventStream.Default.StopAsync();
+                break;
+            }
+        }
+        catch (OperationCanceledException)
+        {
+            stdout
+                .Execute(Print("."))
+                .Execute(Print(Environment.NewLine))
+                .Execute(MoveToColumn(0));
         }
     }
 }
