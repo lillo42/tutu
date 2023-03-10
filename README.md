@@ -2,8 +2,7 @@
 
 # Cross-platform Terminal Manipulation Library
 
-Erised is a pure-csharp, terminal manipulation library that makes it possible to write cross-platform text-based interfaces. It supports all UNIX and Windows terminals down to Windows 7 (not all terminals are tested,
-see [Tested Terminals](#tested-terminals) for more info). It is heavily inspired by the `Rust` library [cross-term](https://github.com/crossterm-rs/crossterm)
+Erised is a pure-csharp, terminal manipulation library that makes it possible to write cross-platform text-based interfaces. It supports all UNIX and Windows terminals down to Windows 7 (not all terminals are tested). It is heavily inspired by the `Rust` library [cross-term](https://github.com/crossterm-rs/crossterm)
 
 
 ## Table of Contents
@@ -64,26 +63,12 @@ see [Tested Terminals](#tested-terminals) for more info). It is heavily inspired
 WARNING: Do not change following heading title as it's used in the URL by other crates!
 -->
 
-### Tested Terminals
-
-- Console Host
-    - Windows 10 (Pro)
-    - Windows 8.1 (N)
-- Ubuntu Desktop Terminal
-    - Ubuntu 17.10
-    - Pop!_OS ( Ubuntu ) 20.04
-- (Arch, Manjaro) KDE Konsole
-- (Arch) Kitty
-- Linux Mint
-- (OpenSuse) Alacritty
-- (Chrome OS) Crostini
-
 This crate supports all UNIX terminals and Windows terminals down to Windows 7; however, not all of the
 terminals have been tested. If you have used this library for a terminal other than the above list without
 issues, then feel free to add it to the above list - I really would appreciate it!
 
 ## Getting Started
-_see the [examples directory](examples/) and [documentation](https://docs.rs/crossterm/) for more advanced examples._
+_see the [examples directory](sample/)._
 
 ```csharp
 using Erised;
@@ -100,13 +85,6 @@ public static void Main()
         );
 }
 ```
-
-Checkout this [list](https://docs.rs/crossterm/0.14.0/crossterm/index.html#supported-commands) with all possible commands.
-
-### Other Resources
-
-- [API documentation](https://docs.rs/crossterm/)
-- [Deprecated examples repository](https://github.com/crossterm-rs/examples)
 
 ## Contributing
 
