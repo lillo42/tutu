@@ -5,7 +5,7 @@ using Tutu.Events;
 using Tutu.Exceptions;
 using Tutu.Terminal;
 using Tutu.Unix.Interop.LibC;
-using static Tutu.Events.DefaultEventReader;
+using static Tutu.Events.InternalSystemEventReader;
 using static Tutu.Unix.Interop.LibC.LibC;
 
 namespace Tutu.Unix;

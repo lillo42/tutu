@@ -8,9 +8,9 @@ using Tutu.Events;
 
 // Windows is returning Enter that have been used to start the sample
 // when we use dotnet run
-if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows) && EventReader.Poll(Duration.FromMilliseconds(10)))
+if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows) && SystemEventReader.Instance.Poll(Duration.FromMilliseconds(10)))
 {
-    _ = EventReader.Read();
+    _ = SystemEventReader.Instance.Read();
 }
 
 Console.WriteLine("read line:");
@@ -25,7 +25,7 @@ static string ReadLine()
 
     while (true)
     {
-        var read = EventReader.Read();
+        var read = SystemEventReader.Instance.Read();
         if (read is Event.KeyEventEvent { Event: { Code: KeyCode.CharKeyCode ch, Kind: KeyEventKind.Press } })
         {
             line.Append(ch.Character);
@@ -43,7 +43,7 @@ static string ReadChar()
 {
     while (true)
     {
-        var read = EventReader.Read();
+        var read = SystemEventReader.Instance.Read();
         if (read is Event.KeyEventEvent { Event.Code: KeyCode.CharKeyCode ch })
         {
             return ch.Character;

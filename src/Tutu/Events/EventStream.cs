@@ -77,12 +77,12 @@ public class EventStream
 
         while (!cancellationToken.IsCancellationRequested)
         {
-            var hasEvent = EventReader.Poll(clock, Duration.FromMilliseconds(10));
+            var hasEvent = SystemEventReader.Poll(clock, Duration.FromMilliseconds(10));
             if (hasEvent)
             {
                 try
                 {
-                    var @event = EventReader.Read();
+                    var @event = SystemEventReader.Read();
                     await _channel.Writer.WriteAsync(@event, cancellationToken).ConfigureAwait(false);
                 }
                 catch

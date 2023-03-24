@@ -15,7 +15,7 @@ public class Event : AbstractTest
         var stdout = Console.Out;
         while (true)
         {
-            var @event = EventReader.Read();
+            var @event = SystemEventReader.Read();
 
             stdout
                 .Execute(Print(@event))
@@ -26,7 +26,7 @@ public class Event : AbstractTest
             {
                 if (ch.Character[0] == 'c')
                 {
-                    var position = Tutu.Cursor.Cursor.Position;
+                    var position = Tutu.Cursor.SystemCursor.Position;
                     stdout
                         .Execute(Print($"Cursor position: ({position.Column}, {position.Row})"))
                         .Execute(Print(Environment.NewLine))

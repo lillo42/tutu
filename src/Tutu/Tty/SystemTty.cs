@@ -10,7 +10,7 @@ namespace Tutu.Tty;
 /// <remarks>
 /// It's a wrapper for <see cref="ITty"/>.
 /// </remarks>
-public static class Tty
+public static class SystemTty
 {
     /// <summary>
     /// The current <see cref="ITty"/> instance.
@@ -18,9 +18,9 @@ public static class Tty
     public static ITty Instance { get; }
 
     /// <summary>
-    /// Initialize a new instance of <see cref="Tty"/>.
+    /// Initialize a new instance of <see cref="SystemTty"/>.
     /// </summary>
-    static Tty()
+    static SystemTty()
     {
         Instance = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? new WindowsTty() : new UnixTty();
     }

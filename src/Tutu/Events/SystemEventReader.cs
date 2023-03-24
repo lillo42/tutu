@@ -39,7 +39,7 @@ public interface IEventReader
 /// <summary>
 /// The default implementation of <see cref="IEventReader"/>
 /// </summary>
-public class DefaultEventReader : IEventReader
+internal class InternalSystemEventReader : IEventReader
 {
     private static Mutex<InternalReader> InternalReader { get; } = new(new(CreateEventSource()));
 
@@ -115,12 +115,12 @@ public class DefaultEventReader : IEventReader
 /// <summary>
 /// The static event reader.
 /// </summary>
-public static class EventReader
+public static class SystemEventReader 
 {
     /// <summary>
     /// The singleton instance of <see cref="IEventReader"/>.
     /// </summary>
-    public static IEventReader Instance { get; } = new DefaultEventReader();
+    public static IEventReader Instance { get; } = new InternalSystemEventReader();
 
 
     /// <inheritdoc cref="IEventReader.Poll(System.Nullable{NodaTime.Duration})"/>

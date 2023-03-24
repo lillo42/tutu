@@ -1,7 +1,7 @@
 ﻿using NodaTime;
 using Tutu.Cursor;
 using Tutu.Events;
-using static Tutu.Events.DefaultEventReader;
+using static Tutu.Events.InternalSystemEventReader;
 
 namespace Tutu.Unix;
 
@@ -15,7 +15,7 @@ public class UnixCursor : ICursor
     {
         get
         {
-            var terminal = (UnixTerminal)Terminal.Terminal.Instance;
+            var terminal = (UnixTerminal)Terminal.SystemTerminal.Instance;
             if (terminal.IsRawModeEnabled)
             {
                 return ReadPositionRaw();

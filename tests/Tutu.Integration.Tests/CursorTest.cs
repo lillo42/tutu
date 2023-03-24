@@ -11,7 +11,7 @@ public class CursorTest
 
     public CursorTest()
     {
-        _cursor = Tutu.Cursor.Cursor.Instance;
+        _cursor = Tutu.Cursor.SystemCursor.Instance;
     }
 
     [Fact]

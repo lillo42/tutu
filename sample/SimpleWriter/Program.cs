@@ -42,7 +42,7 @@ foreach (var line in Text.Split('\n'))
     y += 1;
 }
 
-Tutu.Terminal.Terminal.EnableRawMode();
+Tutu.Terminal.SystemTerminal.EnableRawMode();
 
 var key = ReadChar();
 
@@ -50,7 +50,7 @@ Console.Error
     .Execute(Show)
     .Execute(LeaveAlternateScreen);
 
-Tutu.Terminal.Terminal.DisableRawMode();
+Tutu.Terminal.SystemTerminal.DisableRawMode();
 
 
 if (key[0] == '1')
@@ -74,7 +74,7 @@ static string ReadChar()
 {
     while (true)
     {
-        var @event = EventReader.Read();
+        var @event = SystemEventReader.Read();
         if (@event is Event.KeyEventEvent { Event.Code: KeyCode.CharKeyCode ch })
         {
             return ch.Character;
