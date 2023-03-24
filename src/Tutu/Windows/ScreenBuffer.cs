@@ -147,8 +147,8 @@ internal readonly struct ScreenBufferInfo
     /// Will calculate the width and height from <see cref="CONSOLE_SCREEN_BUFFER_INFO.srWindow"/> and convert it into a <see cref="Size"/>.
     /// </remarks>
     public Size TerminalSize => new(
-        (short)(Info.srWindow.Bottom - Info.srWindow.Top),
-        (short)(Info.srWindow.Right - Info.srWindow.Left)
+        (short)(Info.srWindow.Right - Info.srWindow.Left),
+        (short)(Info.srWindow.Bottom - Info.srWindow.Top)
         );
 
     /// <summary>
