@@ -164,7 +164,7 @@ internal class UnixEventParse
         // newlines as input is because the terminal converts \r into \n for us. When we
         // enter raw mode, we disable that, so \n no longer has any meaning - it's better to
         // use Ctrl+J. Waiting to handle it here means it gets picked up later
-        if (buffer[0] == '\n' && !Terminal.Terminal.IsRawModeEnabled)
+        if (buffer[0] == '\n' && !Terminal.SystemTerminal.IsRawModeEnabled)
         {
             return Event(Key(new KeyEvent(KeyCode.Enter, KeyModifiers.None)));
         }
@@ -721,7 +721,7 @@ internal class UnixEventParse
                 // newlines as input is because the terminal converts \r into \n for us. When we
                 // enter raw mode, we disable that, so \n no longer has any meaning - it's better to
                 // use Ctrl+J. Waiting to handle it here means it gets picked up later
-                '\n' when !Terminal.Terminal.IsRawModeEnabled => KeyCode.Enter,
+                '\n' when !Terminal.SystemTerminal.IsRawModeEnabled => KeyCode.Enter,
                 '\t' when modifiers.HasFlag(KeyModifiers.Shift) => KeyCode.BackTab,
                 '\t' => KeyCode.Tab,
                 '\x7F' => KeyCode.Backspace,

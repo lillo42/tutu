@@ -11,7 +11,7 @@ public class TerminalTest
 
     public TerminalTest()
     {
-        _terminal = Tutu.Terminal.Terminal.Instance;
+        _terminal = Tutu.Terminal.SystemTerminal.Instance;
     }
 
     [Fact]

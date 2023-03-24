@@ -4,7 +4,6 @@ using Tutu.Terminal;
 using static Tutu.Commands.Cursor;
 using static Tutu.Commands.Style;
 using static Tutu.Commands.Terminal;
-using Terminal = Tutu.Terminal.Terminal;
 
 const string Menu = @"Tutu interactive test
 
@@ -28,7 +27,7 @@ var stdout = Console.Out;
 
 stdout.Execute(EnterAlternateScreen);
 
-Terminal.EnableRawMode();
+SystemTerminal.EnableRawMode();
 
 
 while (true)
@@ -81,14 +80,14 @@ stdout
     .Execute(Show)
     .Execute(LeaveAlternateScreen);
 
-Terminal.DisableRawMode();
+SystemTerminal.DisableRawMode();
 
 
 static string ReadChar()
 {
     while (true)
     {
-        var read = EventReader.Read();
+        var read = SystemEventReader.Read();
         if (read is Event.KeyEventEvent { Event: { Code: KeyCode.CharKeyCode ch, Kind: KeyEventKind.Press } })
         {
             return ch.Character;

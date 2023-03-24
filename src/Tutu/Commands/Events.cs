@@ -52,7 +52,7 @@ public static class Events
     /// </summary>
     /// <remarks>
     /// It should be paired with <see cref="DisableFocusChangeCommand"/> at the end of execution.
-    /// Focus events can be captured with <see cref="EventReader.Read"/>.
+    /// Focus events can be captured with <see cref="SystemEventReader.Read"/>.
     /// </remarks>
     public static ICommand EnableFocusChange { get; } = new EnableFocusChangeCommand();
 

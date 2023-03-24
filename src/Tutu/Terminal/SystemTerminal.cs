@@ -12,7 +12,7 @@ namespace Tutu.Terminal;
 /// Depending on the platform, it will be initialized with a different implementation.
 /// for Windows, it will be <see cref="WindowsTerminal"/>, for Unix, it will be <see cref="UnixTerminal"/>.
 /// </remarks>
-public static class Terminal
+public static class SystemTerminal
 {
     /// <summary>
     /// The current <see cref="ITerminal"/> instance.
@@ -22,7 +22,7 @@ public static class Terminal
     /// <summary>
     /// Initialize the terminal.
     /// </summary>
-    static Terminal()
+    static SystemTerminal()
     {
         Instance = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? new WindowsTerminal() : new UnixTerminal();
     }

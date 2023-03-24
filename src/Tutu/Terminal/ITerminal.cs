@@ -42,7 +42,7 @@ public interface ITerminal
     /// This always returns `false` on Windows.
     ///
     /// On unix systems, this function will block and possibly time out while
-    /// <see cref="EventReader.Read"/> or <see cref="EventReader.Poll(System.Nullable{NodaTime.Duration})"/> are being called.
+    /// <see cref="SystemEventReader.Read"/> or <see cref="SystemEventReader.Poll(System.Nullable{NodaTime.Duration})"/> are being called.
     /// </remarks>
     bool SupportsKeyboardEnhancement { get; }
 }

@@ -122,7 +122,7 @@ internal class UnixEventSource : IEventSource
                 // not a really long time from the absolute time point of view, but
                 // it's a really long time from the mio, async-std/tokio executor, ...
                 // point of view.
-                var newSize = Terminal.Terminal.Size;
+                var newSize = Terminal.SystemTerminal.Size;
                 return InternalEvent.Event(new Event.ScreenResizeEvent(newSize.Width, newSize.Height));
             }
         }

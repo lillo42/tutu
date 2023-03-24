@@ -3,10 +3,10 @@
 using NodaTime;
 using Tutu.Events;
 using Tutu.Extensions;
+using Tutu.Terminal;
 using static Tutu.Commands.Cursor;
 using static Tutu.Commands.Events;
 using static Tutu.Commands.Style;
-using Terminal = Tutu.Terminal.Terminal;
 
 const string Help = @"Event Stream for read Events
  - Keyboard, mouse and terminal resize events enabled
@@ -17,7 +17,7 @@ const string Help = @"Event Stream for read Events
 
 Console.WriteLine(Help);
 
-Terminal.EnableRawMode();
+SystemTerminal.EnableRawMode();
 
 var stdout = Console.Out;
 stdout.Execute(EnableMouseCapture);
@@ -25,7 +25,7 @@ stdout.Execute(EnableMouseCapture);
 await PrintEventsAsync();
 
 stdout.Execute(DisableMouseCapture);
-Terminal.DisableRawMode();
+SystemTerminal.DisableRawMode();
 
 async Task PrintEventsAsync()
 {
@@ -48,7 +48,7 @@ async Task PrintEventsAsync()
 
             if (@event is Event.KeyEventEvent { Event.Code: KeyCode.CharKeyCode { Character: "c" } })
             {
-                var position = Tutu.Cursor.Cursor.Position;
+                var position = Tutu.Cursor.SystemCursor.Position;
                 stdout
                     .Execute(Print($"Cursor position: ({position.Column}, {position.Row})"))
                     .Execute(Print(Environment.NewLine))

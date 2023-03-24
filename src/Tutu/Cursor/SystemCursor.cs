@@ -12,7 +12,7 @@ namespace Tutu.Cursor;
 /// Depending on the platform, it will be initialized with a different implementation.
 /// For Windows, it will be <see cref="WindowsCursor"/>, for Unix, it will be <see cref="UnixCursor"/>.
 /// </remarks>
-public static class Cursor
+public static class SystemCursor
 {
     /// <summary>
     /// The current <see cref="ICursor"/> instance.
@@ -22,7 +22,7 @@ public static class Cursor
     /// <summary>
     /// Initialize the <see cref="Instance"/>.
     /// </summary>
-    static Cursor()
+    static SystemCursor()
     {
         Instance = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? new WindowsCursor() : new UnixCursor();
     }
