@@ -2,7 +2,7 @@
 
 # Cross-platform Terminal Manipulation Library
 
-Erised is a pure-csharp, terminal manipulation library that makes it possible to write cross-platform text-based interfaces. It supports all UNIX and Windows terminals down to Windows 7 (not all terminals are tested). It is heavily inspired by the `Rust` library [cross-term](https://github.com/crossterm-rs/crossterm)
+Tutu is a pure-csharp, terminal manipulation library that makes it possible to write cross-platform text-based interfaces. It supports all UNIX and Windows terminals down to Windows 7 (not all terminals are tested). It is heavily inspired by the `Rust` library [cross-term](https://github.com/crossterm-rs/crossterm)
 
 
 ## Table of Contents
@@ -59,9 +59,6 @@ Erised is a pure-csharp, terminal manipulation library that makes it possible to
     - futures Stream  (feature 'event-stream')
     - Poll/read API
 
-<!--
-WARNING: Do not change following heading title as it's used in the URL by other crates!
--->
 
 This crate supports all UNIX terminals and Windows terminals down to Windows 7; however, not all of the
 terminals have been tested. If you have used this library for a terminal other than the above list without
@@ -71,8 +68,8 @@ issues, then feel free to add it to the above list - I really would appreciate i
 _see the [examples directory](sample/)._
 
 ```csharp
-using Erised;
-using static Erised.Commands.Style;
+using Tutu;
+using static Tutu.Commands.Style;
 
 public static void Main()
 {
@@ -85,11 +82,6 @@ public static void Main()
         );
 }
 ```
-
-## Contributing
-
-We highly appreciate when anyone contributes to this crate. Before you do, please,
-read the [Contributing](docs/CONTRIBUTING.md) guidelines.
 
 ## Authors
 
