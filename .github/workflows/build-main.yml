@@ -10,20 +10,27 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v1
-      - name: add build.sh permission
-        run: chmod +x ./build.sh
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
       - name: Build & Test
-        run: ./build.sh Tests
+        run: |
+          chmod +x ./build.sh
+          ./build.sh Tests
   
   build-windows:
     name: build & tests on Windows
     runs-on: windows-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v1
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
       - name: Setup .NET
         uses: actions/setup-dotnet@v3
+
       - name: Build & Test
         run: ./build.ps1 Tests
   
@@ -32,12 +39,26 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v1
-      - name: add build.sh permission
-        run: chmod +x ./build.sh
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
       - name: Packages
-        run: ./build.sh Pack
-      - uses: actions/upload-artifact@v1
+        run: |
+          chmod +x ./build.sh
+          ./build.sh Pack
+
+      - uses: actions/upload-artifact@v3
         with:
           name: packages
           path: artifacts/packages
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: test-results
+          path: artifacts/test-results
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: coverage-report
+          path: artifacts/coverage-report

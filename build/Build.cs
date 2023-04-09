@@ -37,7 +37,7 @@ class Build : NukeBuild
 
     [Solution] readonly Solution Solution;
     [GitRepository] readonly GitRepository GitRepository;
-    [GitVersion(NoFetch = true)] readonly GitVersion GitVersion;
+    [GitVersion(NoFetch = true, Framework = "net5.0")] readonly GitVersion GitVersion;
     [CI] GitHubActions GitHubActions;
 
     AbsolutePath SourceDirectory => RootDirectory / "src";
@@ -114,7 +114,7 @@ class Build : NukeBuild
                 .CombineWith(testProjects, (_, v) => _
                     .SetProjectFile(v)
                     .SetLoggers($"trx;LogFileName={v.Name}.trx")
-                    .SetCoverletOutput(TestResultDirectory / $"{v.Name}.xml")));
+                    .SetCoverletOutput(CoverageReportDirectory / $"{v.Name}.xml")));
         });
 
     Target IntegrationTests => _ => _
