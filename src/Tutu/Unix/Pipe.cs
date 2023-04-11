@@ -42,14 +42,8 @@ internal static class Pipe
     }
 }
 
-internal class WakeFd
+internal record WakeFd(int Fd, WakeMethod Method)
 {
-    public WakeFd(int fd, WakeMethod method)
-    {
-        Fd = fd;
-        Method = method;
-    }
-
     public void SetFlags()
     {
         var flags = fcntl(Fd, F_GETFL, 0);
@@ -90,9 +84,6 @@ internal class WakeFd
             }
         }
     }
-
-    public int Fd { get; }
-    public WakeMethod Method { get; }
 }
 
 internal enum WakeMethod
