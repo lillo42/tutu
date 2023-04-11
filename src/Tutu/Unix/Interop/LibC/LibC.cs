@@ -39,7 +39,7 @@ internal static partial class LibC
     public static unsafe partial ssize_t send(int socket, void* buf, size_t len, int flags);
 
     [LibraryImport(LibraryName, SetLastError = true)]
-    public static partial void signal(int signum, [MarshalAs(UnmanagedType.FunctionPtr)] SignalHandler handler);
+    public static partial void signal(int signum, IntPtr handler);
 
     [LibraryImport(LibraryName, SetLastError = true)]
     public static partial int socketpair(int domain, int type, int protocol, Span<int> sv);
