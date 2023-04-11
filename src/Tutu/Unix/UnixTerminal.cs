@@ -18,50 +18,59 @@ namespace Tutu.Unix;
 /// </remarks>
 public class UnixTerminal : ITerminal
 {
-    private readonly Mutex<termios?> _terminalModePriorRawMode = new(null);
+    private termios? _terminalModePriorRawMode;
 
     /// <inheritdoc cref="ITerminal.IsRawModeEnabled"/> 
     public bool IsRawModeEnabled
     {
         get
         {
-            using var value = _terminalModePriorRawMode.Lock();
-            return value.Value != null;
+            lock (this)
+            {
+                return _terminalModePriorRawMode != null;
+            }
         }
     }
 
     /// <inheritdoc cref="ITerminal.DisableRawMode"/> 
     public void EnableRawMode()
     {
-        using var originalMode = _terminalModePriorRawMode.Lock();
-        if (originalMode.Value != null)
+        lock (this)
         {
-            return;
+            if (_terminalModePriorRawMode != null)
+            {
+                return;
+            }
+        
+            var tty = FileDesc.TtyFd();
+            
+            var ios = new termios();
+            GetTerminalAttributes(tty, ref ios);
+            
+            var originalModeIOS = ios;
+
+            RawTerminalAttribute(ref ios);
+            SetTerminalAttributes(tty, ref ios);
+
+            _terminalModePriorRawMode = originalModeIOS;
         }
-
-        var tty = FileDesc.TtyFd();
-        var ios = GetTerminalAttributes(tty);
-        var originalModeIOS = ios;
-
-        RawTerminalAttribute(ref ios);
-        SetTerminalAttributes(tty, ref ios);
-
-        originalMode.Value = originalModeIOS;
     }
 
     /// <inheritdoc cref="ITerminal.DisableRawMode"/> 
     public void DisableRawMode()
     {
-        using var originalMode = _terminalModePriorRawMode.Lock();
-        if (originalMode.Value == null)
+        lock (this)
         {
-            return;
-        }
+            if (_terminalModePriorRawMode == null)
+            {
+                return;
+            }
 
-        var tty = FileDesc.TtyFd();
-        var originalModeIOS = originalMode.Value.Value;
-        SetTerminalAttributes(tty, ref originalModeIOS);
-        originalMode.Value = null;
+            var tty = FileDesc.TtyFd();
+            var originalModeIOS = _terminalModePriorRawMode.Value;
+            SetTerminalAttributes(tty, ref originalModeIOS);
+            _terminalModePriorRawMode = null;
+        }
     }
 
     /// <inheritdoc cref="ITerminal.Size"/> 
@@ -191,15 +200,12 @@ public class UnixTerminal : ITerminal
         }
     }
 
-    private static termios GetTerminalAttributes(FileDesc fd)
+    private static void GetTerminalAttributes(FileDesc fd, ref termios termios)
     {
-        var termios = new termios();
         if (tcgetattr(fd, ref termios) < 0)
         {
             Marshal.ThrowExceptionForHR(Marshal.GetLastWin32Error());
         }
-
-        return termios;
     }
 
     private static void SetTerminalAttributes(FileDesc fd, ref termios termios)
