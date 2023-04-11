@@ -4,7 +4,7 @@ using static Tutu.Unix.Interop.LibC.LibC;
 
 namespace Tutu.Unix;
 
-internal class Pipe
+internal static class Pipe
 {
     private static readonly HashSet<WakeFd> s_register = new();
 
@@ -34,9 +34,11 @@ internal class Pipe
         }
     }
 
-    private static void Register(int signal, SignalHandler handler)
+    private static void Register(int signal, SignalHandler callback)
     {
-        LibC.signal(signal, handler);
+        var gcHandle = GCHandle.Alloc(callback); // A hack to prevent GC from collecting the delegate.
+        var pointer = Marshal.GetFunctionPointerForDelegate(callback);
+        LibC.signal(signal, pointer);
     }
 }
 
