@@ -10,10 +10,10 @@ using Nuke.Common.ProjectModel;
 using Nuke.Common.Tooling;
 using Nuke.Common.Tools.Coverlet;
 using Nuke.Common.Tools.DotNet;
+using Nuke.Common.Tools.GitReleaseManager;
 using Nuke.Common.Tools.GitVersion;
-using Nuke.Common.Utilities.Collections;
-using static Nuke.Common.IO.FileSystemTasks;
 using static Nuke.Common.Tools.DotNet.DotNetTasks;
+using static Nuke.Common.Tools.GitReleaseManager.GitReleaseManagerTasks;
 
 [DotNetVerbosityMapping]
 [UnsetVisualStudioEnvironmentVariables]
@@ -57,9 +57,9 @@ class Build : NukeBuild
             DotNetClean(s => s
                 .SetProject(Solution)
                 .SetConfiguration(Configuration));
-            SourceDirectory.GlobDirectories("**/bin", "**/obj").ForEach(DeleteDirectory);
-            TestsDirectory.GlobDirectories("**/bin", "**/obj").ForEach(DeleteDirectory);
-            EnsureCleanDirectory(ArtifactsDirectory);
+            SourceDirectory.GlobDirectories("**/bin", "**/obj").DeleteDirectories();
+            TestsDirectory.GlobDirectories("**/bin", "**/obj").DeleteDirectories();
+            ArtifactsDirectory.GlobDirectories().DeleteDirectories();
         });
 
     Target Restore => _ => _
@@ -167,20 +167,27 @@ class Build : NukeBuild
         .Requires(() => Configuration.Equals(Configuration.Release))
         .Executes(() =>
         {
-           DotNetNuGetPush(s => s
-                .SetSource(NugetSource)
-                .SetApiKey(NugetApiKey)
-                .EnableSkipDuplicate()
-                .CombineWith(
-                    PackageDirectory.GlobFiles("*.nupkg"),
-                    (_, v) => _.SetTargetPath(v)));
-            
             DotNetNuGetPush(s => s
                 .SetSource(NugetSource)
                 .SetApiKey(NugetApiKey)
                 .EnableSkipDuplicate()
                 .CombineWith(
-                    PackageDirectory.GlobFiles("*.snupkg"),
+                    PackageDirectory.GlobFiles("*.nupkg", "*.snupkg"),
                     (_, v) => _.SetTargetPath(v)));
+        });
+
+    Target CreateRelease => _ => _
+        .Before(Publish)
+        .Requires(() => GitHubActions)
+        .Executes(() =>
+        {
+            GitReleaseManagerCreate(release => release
+                .SetToken(GitHubActions.Token)
+                .SetRepositoryName(GitHubActions.Repository)
+                .SetRepositoryOwner(GitHubActions.RepositoryOwner)
+                .SetName(GitVersion.AssemblySemVer)
+                .SetTargetCommitish(GitHubActions.Sha)
+                .AddAssetPaths(PackageDirectory)
+            );
         });
 }
