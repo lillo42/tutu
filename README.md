@@ -1,4 +1,4 @@
-# Erised
+# Tutu 
 
 # Cross-platform Terminal Manipulation Library
 

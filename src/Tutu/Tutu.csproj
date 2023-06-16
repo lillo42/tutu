@@ -5,7 +5,15 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <IsPackable>true</IsPackable>
+    <PackageTags>console terminal cross-platform input cursor</PackageTags>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <Title>Tutu</Title>
+    <Description>Cross platform terminal library in C#</Description>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="../../README.md" Pack="true" PackagePath="/" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.SourceLink.GitHub">
