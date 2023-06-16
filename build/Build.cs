@@ -167,7 +167,7 @@ class Build : NukeBuild
         });
 
     Target Publish => _ => _
-        .After(Pack)
+        .DependsOn(Pack)
         .Consumes(Pack)
         .Requires(() => NugetApiKey)
         .Requires(() => Configuration.Equals(Configuration.Release))
@@ -183,7 +183,7 @@ class Build : NukeBuild
         });
 
     Target CreateRelease => _ => _
-        .Before(Publish)
+        .After(Publish)
         .Requires(() => GitHubActions)
         .Executes(() =>
         {
