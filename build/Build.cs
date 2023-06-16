@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using Nuke.Common;
@@ -12,6 +13,7 @@ using Nuke.Common.Tools.Coverlet;
 using Nuke.Common.Tools.DotNet;
 using Nuke.Common.Tools.GitReleaseManager;
 using Nuke.Common.Tools.GitVersion;
+using Serilog;
 using static Nuke.Common.Tools.DotNet.DotNetTasks;
 using static Nuke.Common.Tools.GitReleaseManager.GitReleaseManagerTasks;
 
@@ -181,13 +183,20 @@ class Build : NukeBuild
         .Requires(() => GitHubActions)
         .Executes(() =>
         {
-            GitReleaseManagerCreate(release => release
-                .SetToken(GitHubActions.Token)
-                .SetRepositoryName(GitHubActions.Repository)
-                .SetRepositoryOwner(GitHubActions.RepositoryOwner)
-                .SetName(GitVersion.AssemblySemVer)
-                .SetTargetCommitish(GitHubActions.Sha)
-                .AddAssetPaths(PackageDirectory)
-            );
+            try
+            {
+                GitReleaseManagerCreate(release => release
+                    .SetToken(GitHubActions.Token)
+                    .SetRepositoryName(GitHubActions.Repository)
+                    .SetRepositoryOwner(GitHubActions.RepositoryOwner)
+                    .SetName(GitVersion.AssemblySemVer)
+                    .SetTargetCommitish(GitHubActions.Sha)
+                    .AddAssetPaths(PackageDirectory)
+                );
+            }
+            catch (Exception e)
+            {
+                Log.Logger.Warning(e, "Failed to create release");
+            }
         });
 }

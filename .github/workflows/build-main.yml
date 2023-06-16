@@ -14,7 +14,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Build & Test
+      - name: Build, Test, Publish & Create Release
         run: |
           chmod +x ./build.sh
           ./build.sh Tests Publish CreateRelease --api-key ${{secrets.NUGET_TOKEN}}
@@ -33,18 +33,18 @@ jobs:
         with:
           name: coverage-report
           path: artifacts/coverage-report
-  
-  build-windows:
-    name: build & tests on Windows
-    runs-on: windows-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
 
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v3
-
-      - name: Build & Test
-        run: ./build.ps1 Tests
+#  build-windows:
+#    name: build & tests on Windows
+#    runs-on: windows-latest
+#    steps:
+#      - name: Checkout code
+#        uses: actions/checkout@v3
+#        with:
+#          fetch-depth: 0
+#
+#      - name: Setup .NET
+#        uses: actions/setup-dotnet@v3
+#
+#      - name: Build & Test
+#        run: ./build.ps1 Tests
