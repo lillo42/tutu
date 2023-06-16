@@ -96,12 +96,16 @@ class Build : NukeBuild
         .Produces(TestResultDirectory / "*.xml")
         .Executes(() =>
         {
-            var testProjects = new List<Project> { Solution.GetProject("Tutu.Tests") };
+            var testProjects = new List<Project>();
+            testProjects.AddRange(Solution.GetAllProjects("Tutu.Tests"));
 
             if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
-                testProjects.Add(Solution.GetProject("Tutu.Unix.Integration.Tests"));
+                testProjects.AddRange(Solution.GetAllProjects("Tutu.Unix.Integration.Tests"));
             }
+
+            TestResultDirectory.CreateOrCleanDirectory();
+            CoverageReportDirectory.CreateOrCleanDirectory();
 
             DotNetTest(s => s
                 .SetProjectFile(Solution)
