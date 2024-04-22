@@ -17,16 +17,6 @@ public abstract class TutuException : Exception
     /// <summary>
     /// Initializes a new instance of the <see cref="TutuException"/> class.
     /// </summary>
-    /// <param name="info">The <see cref="SerializationInfo"/>.</param>
-    /// <param name="context">The <see cref="StreamContent"/>.</param>
-    protected TutuException(SerializationInfo info, StreamingContext context)
-        : base(info, context)
-    {
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="TutuException"/> class.
-    /// </summary>
     /// <param name="message">The error message.</param>
     protected TutuException(string? message) : base(message)
     {
