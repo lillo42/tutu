@@ -27,6 +27,23 @@ public interface IEventReader
     bool Poll(IClock clock, Duration? timeout = null);
 
     /// <summary>
+    /// Checks if there is an <see cref="IEvent"/>.
+    /// </summary>
+    /// <param name="timeout">Maximum waiting time for event availability.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+    /// <returns><see langword="true"/> if an <see cref="IEvent"/> is available; otherwise return <see langword="true"/>.</returns>
+    Task<bool> PollAsync(Duration? timeout = null, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Checks if there is an <see cref="IEvent"/>.
+    /// </summary>
+    /// <param name="clock">The <see cref="IClock"/>.</param>
+    /// <param name="timeout">Maximum waiting time for event availability.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+    /// <returns><see langword="true"/> if an <see cref="IEvent"/> is available; otherwise return <see langword="true"/>.</returns>
+    Task<bool> PollAsync(IClock clock, Duration? timeout = null, CancellationToken cancellationToken = default);
+
+    /// <summary>
     /// Reads a single <see cref="IEvent"/>.
     /// </summary>
     /// <returns></returns>
@@ -61,6 +78,14 @@ internal sealed class InternalSystemEventReader : IEventReader
 
     /// <inheritdoc cref="IEventReader.Poll(NodaTime.IClock, System.Nullable{NodaTime.Duration})" />
     public bool Poll(IClock clock, Duration? timeout = null) => PollInternal(clock, timeout, PublicEventFilter.Default);
+
+    /// <inheritdoc cref="IEventReader.PollAsync(NodaTime.Duration?, System.Threading.CancellationToken)"/>
+    public Task<bool> PollAsync(Duration? timeout = null, CancellationToken cancellationToken = default) 
+        => Task.Run(() => Poll(timeout), cancellationToken);
+
+    /// <inheritdoc cref="IEventReader.PollAsync(NodaTime.IClock,System.Nullable{NodaTime.Duration},System.Threading.CancellationToken)"/>
+    public Task<bool> PollAsync(IClock clock, Duration? timeout = null, CancellationToken cancellationToken = default) 
+        => Task.Run(() => Poll(clock, timeout), cancellationToken);
 
     /// <see cref="IEventReader.Read"/>
     public IEvent Read()
