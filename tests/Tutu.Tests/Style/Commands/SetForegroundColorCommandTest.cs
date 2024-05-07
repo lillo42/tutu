@@ -15,7 +15,7 @@ public class SetForegroundColorCommandTest
             {
                 if (color != Color.Reset)
                 {
-                    yield return new object[] { color };
+                    yield return [color];
                 }
             }
         }

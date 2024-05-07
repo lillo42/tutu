@@ -132,8 +132,8 @@ public class Color : AbstractTest
 
 
 
-    private static List<Tutu.Style.Types.Color> Colors => new()
-    {
+    private static List<Tutu.Style.Types.Color> Colors =>
+    [
         Tutu.Style.Types.Color.Black,
         Tutu.Style.Types.Color.DarkGrey,
         Tutu.Style.Types.Color.Grey,
@@ -153,6 +153,6 @@ public class Color : AbstractTest
         Tutu.Style.Types.Color.AnsiValue(15),
         Tutu.Style.Types.Color.Rgb(255, 0, 0),
         Tutu.Style.Types.Color.Rgb(0, 255, 0),
-        Tutu.Style.Types.Color.Rgb(0, 0, 255),
-    };
+        Tutu.Style.Types.Color.Rgb(0, 0, 255)
+    ];
 }

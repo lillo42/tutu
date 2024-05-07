@@ -38,7 +38,7 @@ public class ColorTest
             {
                 if (color != Color.Reset)
                 {
-                    yield return new object[] { color.Name, color };
+                    yield return [color.Name, color];
                 }
             }
         }

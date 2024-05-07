@@ -6,7 +6,7 @@ namespace Tutu.Unix;
 
 internal static class Pipe
 {
-    private static readonly HashSet<WakeFd> s_register = new();
+    private static readonly HashSet<WakeFd> s_register = [];
 
     public static unsafe void Register(FileDesc fd, int signal)
     {

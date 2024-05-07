@@ -15,7 +15,7 @@ public class SetColorsCommandTest
             {
                 if (color != Color.Reset)
                 {
-                    yield return new object[] { color };
+                    yield return [color];
                 }
             }
         }

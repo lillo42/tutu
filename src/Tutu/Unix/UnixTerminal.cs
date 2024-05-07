@@ -19,13 +19,14 @@ namespace Tutu.Unix;
 public class UnixTerminal : ITerminal
 {
     private termios? _terminalModePriorRawMode;
+    private readonly object _lock = new();
 
     /// <inheritdoc cref="ITerminal.IsRawModeEnabled"/> 
     public bool IsRawModeEnabled
     {
         get
         {
-            lock (this)
+            lock (_lock)
             {
                 return _terminalModePriorRawMode != null;
             }
@@ -35,7 +36,7 @@ public class UnixTerminal : ITerminal
     /// <inheritdoc cref="ITerminal.DisableRawMode"/> 
     public void EnableRawMode()
     {
-        lock (this)
+        lock (_lock)
         {
             if (_terminalModePriorRawMode != null)
             {
@@ -59,7 +60,7 @@ public class UnixTerminal : ITerminal
     /// <inheritdoc cref="ITerminal.DisableRawMode"/> 
     public void DisableRawMode()
     {
-        lock (this)
+        lock (_lock)
         {
             if (_terminalModePriorRawMode == null)
             {

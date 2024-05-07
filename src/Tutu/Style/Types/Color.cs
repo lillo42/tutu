@@ -52,90 +52,90 @@ public readonly record struct Color(string Name, byte[] Values)
     /// <summary>
     /// Reset color.
     /// </summary>
-    public static Color Reset { get; } = new("reset", new byte[] { 0 });
+    public static Color Reset { get; } = new("reset", [0]);
 
     /// <summary>
     /// Black color.
     /// </summary>
-    public static Color Black { get; } = new("black", new byte[] { 5, 0 });
+    public static Color Black { get; } = new("black", [5, 0]);
 
     /// <summary>
     /// Dark grey color.
     /// </summary>
-    public static Color DarkGrey { get; } = new("dark-grey", new byte[] { 5, 8 });
+    public static Color DarkGrey { get; } = new("dark-grey", [5, 8]);
 
     /// <summary>
     /// Red color.
     /// </summary>
-    public static Color Red { get; } = new("red", new byte[] { 5, 9 });
+    public static Color Red { get; } = new("red", [5, 9]);
 
     /// <summary>
     /// Dark red color.
     /// </summary>
-    public static Color DarkRed { get; } = new("dark-red", new byte[] { 5, 1 });
+    public static Color DarkRed { get; } = new("dark-red", [5, 1]);
 
     /// <summary>
     /// Green color.
     /// </summary>
-    public static Color Green { get; } = new("green", new byte[] { 5, 10 });
+    public static Color Green { get; } = new("green", [5, 10]);
 
     /// <summary>
     /// Dark green color.
     /// </summary>
-    public static Color DarkGreen { get; } = new("dark-green", new byte[] { 5, 2 });
+    public static Color DarkGreen { get; } = new("dark-green", [5, 2]);
 
     /// <summary>
     /// Yellow color.
     /// </summary>
-    public static Color Yellow { get; } = new("yellow", new byte[] { 5, 11 });
+    public static Color Yellow { get; } = new("yellow", [5, 11]);
 
     /// <summary>
     /// Dark yellow color.
     /// </summary>
-    public static Color DarkYellow { get; } = new("dark-yellow", new byte[] { 5, 3 });
+    public static Color DarkYellow { get; } = new("dark-yellow", [5, 3]);
 
     /// <summary>
     /// Blue color.
     /// </summary>
-    public static Color Blue { get; } = new("blue", new byte[] { 5, 12 });
+    public static Color Blue { get; } = new("blue", [5, 12]);
 
     /// <summary>
     /// Dark blue color.
     /// </summary>
-    public static Color DarkBlue { get; } = new("dark-blue", new byte[] { 5, 4 });
+    public static Color DarkBlue { get; } = new("dark-blue", [5, 4]);
 
     /// <summary>
     /// Magenta color.
     /// </summary>
-    public static Color Magenta { get; } = new("magenta", new byte[] { 5, 13 });
+    public static Color Magenta { get; } = new("magenta", [5, 13]);
 
     /// <summary>
     /// Dark magenta color.
     /// </summary>
-    public static Color DarkMagenta { get; } = new("dark-magenta", new byte[] { 5, 5 });
+    public static Color DarkMagenta { get; } = new("dark-magenta", [5, 5]);
 
     /// <summary>
     /// Cyan color.
     /// </summary>
-    public static Color Cyan { get; } = new("cyan", new byte[] { 5, 14 });
+    public static Color Cyan { get; } = new("cyan", [5, 14]);
 
     /// <summary>
     /// Dark cyan color.
     /// </summary>
-    public static Color DarkCyan { get; } = new("dark-cyan", new byte[] { 5, 6 });
+    public static Color DarkCyan { get; } = new("dark-cyan", [5, 6]);
 
     /// <summary>
     /// White color.
     /// </summary>
-    public static Color White { get; } = new("white", new byte[] { 5, 15 });
+    public static Color White { get; } = new("white", [5, 15]);
 
     /// <summary>
     /// Dark grey color.
     /// </summary>
-    public static Color Grey { get; } = new("grey", new byte[] { 5, 7 });
+    public static Color Grey { get; } = new("grey", [5, 7]);
 
     internal static Color[] AllColors { get; } =
-    {
+    [
         Reset,
         Black,
         DarkGrey,
@@ -152,8 +152,8 @@ public readonly record struct Color(string Name, byte[] Values)
         Cyan,
         DarkCyan,
         White,
-        Grey,
-    };
+        Grey
+    ];
 
     /// <summary>
     /// Creates a new RGB color.
@@ -162,14 +162,15 @@ public readonly record struct Color(string Name, byte[] Values)
     /// <param name="green">The green component.</param>
     /// <param name="blue">The blue component.</param>
     /// <returns>The new RGB color.</returns>
-    public static Color Rgb(byte red, byte green, byte blue) => new($"RGB {{ r: {red}, g: {green}, b: {blue} }}", new byte[] { 2, red, green, blue });
+    public static Color Rgb(byte red, byte green, byte blue) => new($"RGB {{ r: {red}, g: {green}, b: {blue} }}", [2, red, green, blue
+    ]);
 
     /// <summary>
     /// Creates a new ANSI color.
     /// </summary>
     /// <param name="value">The ANSI value.</param>
     /// <returns>The new ANSI color.</returns>
-    public static Color AnsiValue(byte value) => new($"AnsiValue({value})", new byte[] { 5, value });
+    public static Color AnsiValue(byte value) => new($"AnsiValue({value})", [5, value]);
 
     /// <summary>
     /// Try to parse a color from a string.

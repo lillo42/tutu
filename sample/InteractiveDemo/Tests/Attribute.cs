@@ -7,7 +7,7 @@ namespace InteractiveDemo.Tests;
 public class Attribute : AbstractTest
 {
     private static (Tutu.Style.Types.Attribute, Tutu.Style.Types.Attribute)[] Attibuttes =
-    {
+    [
         (Tutu.Style.Types.Attribute.Bold, Tutu.Style.Types.Attribute.NormalIntensity),
         (Tutu.Style.Types.Attribute.Italic, Tutu.Style.Types.Attribute.NoItalic),
         (Tutu.Style.Types.Attribute.Underlined, Tutu.Style.Types.Attribute.NoUnderline),
@@ -19,8 +19,8 @@ public class Attribute : AbstractTest
 
         (Tutu.Style.Types.Attribute.Reverse, Tutu.Style.Types.Attribute.NoReverse),
         (Tutu.Style.Types.Attribute.CrossedOut, Tutu.Style.Types.Attribute.NotCrossedOut),
-        (Tutu.Style.Types.Attribute.SlowBlink, Tutu.Style.Types.Attribute.NoBlink),
-    };
+        (Tutu.Style.Types.Attribute.SlowBlink, Tutu.Style.Types.Attribute.NoBlink)
+    ];
 
     private static void TestSetDisplayAttribute(TextWriter writer)
     {

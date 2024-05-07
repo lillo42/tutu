@@ -11,7 +11,7 @@ public class SetAttributeCommandTest
         {
             foreach (var attribute in Tutu.Style.Types.Attribute.AllAttributes)
             {
-                yield return new object[] { attribute };
+                yield return [attribute];
             }
         }
     }

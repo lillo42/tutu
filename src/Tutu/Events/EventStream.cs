@@ -53,6 +53,7 @@ public class EventStream
     public async Task StartAsync(IClock? clock = null)
     {
         await StopAsync().ConfigureAwait(false);
+
         _cancellationTokenSource = new CancellationTokenSource();
         _consumeTask = ConsumeEvents(clock ?? SystemClock.Instance, _cancellationTokenSource.Token);
     }
@@ -62,7 +63,13 @@ public class EventStream
     /// </summary>
     public async Task StopAsync()
     {
-        _cancellationTokenSource?.Cancel();
+        if (_cancellationTokenSource != null)
+        {
+            await _cancellationTokenSource.CancelAsync();
+            _cancellationTokenSource.Dispose();
+            _cancellationTokenSource = null;
+        }
+
         if (_consumeTask != null)
         {
             await _consumeTask.ConfigureAwait(false);
