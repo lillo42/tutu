@@ -9,7 +9,7 @@ namespace Tutu.Terminal.Commands;
 /// <remarks>
 /// Commands must be executed/queued for execution otherwise they do nothing.
 /// </remarks>
-public record ClearCommand(ClearType Type) : ICommand
+public sealed record ClearCommand(ClearType Type) : ICommand
 {
     /// <inheritdoc />
     public void WriteAnsi(TextWriter write) => write.Write(Type switch

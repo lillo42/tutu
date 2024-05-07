@@ -9,7 +9,7 @@
 /// <para>Use <see cref="SetCursorStyleCursorCommand"/> for better cross-compatibility.</para>
 /// <para>Commands must be executed/queued for execution otherwise they do nothing.</para>
 /// </remarks>
-public record DisableBlinkingCursorCommand : ICommand
+public sealed record DisableBlinkingCursorCommand : ICommand
 {
     /// <inheritdoc />
     public void WriteAnsi(TextWriter write)

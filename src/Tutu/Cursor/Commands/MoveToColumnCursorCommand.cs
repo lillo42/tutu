@@ -10,7 +10,7 @@ namespace Tutu.Cursor.Commands;
 /// <para>This command is 0 based, meaning 0 is the leftmost column.</para>
 /// <para>Commands must be executed/queued for execution otherwise they do nothing.</para>
 /// </remarks>
-public record MoveToColumnCursorCommand(ushort NewColumn) : ICommand
+public sealed record MoveToColumnCursorCommand(ushort NewColumn) : ICommand
 {
     /// <inheritdoc />
     public void WriteAnsi(TextWriter write)

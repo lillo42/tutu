@@ -7,7 +7,7 @@
 /// <remarks>
 ///  Commands must be executed/queued for execution otherwise they do nothing.
 /// </remarks>
-public record SetStyleCommand(ContentStyled Style) : ICommand
+public sealed record SetStyleCommand(ContentStyled Style) : ICommand
 {
     /// <inheritdoc />
     public void WriteAnsi(TextWriter write)

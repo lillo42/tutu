@@ -42,7 +42,7 @@ internal static class Pipe
     }
 }
 
-internal record WakeFd(int Fd, WakeMethod Method)
+internal sealed record WakeFd(int Fd, WakeMethod Method)
 {
     public void SetFlags()
     {

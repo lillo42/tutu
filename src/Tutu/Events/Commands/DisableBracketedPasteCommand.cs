@@ -3,7 +3,7 @@
 /// <summary>
 /// A command that disables bracketed paste mode.
 /// </summary>
-public record DisableBracketedPasteCommand : ICommand
+public sealed record DisableBracketedPasteCommand : ICommand
 {
     /// <inheritdoc />
     public void WriteAnsi(TextWriter write)

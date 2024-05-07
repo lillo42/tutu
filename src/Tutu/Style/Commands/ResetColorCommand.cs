@@ -8,7 +8,7 @@ namespace Tutu.Style.Commands;
 /// <remarks>
 /// Commands must be executed/queued for execution otherwise they do nothing.
 /// </remarks>
-public record ResetColorCommand : ICommand
+public sealed record ResetColorCommand : ICommand
 {
     /// <inheritdoc />
     public void WriteAnsi(TextWriter write)

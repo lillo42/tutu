@@ -8,7 +8,7 @@ namespace Tutu.Unix;
 /// <summary>
 /// The Unix implementation of <see cref="ICursor"/>.
 /// </summary>
-public class UnixCursor : ICursor
+public sealed class UnixCursor : ICursor
 {
     /// <inheritdoc cref="ICursor.Position"/>
     public CursorPosition Position
@@ -36,12 +36,6 @@ public class UnixCursor : ICursor
     private static CursorPosition ReadPositionRaw()
     {
         // Use `ESC [ 6 n` to and retrieve the cursor position.
-        /*
-        var stdout = Console.OpenStandardOutput();
-        stdout.Write("\x1B[6n"u8);
-        stdout.Flush();
-        */
-        
         Console.Out.Write($"{AnsiCodes.CSI}6n");
 
         while (true)

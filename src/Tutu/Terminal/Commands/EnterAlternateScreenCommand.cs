@@ -9,7 +9,7 @@ namespace Tutu.Terminal.Commands;
 /// <para>Commands must be executed/queued for execution otherwise they do nothing.</para>
 /// <para>Use <see cref="LeaveAlternateScreenCommand"/> command to leave the entered alternate screen.</para>
 /// </remarks>
-public record EnterAlternateScreenCommand : ICommand
+public sealed record EnterAlternateScreenCommand : ICommand
 {
     /// <inheritdoc />
     public void WriteAnsi(TextWriter write)

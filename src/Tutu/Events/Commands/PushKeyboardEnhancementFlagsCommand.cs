@@ -17,7 +17,7 @@
 ///     <item><see href="https://gitlab.com/craigbarnes/dte/-/issues/138">dte text editor</see></item>
 /// </list> 
 /// </remarks>
-public record PushKeyboardEnhancementFlagsCommand(KeyboardEnhancementFlags Flags) : ICommand
+public sealed record PushKeyboardEnhancementFlagsCommand(KeyboardEnhancementFlags Flags) : ICommand
 {
     /// <inheritdoc />
     public void WriteAnsi(TextWriter write) => write.Write($"{AnsiCodes.CSI}>{(int)Flags}u");

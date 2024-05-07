@@ -10,7 +10,7 @@ namespace Tutu.Cursor.Commands;
 /// <para>This command is 0 based, meaning 0 is the topmost row.</para>
 /// <para>Commands must be executed/queued for execution otherwise they do nothing.</para>
 /// </remarks>
-public record MoveToRowCursorCommand(ushort NewRow) : ICommand
+public sealed record MoveToRowCursorCommand(ushort NewRow) : ICommand
 {
     /// <inheritdoc />
     public void WriteAnsi(TextWriter write)

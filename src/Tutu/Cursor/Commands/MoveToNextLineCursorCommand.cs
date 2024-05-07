@@ -12,7 +12,7 @@ namespace Tutu.Cursor.Commands;
 /// <para>Most terminals default 0 argument to 1.</para>
 /// <para>Commands must be executed/queued for execution otherwise they do nothing.</para>
 /// </remarks>
-public record MoveToNextLineCursorCommand(ushort Count) : ICommand
+public sealed record MoveToNextLineCursorCommand(ushort Count) : ICommand
 {
     /// <inheritdoc />
     public void WriteAnsi(TextWriter write)

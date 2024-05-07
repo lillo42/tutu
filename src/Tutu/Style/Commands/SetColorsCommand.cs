@@ -11,7 +11,7 @@ namespace Tutu.Style.Commands;
 /// <remarks>
 /// Commands must be executed/queued for execution otherwise they do nothing.
 /// </remarks>
-public record SetColorsCommand(Color? Foreground, Color? Background) : ICommand
+public sealed record SetColorsCommand(Color? Foreground, Color? Background) : ICommand
 {
     /// <inheritdoc />
     public void WriteAnsi(TextWriter write)

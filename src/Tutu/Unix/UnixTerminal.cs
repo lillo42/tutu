@@ -16,7 +16,7 @@ namespace Tutu.Unix;
 /// <remarks>
 /// It should be use as Singleton.
 /// </remarks>
-public class UnixTerminal : ITerminal
+public sealed class UnixTerminal : ITerminal
 {
     private termios? _terminalModePriorRawMode;
     private readonly object _lock = new();

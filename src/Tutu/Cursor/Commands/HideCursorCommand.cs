@@ -8,7 +8,7 @@ namespace Tutu.Cursor.Commands;
 /// <remarks>
 /// Commands must be executed/queued for execution otherwise they do nothing.
 /// </remarks>
-public record HideCursorCommand : ICommand
+public sealed record HideCursorCommand : ICommand
 {
     /// <inheritdoc />
     public void WriteAnsi(TextWriter write)

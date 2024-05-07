@@ -11,7 +11,7 @@ namespace Tutu.Style;
 /// <param name="BackgroundColor">The background <see cref="Color"/>.</param>
 /// <param name="UnderlineColor">The underline <see cref="Color"/>.</param>
 /// <param name="Attributes">The <see cref="Attribute"/> collection.</param>
-public record ContentStyled(
+public sealed record ContentStyled(
     Color? ForegroundColor,
     Color? BackgroundColor,
     Color? UnderlineColor,

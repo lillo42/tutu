@@ -10,7 +10,7 @@ namespace Tutu.Windows;
 /// <remarks>
 /// It should be use as Singleton.
 /// </remarks>
-public class WindowsTerminal : ITerminal
+public sealed class WindowsTerminal : ITerminal
 {
     private const uint EnableLineInput = 0x0002;
     private const uint EnableEchoInput = 0x0004;

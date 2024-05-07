@@ -7,7 +7,7 @@ namespace Tutu.Windows;
 /// <summary>
 /// Windows implementation of <see cref="IEventSource"/>.
 /// </summary>
-internal class WindowsEventSource : IEventSource
+internal sealed class WindowsEventSource : IEventSource
 {
     private ushort? _surrogate;
     private readonly MouseButtonPressed _mouseButtonPressed = new();

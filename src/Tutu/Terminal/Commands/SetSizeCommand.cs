@@ -10,7 +10,7 @@ namespace Tutu.Terminal.Commands;
 /// <remarks>
 /// * Commands must be executed/queued for execution otherwise they do nothing.
 /// </remarks>
-public record SetSizeCommand(ushort Column, ushort Row) : ICommand
+public sealed record SetSizeCommand(ushort Column, ushort Row) : ICommand
 {
     /// <inheritdoc />
     public void WriteAnsi(TextWriter write) => write.Write($"{AnsiCodes.CSI}8;{Column};{Row}t");

@@ -32,7 +32,7 @@ public interface IQueueExecutor
 /// Default implementation of <see cref="IQueueExecutor"/>.
 /// </summary>
 /// <param name="Writer">The <see cref="TextWriter"/> to execute commands.</param>
-public record QueueExecutor(TextWriter Writer) : IQueueExecutor
+public sealed record QueueExecutor(TextWriter Writer) : IQueueExecutor
 {
     private readonly Queue<ICommand> _queue = new();
 

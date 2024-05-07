@@ -59,32 +59,32 @@ public static class MouseEventKind
     /// pressed mouse button. contains the button that was pressed.
     /// </summary>
     /// <param name="Button">The pressed <see cref="MouseButton"/>.</param>
-    public record MouseDownEventKind(MouseButton Button) : IMouseEventKind;
+    public sealed record MouseDownEventKind(MouseButton Button) : IMouseEventKind;
 
     /// <summary>
     /// Released mouse button. Contains the button that was released.
     /// </summary>
     /// <param name="Button">The pressed <see cref="MouseButton"/>.</param>
-    public record MouseUpEventKind(MouseButton Button) : IMouseEventKind;
+    public sealed record MouseUpEventKind(MouseButton Button) : IMouseEventKind;
 
     /// <summary>
     /// Moved the mouse cursor while pressing the contained mouse button.
     /// </summary>
     /// <param name="Button">The pressed <see cref="MouseButton"/>.</param>
-    public record MouseDragEventKind(MouseButton Button) : IMouseEventKind;
+    public sealed record MouseDragEventKind(MouseButton Button) : IMouseEventKind;
 
     /// <summary>
     /// Moved the mouse cursor while not pressing a mouse button.
     /// </summary>
-    public record MouseMovedEventKind : IMouseEventKind;
+    public sealed record MouseMovedEventKind : IMouseEventKind;
 
     /// <summary>
     /// Scrolled mouse wheel downwards (towards the user).
     /// </summary>
-    public record MouseScrollDownEventKind : IMouseEventKind;
+    public sealed record MouseScrollDownEventKind : IMouseEventKind;
 
     /// <summary>
     /// Scrolled mouse wheel upwards (away from the user).
     /// </summary>
-    public record MouseScrollUpEventKind : IMouseEventKind;
+    public sealed record MouseScrollUpEventKind : IMouseEventKind;
 }

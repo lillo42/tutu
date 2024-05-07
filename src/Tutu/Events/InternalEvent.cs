@@ -33,21 +33,21 @@ internal interface IInternalEvent
 /// An event.
 /// </summary>
 /// <param name="Event"></param>
-internal record PublicEvent(IEvent Event) : IInternalEvent;
+internal sealed record PublicEvent(IEvent Event) : IInternalEvent;
 
 /// <summary>
 /// A cursor position
 /// </summary>
 /// <param name="Column"></param>
 /// <param name="Row"></param>
-internal record CursorPositionInternalEvent(int Column, int Row) : IInternalEvent;
+internal sealed record CursorPositionInternalEvent(int Column, int Row) : IInternalEvent;
 
 /// <summary>
 /// The progressive keyboard enhancement flags enabled by the terminal.
 /// </summary>
-internal record KeyboardEnhancementFlagsInternalEvent(KeyboardEnhancementFlags Flags) : IInternalEvent;
+internal sealed record KeyboardEnhancementFlagsInternalEvent(KeyboardEnhancementFlags Flags) : IInternalEvent;
 
 /// <summary>
 /// Attributes and architectural class of the terminal.
 /// </summary>
-internal record PrimaryDeviceAttributesInternalEvent : IInternalEvent;
+internal sealed record PrimaryDeviceAttributesInternalEvent : IInternalEvent;

@@ -7,7 +7,7 @@
 /// <para>Specifically, it pops one level of keyboard enhancement flags.</para>
 /// <para>See <see cref="PushKeyboardEnhancementFlagsCommand"/> and https://sw.kovidgoyal.net/kitty/keyboard-protocol/ for more information.</para>
 /// </remarks>
-public record PopKeyboardEnhancementFlagsCommand : ICommand
+public sealed record PopKeyboardEnhancementFlagsCommand : ICommand
 {
     /// <inheritdoc />
     public void WriteAnsi(TextWriter write)

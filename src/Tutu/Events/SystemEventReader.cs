@@ -39,7 +39,7 @@ public interface IEventReader
 /// <summary>
 /// The default implementation of <see cref="IEventReader"/>
 /// </summary>
-internal class InternalSystemEventReader : IEventReader
+internal sealed class InternalSystemEventReader : IEventReader
 {
     private static Mutex<InternalReader> InternalReader { get; } = new(new(CreateEventSource()));
 
@@ -57,6 +57,7 @@ internal class InternalSystemEventReader : IEventReader
     /// <inheritdoc cref="IEventReader.Poll(System.Nullable{NodaTime.Duration})"/>
     public bool Poll(Duration? timeout = null)
         => Poll(SystemClock.Instance, timeout);
+
 
     /// <inheritdoc cref="IEventReader.Poll(NodaTime.IClock, System.Nullable{NodaTime.Duration})" />
     public bool Poll(IClock clock, Duration? timeout = null) => PollInternal(clock, timeout, PublicEventFilter.Default);
@@ -115,7 +116,7 @@ internal class InternalSystemEventReader : IEventReader
 /// <summary>
 /// The static event reader.
 /// </summary>
-public static class SystemEventReader 
+public static class SystemEventReader
 {
     /// <summary>
     /// The singleton instance of <see cref="IEventReader"/>.

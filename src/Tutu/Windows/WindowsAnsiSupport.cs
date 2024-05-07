@@ -3,7 +3,7 @@
 /// <summary>
 /// Windows implementation of <see cref="IAnsiSupport"/>.
 /// </summary>
-public class WindowsAnsiSupport : IAnsiSupport
+public sealed class WindowsAnsiSupport : IAnsiSupport
 {
     private const uint ENABLE_VIRTUAL_TERMINAL_PROCESSING = 0x0004;
 

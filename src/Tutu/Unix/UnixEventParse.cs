@@ -9,7 +9,7 @@ using static System.Convert;
 
 namespace Tutu.Unix;
 
-internal class UnixEventParse
+internal sealed class UnixEventParse
 {
     private readonly List<byte> _buffer;
     private readonly Queue<IInternalEvent> _internalEvents;

@@ -3,7 +3,7 @@ using static Tutu.Unix.Interop.LibC.LibC;
 
 namespace Tutu.Unix;
 
-internal class UnixStream
+internal sealed class UnixStream
 {
     public static (FileDesc, FileDesc) CreateUnixStreamPair()
     {

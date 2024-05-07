@@ -9,7 +9,7 @@ namespace Tutu.Cursor.Commands;
 /// <para>The cursor position is stored globally.</para>
 /// <para>Commands must be executed/queued for execution otherwise they do nothing.</para>
 /// </remarks>
-public record RestorePositionCursorCommand : ICommand
+public sealed record RestorePositionCursorCommand : ICommand
 {
     /// <inheritdoc />
     public void WriteAnsi(TextWriter write)

@@ -8,7 +8,7 @@ namespace Tutu.Windows;
 /// <summary>
 /// Windows implementation of <see cref="ICursor"/>.
 /// </summary>
-public class WindowsCursor : ICursor
+public sealed class WindowsCursor : ICursor
 {
     private static ulong _savedCursorPosition = ulong.MaxValue;
 

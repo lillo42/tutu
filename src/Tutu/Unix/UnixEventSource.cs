@@ -9,7 +9,7 @@ namespace Tutu.Unix;
 /// <summary>
 /// Unix implementation of <see cref="IEventSource"/>.
 /// </summary>
-internal class UnixEventSource : IEventSource
+internal sealed class UnixEventSource : IEventSource
 {
     // I (@zrzka) wasn't able to read more than 1_022 bytes when testing
     // reading on macOS/Linux -> we don't need bigger buffer and 1k of bytes

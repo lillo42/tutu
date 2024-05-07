@@ -9,7 +9,7 @@ namespace Tutu.Terminal.Commands;
 /// <remarks>
 /// Commands must be executed/queued for execution otherwise they do nothing.
 /// </remarks>
-public record SetTitleCommand(string Title) : ICommand
+public sealed record SetTitleCommand(string Title) : ICommand
 {
     /// <inheritdoc />
     public void WriteAnsi(TextWriter write) => write.Write($"{AnsiCodes.ESC}]0;{Title}\x07");

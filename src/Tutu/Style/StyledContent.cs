@@ -8,7 +8,7 @@ namespace Tutu.Style;
 /// <param name="Style">The <see cref="ContentStyled"/>.</param>
 /// <param name="Content">The content.</param>
 /// <typeparam name="T">Th content type.</typeparam>
-public record StyledContent<T>(ContentStyled Style, T Content)
+public sealed record StyledContent<T>(ContentStyled Style, T Content)
     where T : notnull
 {
     /// <summary>

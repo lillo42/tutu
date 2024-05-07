@@ -11,7 +11,7 @@ namespace Tutu.Cursor.Commands;
 /// <para>Top left cell is represented as `0,0`.</para>
 /// <para>Commands must be executed/queued for execution otherwise they do nothing.</para>
 /// </remarks>
-public record MoveToCursorCommand(ushort Column, ushort Row) : ICommand
+public sealed record MoveToCursorCommand(ushort Column, ushort Row) : ICommand
 {
     /// <inheritdoc />
     public void WriteAnsi(TextWriter write)

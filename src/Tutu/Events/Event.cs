@@ -49,30 +49,30 @@ public static class Event
     /// <summary>
     /// The terminal gained focus
     /// </summary>
-    public record FocusGainedEvent : IEvent;
+    public sealed record FocusGainedEvent : IEvent;
 
     /// <summary>
     /// The terminal lost focus
     /// </summary>
-    public record FocusLostEvent : IEvent;
+    public sealed record FocusLostEvent : IEvent;
 
     /// <summary>
     /// A single key event with additional pressed modifiers.
     /// </summary>
     /// <param name="Event">The <see cref="Events.KeyEvent"/>.</param>
-    public record KeyEventEvent(KeyEvent Event) : IEvent;
+    public sealed record KeyEventEvent(KeyEvent Event) : IEvent;
 
     /// <summary>
     /// A single mouse event with additional pressed modifiers.
     /// </summary>
     /// <param name="Event">The <see cref="Events.MouseEvent"/>.</param>
-    public record MouseEventEvent(MouseEvent Event) : IEvent;
+    public sealed record MouseEventEvent(MouseEvent Event) : IEvent;
 
     /// <summary>
     /// A string that was pasted into the terminal.
     /// </summary>
     /// <param name="Text"></param>
-    public record TextPastedEvent(string Text) : IEvent;
+    public sealed record TextPastedEvent(string Text) : IEvent;
 
     /// <summary>
     ///  An resize event with new dimensions after resize (columns, rows).
@@ -82,7 +82,7 @@ public static class Event
     /// </remarks>
     /// <param name="Column">The new column</param>
     /// <param name="Row">The new row</param>
-    public record ScreenResizeEvent(int Column, int Row) : IEvent;
+    public sealed record ScreenResizeEvent(int Column, int Row) : IEvent;
 }
 
 /// <summary>

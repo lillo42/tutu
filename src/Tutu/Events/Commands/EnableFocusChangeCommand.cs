@@ -7,7 +7,7 @@
 /// <para>It should be paired with <see cref="DisableFocusChangeCommand"/> at the end of execution.</para>
 /// <para>Focus events can be captured with [read](./fn.read.html)/[poll](./fn.poll.html).</para>
 /// </remarks>
-public record EnableFocusChangeCommand : ICommand
+public sealed record EnableFocusChangeCommand : ICommand
 {
     /// <inheritdoc />
     public void WriteAnsi(TextWriter write)

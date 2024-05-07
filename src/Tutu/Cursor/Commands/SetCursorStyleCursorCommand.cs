@@ -8,7 +8,7 @@
 /// <remarks>
 /// Commands must be executed/queued for execution otherwise they do nothing.
 /// </remarks>
-public record SetCursorStyleCursorCommand(CursorStyle Style) : ICommand
+public sealed record SetCursorStyleCursorCommand(CursorStyle Style) : ICommand
 {
     /// <inheritdoc />
     public void WriteAnsi(TextWriter write) => write.Write(Style switch

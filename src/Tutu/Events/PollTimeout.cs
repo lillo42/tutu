@@ -5,7 +5,7 @@ namespace Tutu.Events;
 /// <summary>
 /// Keeps track of the elapsed time since the moment the polling started.
 /// </summary>
-public class PollTimeout
+public sealed class PollTimeout
 {
     private readonly IClock _clock;
     private readonly Instant _start;

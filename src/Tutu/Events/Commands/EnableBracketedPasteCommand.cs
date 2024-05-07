@@ -9,7 +9,7 @@
 /// <see href="https://docs.microsoft.com/en-us/windows/console/console-virtual-terminal-sequences">virtual terminal sequences</see>.
 /// </para>
 /// </remarks>
-public record EnableBracketedPasteCommand : ICommand
+public sealed record EnableBracketedPasteCommand : ICommand
 {
     /// <inheritdoc />
     public void WriteAnsi(TextWriter write)

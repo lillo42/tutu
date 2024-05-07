@@ -26,7 +26,7 @@ public interface IExecutableCommand
 /// Default implementation of <see cref="IExecutableCommand"/>.
 /// </summary>
 /// <param name="Writer"></param>
-public record ExecutableCommand(TextWriter Writer) : IExecutableCommand
+public sealed record ExecutableCommand(TextWriter Writer) : IExecutableCommand
 {
     /// <inheritdoc cref="IExecutableCommand.Execute(Tutu.ICommand[])"/>
     public IExecutableCommand Execute(params ICommand[] commands)

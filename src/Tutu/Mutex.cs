@@ -3,7 +3,7 @@ using NodaTime;
 
 namespace Tutu;
 
-internal class Mutex<T>
+internal sealed class Mutex<T>
 {
     private readonly Mutex _mutex = new();
     private T _value;

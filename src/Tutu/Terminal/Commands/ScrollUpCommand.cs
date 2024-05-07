@@ -9,7 +9,7 @@ namespace Tutu.Terminal.Commands;
 /// <remarks>
 /// Commands must be executed/queued for execution otherwise they do nothing.
 /// </remarks>
-public record ScrollUpCommand(ushort Lines) : ICommand
+public sealed record ScrollUpCommand(ushort Lines) : ICommand
 {
     /// <inheritdoc />
     public void WriteAnsi(TextWriter write) => write.Write($"{AnsiCodes.CSI}{Lines}S");

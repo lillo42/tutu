@@ -16,7 +16,7 @@ internal interface IFilter
 /// <summary>
 /// Public <see cref="IEvent"/> filter.
 /// </summary>
-internal record PublicEventFilter : IFilter
+internal sealed record PublicEventFilter : IFilter
 {
     /// <summary>
     /// The default filter.
@@ -30,7 +30,7 @@ internal record PublicEventFilter : IFilter
 /// <summary>
 /// The cursor position filter.
 /// </summary>
-internal record CursorPositionFilter : IFilter
+internal sealed record CursorPositionFilter : IFilter
 {
     /// <summary>
     /// The default filter.
@@ -44,7 +44,7 @@ internal record CursorPositionFilter : IFilter
 /// <summary>
 /// The keyboard enhancement flags filter.
 /// </summary>
-internal record KeyboardEnhancementFlagsFilter : IFilter
+internal sealed record KeyboardEnhancementFlagsFilter : IFilter
 {
     /// <summary>
     /// The default filter.
@@ -58,7 +58,7 @@ internal record KeyboardEnhancementFlagsFilter : IFilter
 /// <summary>
 /// The primary device attributes filter.
 /// </summary>
-internal record PrimaryDeviceAttributesFilter : IFilter
+internal sealed record PrimaryDeviceAttributesFilter : IFilter
 {
     /// <summary>
     /// The default filter.

@@ -468,9 +468,9 @@ internal static class WindowsEventParse
     {
     }
 
-    public record WindowsKeyEvent(IEvent Event) : IWindowsKeyEvent;
+    public sealed record WindowsKeyEvent(IEvent Event) : IWindowsKeyEvent;
 
-    public record WindowsSurrogate(ushort Surrogate) : IWindowsKeyEvent;
+    public sealed record WindowsSurrogate(ushort Surrogate) : IWindowsKeyEvent;
 }
 
 /// <summary>

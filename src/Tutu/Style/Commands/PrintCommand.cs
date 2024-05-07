@@ -5,7 +5,7 @@
 /// </summary>
 /// <param name="Content">The content.</param>
 /// <typeparam name="T">The content type.</typeparam>
-public record PrintCommand<T>(T Content) : ICommand
+public sealed record PrintCommand<T>(T Content) : ICommand
     where T : notnull
 {
     /// <inheritdoc />

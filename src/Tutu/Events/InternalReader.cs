@@ -2,7 +2,7 @@
 
 namespace Tutu.Events;
 
-internal class InternalReader
+internal sealed class InternalReader
 {
     private readonly IEventSource _source;
     private readonly List<IInternalEvent> _events;

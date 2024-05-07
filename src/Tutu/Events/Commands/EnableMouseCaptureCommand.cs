@@ -5,7 +5,7 @@ namespace Tutu.Events.Commands;
 /// <summary>
 /// A command that enables mouse event capturing.
 /// </summary>
-public record EnableMouseCaptureCommand : ICommand
+public sealed record EnableMouseCaptureCommand : ICommand
 {
     /// <inheritdoc />
     public void WriteAnsi(TextWriter write) => write.Write(

@@ -10,7 +10,7 @@ namespace Tutu.Style.Commands;
 /// <remarks>
 /// Commands must be executed/queued for execution otherwise they do nothing.
 /// </remarks>
-public record PrintStyledContentCommand<T>(StyledContent<T> Content) : ICommand
+public sealed record PrintStyledContentCommand<T>(StyledContent<T> Content) : ICommand
     where T : notnull
 {
     /// <inheritdoc />

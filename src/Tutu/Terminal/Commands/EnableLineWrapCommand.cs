@@ -5,7 +5,7 @@ namespace Tutu.Terminal.Commands;
 /// <summary>
 /// Enable line wrapping.
 /// </summary>
-public record EnableLineWrapCommand : ICommand
+public sealed record EnableLineWrapCommand : ICommand
 {
     /// <inheritdoc />
     public void WriteAnsi(TextWriter write)

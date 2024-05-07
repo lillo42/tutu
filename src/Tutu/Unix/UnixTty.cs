@@ -6,7 +6,7 @@ namespace Tutu.Unix;
 /// <summary>
 /// The Unix implementation of <see cref="ITty"/>. 
 /// </summary>
-public class UnixTty : ITty
+public sealed class UnixTty : ITty
 {
     /// <inheritdoc cref="ITty.IsTty"/>
     public bool IsTty

@@ -202,79 +202,79 @@ public static class KeyCode
     /// <summary>
     /// Backspace key.
     /// </summary>
-    public record BackspaceKeyCode : IKeyCode;
+    public sealed record BackspaceKeyCode : IKeyCode;
 
     /// <summary>
     /// Enter key.
     /// </summary>
-    public record EnterKeyCode : IKeyCode;
+    public sealed record EnterKeyCode : IKeyCode;
 
     /// <summary>
     /// Left arrow key.
     /// </summary>
-    public record LeftKeyCode : IKeyCode;
+    public sealed record LeftKeyCode : IKeyCode;
 
     /// <summary>
     /// Right arrow key.
     /// </summary>
-    public record RightKeyCode : IKeyCode;
+    public sealed record RightKeyCode : IKeyCode;
 
     /// <summary>
     /// Up arrow key.
     /// </summary>
-    public record UpKeyCode : IKeyCode;
+    public sealed record UpKeyCode : IKeyCode;
 
     /// <summary>
     /// Down arrow key.
     /// </summary>
-    public record DownKeyCode : IKeyCode;
+    public sealed record DownKeyCode : IKeyCode;
 
     /// <summary>
     /// Home key.
     /// </summary>
-    public record HomeKeyCode : IKeyCode;
+    public sealed record HomeKeyCode : IKeyCode;
 
     /// <summary>
     /// End key.
     /// </summary>
-    public record EndKeyCode : IKeyCode;
+    public sealed record EndKeyCode : IKeyCode;
 
     /// <summary>
     /// Page up key.
     /// </summary>
-    public record PageUpKeyCode : IKeyCode;
+    public sealed record PageUpKeyCode : IKeyCode;
 
     /// <summary>
     /// Page down key.
     /// </summary>
-    public record PageDownKeyCode : IKeyCode;
+    public sealed record PageDownKeyCode : IKeyCode;
 
     /// <summary>
     /// Tab key.
     /// </summary>
-    public record TabKeyCode : IKeyCode;
+    public sealed record TabKeyCode : IKeyCode;
 
     /// <summary>
     /// Shift + Tab key.
     /// </summary>
-    public record BackTabKeyCode : IKeyCode;
+    public sealed record BackTabKeyCode : IKeyCode;
 
     /// <summary>
     /// Delete key.
     /// </summary>
-    public record DeleteKeyCode : IKeyCode;
+    public sealed record DeleteKeyCode : IKeyCode;
 
     /// <summary>
     /// Insert key.
     /// </summary>
-    public record InsertKeyCode : IKeyCode;
+    public sealed record InsertKeyCode : IKeyCode;
 
     /// <summary>
     /// F key.
     ///
     /// `KeyCode::F(1)` represents F1 key, etc.
     /// </summary>
-    public record FKeyCode(int Number) : IKeyCode
+    public sealed record FKeyCode(int Number) : IKeyCode
     {
         /// <inheritdoc />
         public override string ToString() => $"F{Number}";
@@ -287,17 +287,17 @@ public static class KeyCode
     /// <remarks>
     /// Because we need to support UTF-8 character, not all value can be inside in <see langword="char"/>. 
     /// </remarks>
-    public record CharKeyCode(string Character) : IKeyCode;
+    public sealed record CharKeyCode(string Character) : IKeyCode;
 
     /// <summary>
     /// Null.
     /// </summary>
-    public record NullKeyCode : IKeyCode;
+    public sealed record NullKeyCode : IKeyCode;
 
     /// <summary>
     /// Escape key.
     /// </summary>
-    public record EscKeyCode : IKeyCode;
+    public sealed record EscKeyCode : IKeyCode;
 
     /// <summary>
     /// Caps Lock key.
@@ -306,7 +306,7 @@ public static class KeyCode
     /// This key can only be read if <see cref="KeyboardEnhancementFlags.DisambiguateEscapeCodes"/>
     /// has been enabled with <see cref="Tutu.Commands.Events.PushKeyboardEnhancementFlags"/>.
     /// </remarks>
-    public record CapsLockKeyCode : IKeyCode;
+    public sealed record CapsLockKeyCode : IKeyCode;
 
     /// <summary>
     /// Scroll Lock key.
@@ -315,7 +315,7 @@ public static class KeyCode
     /// This key can only be read if <see cref="KeyboardEnhancementFlags.DisambiguateEscapeCodes"/>
     /// has been enabled with <see cref="Tutu.Commands.Events.PushKeyboardEnhancementFlags"/>.
     /// </remarks>
-    public record ScrollLockKeyCode : IKeyCode;
+    public sealed record ScrollLockKeyCode : IKeyCode;
 
     /// <summary>
     /// Num Lock key.
@@ -333,7 +333,7 @@ public static class KeyCode
     /// This key can only be read if <see cref="KeyboardEnhancementFlags.DisambiguateEscapeCodes"/>
     /// has been enabled with <see cref="Tutu.Commands.Events.PushKeyboardEnhancementFlags"/>.
     /// </remarks>
-    public record PrintScreenKeyCode : IKeyCode;
+    public sealed record PrintScreenKeyCode : IKeyCode;
 
     /// <summary>
     /// Pause key.
@@ -342,7 +342,7 @@ public static class KeyCode
     /// This key can only be read if <see cref="KeyboardEnhancementFlags.DisambiguateEscapeCodes"/>
     /// has been enabled with <see cref="Tutu.Commands.Events.PushKeyboardEnhancementFlags"/>.
     /// </remarks>
-    public record PauseKeyCode : IKeyCode;
+    public sealed record PauseKeyCode : IKeyCode;
 
     /// <summary>
     /// Menu key.
@@ -351,7 +351,7 @@ public static class KeyCode
     /// This key can only be read if <see cref="KeyboardEnhancementFlags.DisambiguateEscapeCodes"/>
     /// has been enabled with <see cref="Tutu.Commands.Events.PushKeyboardEnhancementFlags"/>.
     /// </remarks>
-    public record MenuKeyCode : IKeyCode;
+    public sealed record MenuKeyCode : IKeyCode;
 
     /// <summary>
     /// The "Begin" key (often mapped to the 5 key when Num Lock is turned on).
@@ -360,7 +360,7 @@ public static class KeyCode
     /// This key can only be read if <see cref="KeyboardEnhancementFlags.DisambiguateEscapeCodes"/>
     /// has been enabled with <see cref="Tutu.Commands.Events.PushKeyboardEnhancementFlags"/>.
     /// </remarks>
-    public record KeypadBeginKeyCode : IKeyCode;
+    public sealed record KeypadBeginKeyCode : IKeyCode;
 
     /// <summary>
     /// A media key.
@@ -370,7 +370,7 @@ public static class KeyCode
     /// This key can only be read if <see cref="KeyboardEnhancementFlags.DisambiguateEscapeCodes"/>
     /// has been enabled with <see cref="Tutu.Commands.Events.PushKeyboardEnhancementFlags"/>.
     /// </remarks>
-    public record MediaKeyCode(Events.MediaKeyCode Media) : IKeyCode;
+    public sealed record MediaKeyCode(Events.MediaKeyCode Media) : IKeyCode;
 
     /// <summary>
     /// A modifier key.
@@ -380,5 +380,5 @@ public static class KeyCode
     /// This key can only be read if <see cref="KeyboardEnhancementFlags.DisambiguateEscapeCodes"/>
     /// has been enabled with <see cref="Tutu.Commands.Events.PushKeyboardEnhancementFlags"/>.
     /// </remarks>
-    public record ModifierKeyCode(Events.ModifierKeyCode Modifier) : IKeyCode;
+    public sealed record ModifierKeyCode(Events.ModifierKeyCode Modifier) : IKeyCode;
 }

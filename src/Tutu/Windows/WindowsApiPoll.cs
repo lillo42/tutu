@@ -5,7 +5,7 @@ using static Tutu.Windows.Interop.Kernel32.Kernel32;
 
 namespace Tutu.Windows;
 
-internal class WindowsApiPoll
+internal sealed class WindowsApiPoll
 {
     private const uint Infinite = 0xFFFFFFFF;
     public bool Poll(Duration? timeout)

@@ -6,7 +6,7 @@ namespace Tutu.Events;
 /// <summary>
 /// The event stream.
 /// </summary>
-public class EventStream
+public sealed class EventStream
 {
     private readonly Channel<IEvent> _channel;
     private Task? _consumeTask;

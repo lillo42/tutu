@@ -9,7 +9,7 @@ namespace Tutu.Style.Commands;
 /// <remarks>
 /// Commands must be executed/queued for execution otherwise they do nothing.
 /// </remarks>
-public record SetAttributesCommand(IEnumerable<Attribute> Attributes) : ICommand
+public sealed record SetAttributesCommand(IEnumerable<Attribute> Attributes) : ICommand
 {
     /// <inheritdoc />
     public void WriteAnsi(TextWriter write)
